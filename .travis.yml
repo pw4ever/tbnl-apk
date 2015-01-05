@@ -1,5 +1,9 @@
 language: clojure
 
+branches:
+    only:
+        - gh-pages
+
 services:
 # wait till it is upgraded to 2.1+ for the new Cypher on Travis
 - neo4j
