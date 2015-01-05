@@ -85,10 +85,10 @@ tbnl-apk-prep-label 'Testlabel' 01sample | tbnl-apk-with-jmx 2014 -dsvvv
 tbnl-apk -h
 ```
 
-* To start the program with [JVM JMX](http://docs.oracle.com/javase/8/docs/technotes/guides/visualvm/jmx_connections.html) on port 2014 (so that you can [point VisualVM to this port for dynamically monitoring the JVM hosting `tbnl-apk.jar`](http://theholyjava.wordpress.com/2012/09/21/visualvm-monitoring-remote-jvm-over-ssh-jmx-or-not/) and [Clojure nREPL port](https://github.com/clojure/tools.nrepl) 12321 (so you can dynamically interact with application in [Clojure REPL](https://www.youtube.com/watch?v=fnn8JeKfzWY)), the `-i` argument instructs `tbnl-apk` to enter "interactive" mode, i.e., do not quit at then end, to allow nREPL to be connected.
+* To start the program with [JVM JMX](http://docs.oracle.com/javase/8/docs/technotes/guides/visualvm/jmx_connections.html) on port 2014 (so that you can [point VisualVM to this port for dynamically monitoring the JVM hosting `tbnl-apk.jar`](http://theholyjava.wordpress.com/2012/09/21/visualvm-monitoring-remote-jvm-over-ssh-jmx-or-not/) and [Clojure nREPL port](https://github.com/clojure/tools.nrepl) 12321 (so you can dynamically interact with application in [Clojure REPL](https://www.youtube.com/watch?v=fnn8JeKfzWY)), the `--interactive` argument instructs `tbnl-apk` to enter "interactive" mode, i.e., do not quit at then end, to allow nREPL to be connected.
 
 ```sh
-tbnl-apk-with-jmx 2014 -p 12321 -i
+tbnl-apk-with-jmx 2014 --nrepl-port 12321 --interactive
 ```
 
 If the first parameter is not a valid TCP port number, `tbnl-apk-with-jmx` will fall back to `tbnl-apk`.

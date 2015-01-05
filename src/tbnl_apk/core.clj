@@ -53,7 +53,6 @@
    ;; nREPL config
    [nil "--nrepl-port PORT" "REPL port"
     :parse-fn #(Integer/parseInt %)
-    :default 12321
     :validate [#(< 0 % 0x10000)
                (format "Must be a number between 0 and %d (exclusively)"
                        0x10000)]]   
@@ -115,6 +114,8 @@
            dump-manifest]
     :as options}]
   (when (and apk-name (fs/readable? apk-name))
+    (when (and verbose (> verbose 1))
+      (println "processing" apk-name))
     
     (let [start-time (System/currentTimeMillis)]
       (try
@@ -201,11 +202,13 @@
             (when line
               (let [[apk-name & raw-labels] (str/split line #"\s+")
                     labels (map str/capitalize raw-labels)]
-                (when (and apk-name (fs/readable? apk-name))
-                  ;; do the real work
-                  (work apk-name labels options))
-                (when apk-name
-                  (recur (read-line))))))
+                (try
+                  (when (and apk-name (fs/readable? apk-name))
+                    ;; do the real work
+                    (work apk-name labels options))
+                  (catch Exception e
+                    (print-stack-trace-if-verbose e verbose)))
+                (recur (read-line)))))
           
           (when neo4j-task-populate
             (when (> verbose 1)
