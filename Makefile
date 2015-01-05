@@ -25,24 +25,32 @@ default: development
 all: release test
 
 development: development.touch development-package development-install
+
 development-build: development.touch
+
 development.touch: $(SRC)
 	$(LEIN) uberjar && touch $@
+
 development-package: bin/$(NAME).jar bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | development-build
 	tar cvf $(NAME).tar bin
+
 development-install: bin/$(NAME).jar bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | development-build
 	cp $^ ~/bin/
 	chmod +x ~/bin/$(NAME)
 
 release: release-build release-package release-install doc
+
 release-build: release.touch
+
 release.touch: $(SRC)
-	perl -pli.bak -e 'BEGIN { chomp($$G=`git rev-parse HEAD`);} s/<COMMIT>/$$G/;' $(SRC_MAIN); \
+	perl -pli.bak -e 'BEGIN { chomp($$G=`git rev-parse HEAD`; $$T=`date -u +"%a %Y%M%d %T %Z"`);} s/<COMMIT>/$$T: $$G/;' $(SRC_MAIN); \
 	    $(LEIN) uberjar; RET=$$?;\
 	    cp -f $(SRC_MAIN).bak $(SRC_MAIN);\
 	    if [[ $$RET -eq 0 ]]; then touch $@; else false; fi; 
+
 release-package: bin/$(NAME).jar bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | release-build
 	tar cvf $(NAME).tar bin
+
 release-install: bin/$(NAME).jar bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | release-build
 	cp $^ ~/bin/
 	chmod +x ~/bin/$(NAME)
@@ -51,6 +59,7 @@ bin/$(NAME).jar: target/uberjar/$(NAME).jar
 	cp $< $@
 
 doc: docs/uberdoc.html
+
 doc/uberdoc.html: $(SRC)
 	$(LEIN) marg
 
@@ -59,17 +68,23 @@ test:
 
 # localrepo cannot use grench wrapper, otherwise directory may be wrong
 prepare: prepare-asmdex prepare-soot
+
 prepare-asmdex: 00deps/asmdex.jar
 	lein localrepo install $< asmdex/asmdex 1.0
-	prepare-soot: 00deps/soot-trunk.jar
+
+prepare-soot: 00deps/soot-trunk.jar
 	lein localrepo install $< soot/soot 1.0
-	00deps/asmdex.jar: 
+
+00deps/asmdex.jar: 
 	wget $$(cat 00deps/asmdex.url) -O $@
-	00deps/soot-trunk.jar: 
+
+00deps/soot-trunk.jar: 
 	wget $$(cat 00deps/soot.url) -O $@
-	00deps/heros.jar: 
+
+00deps/heros.jar: 
 	wget $$(cat 00deps/heros.url) -O $@
-	bin/android.jar: 
+
+bin/android.jar: 
 	wget $$(cat 00deps/android-jar.url) -O $@
 
 clean:
