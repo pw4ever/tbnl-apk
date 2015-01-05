@@ -172,7 +172,7 @@
       ;; whether help is requested
       (if help
         (do
-          (println "Revision: <COMMIT>")
+          (println "<BUILDINFO>")
           (println summary))
         ;; if help is not requested, do the real work
         (do

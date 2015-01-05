@@ -46,7 +46,8 @@ release: release-build release-package release-install doc
 release-build: release.touch
 
 release.touch: $(SRC)
-	perl -pli.bak -e 'BEGIN { chomp($$G=`git rev-parse HEAD`); chomp($$T=`date -u +"%a %Y%m%d %T %Z"`); } s/<COMMIT>/$$T ($$G)/;' $(SRC_MAIN); \
+	perl -pli.bak -e 'BEGIN { chomp($$G=`git rev-parse HEAD`); chomp($$GC=`if \$$(git diff-index --quiet --cached HEAD); then echo clean; else echo dirty; fi`); chomp($$T=`date -u +"%a %Y%m%d %T %Z"`); chomp($$M=`uname -a`); } s/<BUILDINFO>/Buildenv: $$M\nDate: $$T\nGit commit: $$G ($$GC)/;'\
+	    $(SRC_MAIN); \
 	    $(LEIN) uberjar; RET=$$?;\
 	    cp -f $(SRC_MAIN).bak $(SRC_MAIN);\
 	    if [ $$RET -eq 0 ]; then touch $@; else rm -f $@; false; fi; 
