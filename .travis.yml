@@ -27,7 +27,7 @@ before_script:
 - export PATH=$HOME/bin/:$PATH
 
 script:
-- make
+- make -j3 release
 - tbnl-apk-prep-label
 - tbnl-apk-with-jmx 2014 -h
 - tbnl-apk -h

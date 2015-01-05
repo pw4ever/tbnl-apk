@@ -43,7 +43,7 @@ release: release-build release-package release-install doc
 release-build: release.touch
 
 release.touch: $(SRC)
-	perl -pli.bak -e 'BEGIN { chomp($$G=`git rev-parse HEAD`); chomp($$T=`date -u +"%a %Y%M%d %T %Z"`); } s/<COMMIT>/$$T ($$G)/;' $(SRC_MAIN); \
+	perl -pli.bak -e 'BEGIN { chomp($$G=`git rev-parse HEAD`); chomp($$T=`date -u +"%a %Y%m%d %T %Z"`); } s/<COMMIT>/$$T ($$G)/;' $(SRC_MAIN); \
 	    $(LEIN) uberjar; RET=$$?;\
 	    cp -f $(SRC_MAIN).bak $(SRC_MAIN);\
 	    if [[ $$RET -eq 0 ]]; then touch $@; else false; fi; 
