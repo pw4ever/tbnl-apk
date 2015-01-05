@@ -17,7 +17,7 @@
 
 # tbnl-apk 
 
-[![Build Status](https://travis-ci.org/pw4ever/tbnl-apk.svg?branch=gh-pages)](https://travis-ci.org/pw4ever/tbnl-apk?branch=gh-pages)
+[![Build Status](https://travis-ci.org/pw4ever/tbnl-apk.svg?branch=travis)](https://travis-ci.org/pw4ever/tbnl-apk?branch=travis)
 
 Take your Android packages (APKs) apart and build a Neo4j database for them.
 
