@@ -9,7 +9,7 @@ WGET=${WGET:-'wget'}
 # http://stackoverflow.com/a/246128
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-URL_PREFIX='https://raw.githubusercontent.com/pw4ever/tbnl-apk/github/bin/'
+URL_PREFIX='https://raw.githubusercontent.com/pw4ever/tbnl-apk/gh-pages/bin/'
 
 MAIN='tbnl-apk'
 MAIN_EXEC="${DIR}/${MAIN}"
