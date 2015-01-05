@@ -29,13 +29,16 @@ development: development.touch development-package development-install
 development-build: development.touch
 
 development.touch: $(SRC)
-	$(LEIN) uberjar && touch $@
+	$(LEIN) uberjar && touch $@ || { rm -f $@; false; }
 
-development-package: bin/$(NAME).jar bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | development-build
+development-package: bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | development-build
+	cp target/uberjar/$(NAME).jar bin/$(NAME).jar
 	tar cvf $(NAME).tar bin
 
 development-install: bin/$(NAME).jar bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | development-build
-	cp $^ ~/bin/
+	cp target/uberjar/$(NAME).jar bin/$(NAME).jar
+	mkdir -p ~/bin/
+	cp bin/* ~/bin/
 	chmod +x ~/bin/$(NAME)
 
 release: release-build release-package release-install doc
@@ -46,17 +49,17 @@ release.touch: $(SRC)
 	perl -pli.bak -e 'BEGIN { chomp($$G=`git rev-parse HEAD`); chomp($$T=`date -u +"%a %Y%m%d %T %Z"`); } s/<COMMIT>/$$T ($$G)/;' $(SRC_MAIN); \
 	    $(LEIN) uberjar; RET=$$?;\
 	    cp -f $(SRC_MAIN).bak $(SRC_MAIN);\
-	    if [ $$RET -eq 0 ]; then touch $@; else false; fi; 
+	    if [ $$RET -eq 0 ]; then touch $@; else rm -f $@; false; fi; 
 
-release-package: bin/$(NAME).jar bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | release-build
+release-package: bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | release-build
+	cp target/uberjar/$(NAME).jar bin/$(NAME).jar
 	tar cvf $(NAME).tar bin
 
-release-install: bin/$(NAME).jar bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | release-build
-	cp $^ ~/bin/
+release-install: bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | release-build
+	cp target/uberjar/$(NAME).jar bin/$(NAME).jar
+	mkdir -p ~/bin/
+	cp bin/* ~/bin/
 	chmod +x ~/bin/$(NAME)
-
-bin/$(NAME).jar: target/uberjar/$(NAME).jar
-	cp $< $@
 
 doc: docs/uberdoc.html
 
