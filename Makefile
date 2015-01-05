@@ -46,7 +46,7 @@ release.touch: $(SRC)
 	perl -pli.bak -e 'BEGIN { chomp($$G=`git rev-parse HEAD`); chomp($$T=`date -u +"%a %Y%m%d %T %Z"`); } s/<COMMIT>/$$T ($$G)/;' $(SRC_MAIN); \
 	    $(LEIN) uberjar; RET=$$?;\
 	    cp -f $(SRC_MAIN).bak $(SRC_MAIN);\
-	    if [[ $$RET -eq 0 ]]; then touch $@; else false; fi; 
+	    if [ $$RET -eq 0 ]; then touch $@; else false; fi; 
 
 release-package: bin/$(NAME).jar bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | release-build
 	tar cvf $(NAME).tar bin
