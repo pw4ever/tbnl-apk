@@ -1,0 +1,21 @@
+#! /bin/bash
+# 
+# author: Wei Peng <4pengw@gmail.com>
+# version: 20141230
+# deps: 
+
+FIND=${FIND:-find}
+
+function usage () {
+echo "$0 <space separated labels> [<common path of the '*.apk'>|default: .] [<extra 'find' arguments>]" > /dev/stderr
+}
+
+
+LABELS=${1:-" "}
+shift
+START_PATH=${1:-.}
+shift
+
+[[ -n ${LABELS} ]] || { usage; exit 1; }
+
+find ${START_PATH} -iname '*.apk' -type f -printf "%p ${LABELS}\n" "$@"

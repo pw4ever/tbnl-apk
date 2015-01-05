@@ -1,25 +1,32 @@
 (ns tbnl-apk.apk.aapt.parse
   ;; internal libs
   ;; common libs
-  (require [clojure.string :as str]
-           [clojure.set :as set]
-           [clojure.walk :as walk]
-           [clojure.zip :as zip]
-           [clojure.java.io :as io])
+  (:require [clojure.string :as str]
+            [clojure.set :as set]
+            [clojure.walk :as walk]
+            [clojure.zip :as zip]
+            [clojure.java.io :as io]
+            [clojure.pprint :refer [pprint print-table]]
+            [clojure.stacktrace :refer [print-stack-trace]])  
   ;; special libs
-  (require [clojure.java.shell :as shell :refer [sh]]))
+  (:require [clojure.java.shell :as shell :refer [sh]]))
 
 (def manifest "AndroidManifest.xml")
 
+;; porcelain
 (declare get-badging get-manifest)
+(declare decompile-xml get-manifest-xml)
+
+;; plumbing
 (declare parse-aapt-xmltree
          get-nodes-from-parsed-xmltree)
 (declare aapt-dump-xmltree
          aapt-dump-badging
          aapt-dump-manifest)
 
-(defn get-badging [apk]
+(defn get-badging
   "get badging in Clojure data structure"
+  [apk]
   (let [result (atom {})
         get-string-in-single-quotes #(if-let [[_ meat] (re-find #"^'([^']+)'$" %)]
                                        meat
@@ -63,10 +70,11 @@
                              content)))))))
     @result))
 
-(defn get-manifest [apk]
+(defn get-manifest
   "get manifest in Clojure data structure
 
 reference: https://developer.android.com/guide/topics/manifest/manifest-intro.html"
+  [apk]
   (let [parsed-manifest (parse-aapt-xmltree (aapt-dump-manifest apk))
         result (atom {})
         get-node-android-name (fn [node package]
@@ -99,32 +107,74 @@ reference: https://developer.android.com/guide/topics/manifest/manifest-intro.ht
                     :service
                     :receiver]]
         (swap! result assoc-in [node]
-               (set (map (fn [node]
-                           {(get-node-android-name node package)
-                            (into {}
-                                  (map (fn [intent-filter-tag]
-                                         [(keyword (str "intent-filter-"
-                                                        (name intent-filter-tag)))
-                                          (set (map #(get-node-android-name % package)
-                                                    (get-nodes-from-parsed-xmltree (:content node)
-                                                                                   [:intent-filter
-                                                                                    intent-filter-tag])))])
-                                       [:action :category]))})
-                         (get-nodes-from-parsed-xmltree parsed-manifest
-                                                        [:manifest :application node]))))))
+               (into {}
+                     (map (fn [node]
+                            {(get-node-android-name node package)
+                             (into {}
+                                   (map (fn [intent-filter-tag]
+                                          [(keyword (str "intent-filter-"
+                                                         (name intent-filter-tag)))
+                                           (set (map #(get-node-android-name % package)
+                                                     (get-nodes-from-parsed-xmltree (:content node)
+                                                                                    [:intent-filter
+                                                                                     intent-filter-tag])))])
+                                        [:action :category]))})
+                          (get-nodes-from-parsed-xmltree parsed-manifest
+                                                         [:manifest :application node]))))))
     @result))
 
-(defn parse-aapt-xmltree [xmltree-dump]
+(defn get-manifest-xml
+  "get manifest in XML format"
+  [apk]
+  (decompile-xml apk manifest))
+
+(defn decompile-xml
+  "decompile the binary xml on PATH in APK"
+  [apk path]
+  (let [xmltree (parse-aapt-xmltree (aapt-dump-xmltree apk path))
+        xmltree-to-xml (fn xmltree-to-xml [indent nodes]
+                         (when (not-empty nodes)
+                           (doseq [node nodes]
+                             (let [tag (:tag node)
+                                   attrs (:attrs node)
+                                   content (:content node)
+                                   indent-str (apply str (repeat indent " "))]
+                               (printf "%s<%s%s"
+                                       indent-str
+                                       (name tag)
+                                       (if-not (empty? attrs)
+                                         (str " "
+                                              (str/join " "
+                                                        (map (fn [[k v]]
+                                                               (if (and k v)
+                                                                 (format "%s=\"%s\""
+                                                                         (name k) v)
+                                                                 ""))
+                                                             attrs)))
+                                         ""))
+                               (if (not-empty content)
+                                 (do
+                                   (println ">")
+                                   (xmltree-to-xml (+ indent 2)
+                                                   content)
+                                   (printf "%s</%s>\n"
+                                           indent-str
+                                           (name tag)))
+                                 (println " />"))))))]
+    (with-out-str
+      (println "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+      (xmltree-to-xml 0 xmltree))))
+
+(defn parse-aapt-xmltree
   "parse aapt xmltree dump into Clojure data structure"
-  (let [tmp (map #(let [[_ spaces type raw]
-                        (re-find #"^(\s+)(\S):\s(.+)$"
-                                 %)]
-                    {:indent (count spaces)
-                     :type type
-                     :raw raw})
-                 (str/split-lines xmltree-dump))
-        namespace (:raw (first tmp))
-        lines (vec (rest tmp))
+  [xmltree-dump]
+  (let [lines (vec (map #(let [[_ spaces type raw]
+                               (re-find #"^(\s*)(\S):\s(.+)$"
+                                        %)]
+                           {:indent (count spaces)
+                            :type type
+                            :raw raw})
+                        (str/split-lines xmltree-dump)))
         ;; first pass build: from lines to a tree        
         build (fn build [lines]
                 (when-let [lines (vec lines)]
@@ -139,26 +189,34 @@ reference: https://developer.android.com/guide/topics/manifest/manifest-intro.ht
                                                  (get segment-indexes %)
                                                  (get segment-indexes (inc %)))
                                         (range (dec (count segment-indexes))))]
-                      (vec (map (fn [lines]
-                                  (let [line (first lines)
-                                        lines (rest lines)
-                                        type (:type line)
-                                        raw (:raw line)]
-                                    (case type
-                                      ;; Element
-                                      "E"
-                                      (let [[_ name line] (re-find #"^(\S+)\s+\(line=(\d+)\)$"
-                                                                   raw)]
-                                        {:type :element
-                                         :name name
-                                         :line line
-                                         :children (build lines)})
-                                      ;; Attribute
-                                      "A"
-                                      (let [[_
-                                             encoded-name bare-name
-                                             quoted-value encoded-value bare-value] (re-find
-                                                                                     #"(?x)
+                      (->> segments
+                           (map (fn [lines]
+                                   (let [line (first lines)
+                                         lines (rest lines)
+                                         type (:type line)
+                                         raw (:raw line)]
+                                     (case type
+                                       ;; Namespace
+                                       "N"
+                                       (let [[_ n v] (re-find #"^([^=]+)=([^=]+)$" raw)]
+                                         {:type :namespace
+                                          :name (str "xmlns:" n)
+                                          :value v
+                                          :children (build lines)}) 
+                                       ;; Element
+                                       "E"
+                                       (let [[_ name line] (re-find #"^(\S+)\s+\(line=(\d+)\)$"
+                                                                    raw)]
+                                         {:type :element
+                                          :name name
+                                          :line line
+                                          :children (build lines)})
+                                       ;; Attribute
+                                       "A"
+                                       (let [[_
+                                              encoded-name bare-name
+                                              quoted-value encoded-value bare-value] (re-find
+                                              #"(?x)
 ^(?:
   ([^=(]+)\([^)]+\)| # encoded name
   ([^=(]+) # bare name
@@ -170,26 +228,42 @@ reference: https://developer.android.com/guide/topics/manifest/manifest-intro.ht
   ([^\"(]\S*) # bare value
 )
 "
-                                                                                     raw)]
-                                        {:type :attribute
-                                         :name (or bare-name encoded-name)
-                                         :value (or quoted-value encoded-value bare-value)})))) segments))))))
+                                              raw)]
+                                         {:type :attribute
+                                          :name (or bare-name encoded-name)
+                                          :value (or quoted-value encoded-value bare-value)})
+                                       ;; falls through
+                                       nil))))
+                           (keep identity)
+                           vec)))))
         pass (build lines)]
-    (let [;; second pass: merge attributes into element
-          build (fn build [node]
-                  (when (= (:type node) :element)
+    (let [;; second pass: merge namespace/attributes into elements
+          build (fn build [node & [immediate-namespace]]
+                  (case (:type node)
+                    ;; element
+                    :element
                     (let [[attrs elems] (split-with #(= (:type %) :attribute)
                                                     (:children node))]
                       {:tag (keyword (:name node))
-                       :attrs (into {} (map #(do [(keyword (:name %))
-                                                  (:value %)])
-                                            attrs))
-                       :content (set (map build elems))})))
+                       :attrs (let [attrs (into {} (map #(do [(keyword (:name %))
+                                                              (:value %)])
+                                                        attrs))]
+                                (if immediate-namespace
+                                  (assoc attrs (:name immediate-namespace)
+                                         (:value immediate-namespace))
+                                  attrs))
+                       :content (set (map build elems))})                    
+                    ;; namespace
+                    :namespace
+                    (build (first (:children node))
+                           ;; pass the immediate-namespace to its children
+                           (select-keys node [:name :value]))))
           pass (set (map build pass))]
       pass)))
 
-(defn get-nodes-from-parsed-xmltree [parsed-xmltree [tag & more-tags]]
+(defn get-nodes-from-parsed-xmltree
   "get nodes from parsed xmltree"
+  [parsed-xmltree [tag & more-tags]]
   (->> parsed-xmltree
        (filter #(= (:tag %) tag))
        ((fn [nodes]
@@ -200,16 +274,19 @@ reference: https://developer.android.com/guide/topics/manifest/manifest-intro.ht
             nodes)))
        set))
 
-(defn aapt-dump-xmltree [apk asset]
+(defn aapt-dump-xmltree
   "aapt dump xmltree asset"
+  [apk asset]
   (:out (sh "aapt" "dump" "xmltree"
             apk asset)))
 
-(defn aapt-dump-badging [apk]
+(defn aapt-dump-badging
   "aapt dump badging apk"
+  [apk]
   (:out (sh "aapt" "dump" "badging"
             apk)))
 
-(defn aapt-dump-manifest [apk]
+(defn aapt-dump-manifest
   "aapt dump xmltree <manifest>"
+  [apk]
   (aapt-dump-xmltree apk manifest))
