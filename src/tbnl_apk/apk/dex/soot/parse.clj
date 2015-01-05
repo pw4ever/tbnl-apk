@@ -107,8 +107,8 @@
       (with-soot
         ;; use the current thread's Soot context
         g-objgetter
-        ;; no need to reset Soot context at the end --- as long as everyone uses its own Context
-        false
+        ;; reset at the end to release the Soot Objects built up during the analysis
+        true
         ;; the real work begins from here
         (when (or (not verbose)
                   (<= verbose 1))

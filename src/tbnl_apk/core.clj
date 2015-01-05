@@ -22,7 +22,6 @@
   ;; special libs
   (:require [clojure.tools.cli :refer [parse-opts]])
   (:require [clojure.java.shell :refer [sh]])
-  (:require [clojure.core.async :as async :refer [thread]])
   (:require [me.raynes.fs :as fs])
   (:require [clojure.tools.nrepl.server :refer [start-server stop-server]])
   (:require [cider.nrepl :refer [cider-nrepl-handler]])
@@ -176,17 +175,19 @@
           (println summary))
         ;; if help is not requested, do the real work
         (do
-          ;; use separate thread to start nREPL, so do not delay other task
-          (thread
-            (when nrepl-port
-              (try
-                (start-server :port nrepl-port
-                              :handler cider-nrepl-handler)
-                (catch Exception e
-                  (when (> verbose 1)
-                    (binding [*out* *err*]
-                      (println "error: nREPL server cannot start at port"
-                               nrepl-port)))))))
+          (when nrepl-port
+            ;; use separate thread to start nREPL, so do not delay other task
+            (.. (Thread.
+                 (fn []
+                   (try
+                     (start-server :port nrepl-port
+                                   :handler cider-nrepl-handler)
+                     (catch Exception e
+                       (when (> verbose 1)
+                         (binding [*out* *err*]
+                           (println "error: nREPL server cannot start at port"
+                                    nrepl-port)))))))
+                start))
 
           (when neo4j-task-populate
             ;; "create index" only need to executed once if populate-neo4j is requested
@@ -204,8 +205,12 @@
                     labels (map str/capitalize raw-labels)]
                 (try
                   (when (and apk-name (fs/readable? apk-name))
-                    ;; do the real work
-                    (work apk-name labels options))
+                    ;; do the real work using a fresh Thread
+                    (let [t (Thread. #(work apk-name labels options))]
+                      (doto t
+                        (.start)
+                        ;; wait till the thread dies
+                        (.join))))
                   (catch Exception e
                     (print-stack-trace-if-verbose e verbose)))
                 (recur (read-line)))))

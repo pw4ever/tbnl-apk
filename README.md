@@ -28,8 +28,8 @@ Take your Android packages (APKs) apart and build a Neo4j database for them.
 ### Dependency
 
 * [Java SE](http://www.oracle.com/technetwork/java/javase/downloads/index.html): `java`
-* [Android SDK](https://developer.android.com/sdk/index.html): `aapt`
-* [Neo4j 2.1+](http://neo4j.com/)
+* [Android SDK](https://developer.android.com/sdk/index.html): `aapt` (see [the Travis CI config](https://github.com/pw4ever/tbnl-apk/blob/gh-pages/.travis.yml#L21) for example command-line installation procedure).
+* [Neo4j 2.1+](http://neo4j.com/): Neo4j 2.1+ (not an earlier version) is needed due to the Cypher query language used in the implementation.
 
 The shell script `tbnl-apk`, `tbnl-apk-with-jmx`, and `tbnl-apk-prep-label` are self-bootstrapping, but requires [`bash`](https://www.gnu.org/software/bash/) and assumes a Linux/Unix shell environment.
 
@@ -73,9 +73,26 @@ It is recommended that `$HOME/bin/` being added to your `PATH` environment varia
 
 ### Quick Test
 
+Suppose Neo4j server listens on TCP port 7475.
+
 ```sh
-tbnl-apk-prep-label 'Testlabel' 01sample | tbnl-apk-with-jmx 2014 -dsvvv
+tbnl-apk-prep-label 'Testlabel' 01sample | \
+        JVM_OPTS='-Xmx6g -Xms6g -XX:NewSize=5g -XX:+UseG1GC' \
+        tbnl-apk-with-jmx 2014 -dsntvv --neo4j-port 7475 --nrepl-port 12321 --interactive
 ```
+
+This will process all `*.apk` (recursively) under the `01sample` directory.
+* [Start the JVM with the options](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BGBCIEFC) `-Xmx6g -Xms6g -XX:NewSize=5g -XX:+UseG1GC`. 
+  - Give as much as memory as possible with eager commit, e.g., `-Xmx6g -Xms6g`.
+  - Give most memory to the young generation with just enough left for the old generation, e.g., `-XX:NewSize=5g`.
+  - Use garbage-first garbage collector (G1GC): `-XX:+UseG1GC`.
+* First decompile and dump its `AndroidManifest.xml` (`-d`).
+* Build its graphical model using [Soot]() (`-s`).
+* Send the graphical model to Neo4j at port 7475 (`--neo4j-port 7475`).
+* Tag the model in Neo4j (`-t`).
+* Be doubly verbose (`-vv`).
+* Start Clojure nREPL at port 12321: `--nrepl-port 12321`.
+* Enter interactive mode (`--interactive`): The program will not shutdown after the above processing is done. This allow you to interact with it continously with nREPL.
 
 ### Basics
 
@@ -85,17 +102,20 @@ tbnl-apk-prep-label 'Testlabel' 01sample | tbnl-apk-with-jmx 2014 -dsvvv
 tbnl-apk -h
 ```
 
-* To start the program with [JVM JMX](http://docs.oracle.com/javase/8/docs/technotes/guides/visualvm/jmx_connections.html) on port 2014 (so that you can [point VisualVM to this port for dynamically monitoring the JVM hosting `tbnl-apk.jar`](http://theholyjava.wordpress.com/2012/09/21/visualvm-monitoring-remote-jvm-over-ssh-jmx-or-not/) and [Clojure nREPL port](https://github.com/clojure/tools.nrepl) 12321 (so you can dynamically interact with application in [Clojure REPL](https://www.youtube.com/watch?v=fnn8JeKfzWY)), the `--interactive` argument instructs `tbnl-apk` to enter "interactive" mode, i.e., do not quit at then end, to allow nREPL to be connected.
+* To start the program with [JVM JMX](http://docs.oracle.com/javase/8/docs/technotes/guides/visualvm/jmx_connections.html) on port 2014 (so that you can [point VisualVM to this port for dynamically monitoring the JVM hosting `tbnl-apk.jar`](http://theholyjava.wordpress.com/2012/09/21/visualvm-monitoring-remote-jvm-over-ssh-jmx-or-not/) and [Clojure nREPL port](https://github.com/clojure/tools.nrepl) 12321 (so you can dynamically interact with application in [Clojure REPL](https://www.youtube.com/watch?v=fnn8JeKfzWY)), the `--interactive` argument instructs `tbnl-apk` to enter "interactive" mode, i.e., do not quit at then end, to allow nREPL to be connected. You can tune the JVM with the `JVM_OPTS` environment variable.
 
 ```sh
-tbnl-apk-with-jmx 2014 --nrepl-port 12321 --interactive
+JVM_OPTS='-Xmx6g -Xms6g -XX:NewSize=5g -XX:+UseG1GC' \
+         tbnl-apk-with-jmx 2014 --nrepl-port 12321 --interactive
 ```
 
-If the first parameter is not a valid TCP port number, `tbnl-apk-with-jmx` will fall back to `tbnl-apk`.
+If the first parameter of is not a valid TCP port number, `tbnl-apk-with-jmx` will fall back to `tbnl-apk`.
 
-* (Or) With `java` and `tbnl-apk.jar` (make sure the dummy `android.jar` is at the same directory as `tbnl-apk.jar`, or prepare to specify its path with <argument>)
+* (Or) With `java` and `tbnl-apk.jar` (make sure the `android.jar` is at the same directory as `tbnl-apk.jar`, or prepare to specify its path with <argument>)
 ```sh
-java -jar tbnl-apk.jar -Xmx2048m tbnl-apk.core <argument> 
+java -jar tbnl-apk.jar \
+         -Xmx6g -Xms6g -XX:NewSize=5g -XX:+UseG1GC \
+         tbnl-apk.core <argument> 
 ```
 
 Take input APK file names line-by-line as a [Unix filter](https://en.wikipedia.org/wiki/Filter_(software)#Unix) (e.g., use `find dir -name '*.apk' -type f` to find APKs to feed into `tbnl-apk`).

@@ -98,10 +98,10 @@ process takes a worklist as input, and outputs the new worklist"
              ~'phase-options (PhaseOptions/v)]
          ~@body
          ~(when reset?
-            `(G/reset)))
+            `(G/setGlobalObjectGetter nil)))
        (catch Exception e#
          ;; reset Soot state
-         (G/reset)
+         (G/setGlobalObjectGetter nil)
          (throw e#))
        (finally
          (System/setSecurityManager system-security-manager)))))
