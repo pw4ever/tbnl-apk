@@ -272,14 +272,35 @@
                                                         (fn [form]
                                                           (cond
                                                             (instance? soot.SootMethodRef form)
-                                                            [(.. form declaringClass getName)
-                                                             (.. form name)]
+                                                            (list
+                                                             :method
+                                                             [(.. form declaringClass getName)
+                                                              (.. form name)])
+
+                                                            (instance? soot.SootFieldRef form)
+                                                            (list
+                                                             :field
+                                                             [(.. form declaringClass getName)
+                                                              (.. form name)])
 
                                                             (instance? soot.SootClass form)
-                                                            (.. form getName)
+                                                            (list
+                                                             :type
+                                                             (.. form getName))
 
                                                             (instance? soot.RefType form)
-                                                            (.. form getClassName)
+                                                            (list
+                                                             :type
+                                                             (.. form getClassName))
+
+                                                            (instance? soot.ArrayType form)
+                                                            (list
+                                                             :array
+                                                             [(.. form baseType)
+                                                              (.. form numDimensions)])
+
+                                                            (instance? soot.NullType form)
+                                                            nil
 
                                                             (and (list? form)
                                                                  (= (first form) :invoke))
