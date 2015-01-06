@@ -87,24 +87,73 @@ process takes a worklist as input, and outputs the new worklist"
   "wrap body with major Soot refs *at the call time*: g, scene, pack-manager, options, phase-options; g can be (optionally) provided with g-objgetter (nil to ask fetch the G *at the call time*); (G/reset) at the end if \"reset?\" is true"
   [g-objgetter reset? & body]
   `(locking soot-mutex
-     (try
-       (System/setSecurityManager noexit-security-manager)
-       (when (instance? G$GlobalObjectGetter ~g-objgetter)
-         (G/setGlobalObjectGetter ~g-objgetter))
-       (let [~'g (G/v)
-             ~'scene (Scene/v)
-             ~'pack-manager (PackManager/v)
-             ~'options (Options/v)
-             ~'phase-options (PhaseOptions/v)]
-         ~@body
-         ~(when reset?
-            `(G/setGlobalObjectGetter nil)))
-       (catch Exception e#
-         ;; reset Soot state
-         (G/setGlobalObjectGetter nil)
-         (throw e#))
-       (finally
-         (System/setSecurityManager system-security-manager)))))
+     
+     (let [get-transitive-super-class-and-interface#
+           (memoize
+            (fn [class-or-interface#]
+              (let [known# (atom #{})]
+                (loop [worklist# #{class-or-interface#}
+                       visited# #{}]
+                  (when-not (empty? worklist#)
+                    (let [new-worklist# (atom #{})]
+                      (doseq [item# worklist#
+                              :when (not (visited# item#))]
+                        (swap! known# conj item#)
+                        ;; interfaces
+                        (swap! new-worklist# into (->> (.. item# getInterfaces snapshotIterator)
+                                                       iterator-seq
+                                                       doall))
+                        ;; superclass?
+                        (when (.. item# hasSuperclass)
+                          (swap! new-worklist# conj (.. item# getSuperclass))))
+                      (recur (set/difference @new-worklist# worklist#)
+                             (set/union visited# worklist#)))))
+                @known#)))
+           
+           transitive-ancestor?#
+           (memoize
+            (fn [name-or-class-a# class-b#]
+              (contains? (->> class-b#
+                              get-transitive-super-class-and-interface
+                              (map #(.. ^SootClass % getName))
+                              set)
+                         (if (instance? SootClass name-or-class-a#)
+                           (.. name-or-class-a# getName)
+                           (str name-or-class-a#)))))
+           
+           soot-init# (fn []
+                        ;; set up memoize functions so that they won't retain objects across
+                        (alter-var-root #'get-transitive-super-class-and-interface
+                                        (fn [_#] get-transitive-super-class-and-interface#))
+                        (alter-var-root #'transitive-ancestor?
+                                        (fn [_#] transitive-ancestor?#)))
+           
+           ;; we have to use this instead of clean# due to the use in ~(when reset? ...)           
+           ~'_soot-clean_ (fn []
+                            (alter-var-root #'get-transitive-super-class-and-interface
+                                            (constantly nil))
+                            (alter-var-root #'transitive-ancestor?
+                                            (constantly nil))
+                            (G/setGlobalObjectGetter nil))]
+       (try
+         (soot-init#)
+         (System/setSecurityManager noexit-security-manager)
+         (when (instance? G$GlobalObjectGetter ~g-objgetter)
+           (G/setGlobalObjectGetter ~g-objgetter))
+         (let [~'g (G/v)
+               ~'scene (Scene/v)
+               ~'pack-manager (PackManager/v)
+               ~'options (Options/v)
+               ~'phase-options (PhaseOptions/v)]
+           ~@body
+           ~(when reset?
+              `(~'_soot-clean_)))
+         (catch Exception e#
+           ;; reset Soot state
+           (~'_soot-clean_)
+           (throw e#))
+         (finally
+           (System/setSecurityManager system-security-manager))))))
 
 (defn new-g-objgetter
   "create a new Soot context (G$GlobalObjectGetter)"
@@ -112,7 +161,7 @@ process takes a worklist as input, and outputs the new worklist"
   (let [g (new G)]
     (reify G$GlobalObjectGetter
       (getG [this] g)
-      (reset [this] (new G)))))
+      (reset [this]))))
 
 (defn get-application-classes
   "get application classes in scene"
@@ -223,38 +272,11 @@ process takes a worklist as input, and outputs the new worklist"
 
 (def get-transitive-super-class-and-interface
   "get transitive super class and interfaces known to Soot"
-  (memoize
-   (fn [class-or-interface]
-     (let [known (atom #{})]
-       (loop [worklist #{class-or-interface}
-              visited #{}]
-         (when-not (empty? worklist)
-           (let [new-worklist (atom #{})]
-             (doseq [item worklist
-                     :when (not (visited item))]
-               (swap! known conj item)
-               ;; interfaces
-               (swap! new-worklist into (->> (.. item getInterfaces snapshotIterator)
-                                             iterator-seq
-                                             doall))
-               ;; superclass?
-               (when (.. item hasSuperclass)
-                 (swap! new-worklist conj (.. item getSuperclass))))
-             (recur (set/difference @new-worklist worklist)
-                    (set/union visited worklist)))))
-       @known))))
+  nil)
 
 (def transitive-ancestor?
   "name-or-class-a is a transitive ancestor (super class/interface) of class-b"
-  (memoize
-   (fn [name-or-class-a class-b]
-     (contains? (->> class-b
-                     get-transitive-super-class-and-interface
-                     (map #(.. ^SootClass % getName))
-                     set)
-                (if (instance? SootClass name-or-class-a)
-                  (.. name-or-class-a getName)
-                  (str name-or-class-a))))))
+  nil)
 
 (defn filter-interesting-methodrefs
   "filter interesting methodrefs"

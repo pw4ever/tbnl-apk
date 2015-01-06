@@ -116,15 +116,14 @@
   (not-empty (get-transitive-implicit-cf-super-class-and-interface implicit-cf
                                                                    class)))
 
-(def get-transitive-implicit-cf-super-class-and-interface
+(defn get-transitive-implicit-cf-super-class-and-interface
   "get class's implicit cf super classes/interfaces"
-  (memoize
-   (fn [implicit-cf ^SootClass class]
-     (set/intersection (set (keys implicit-cf))
-                       (->> class
-                            get-transitive-super-class-and-interface
-                            (map #(.. ^SootClass % getName))
-                            set)))))
+  [implicit-cf ^SootClass class]
+  (set/intersection (set (keys implicit-cf))
+                    (->> class
+                         get-transitive-super-class-and-interface
+                         (map #(.. ^SootClass % getName))
+                         set)))
 
 (defn get-implicit-cf-root-class-names
   "get methodref's root implicit-cf classes' names"
