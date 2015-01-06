@@ -64,7 +64,7 @@ release-install: bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/and
 
 doc: docs/uberdoc.html
 
-doc/uberdoc.html: $(SRC)
+docs/uberdoc.html: $(SRC)
 	$(LEIN) marg
 
 test:

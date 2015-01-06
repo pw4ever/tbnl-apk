@@ -3667,14 +3667,13 @@ net.brehaut.ClojureTools = (function (SH) {
   [implicit-cf ^SootClass class]
   (not-empty (get-transitive-implicit-cf-super-class-and-interface implicit-cf
                                                                    class)))</pre></td></tr><tr><td class="docs"><p>get class's implicit cf super classes/interfaces</p>
-</td><td class="codes"><pre class="brush: clojure">(def get-transitive-implicit-cf-super-class-and-interface
-  (memoize
-   (fn [implicit-cf ^SootClass class]
-     (set/intersection (set (keys implicit-cf))
-                       (-&gt;&gt; class
-                            get-transitive-super-class-and-interface
-                            (map #(.. ^SootClass % getName))
-                            set)))))</pre></td></tr><tr><td class="docs"><p>get methodref's root implicit-cf classes' names</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-transitive-implicit-cf-super-class-and-interface
+  [implicit-cf ^SootClass class]
+  (set/intersection (set (keys implicit-cf))
+                    (-&gt;&gt; class
+                         get-transitive-super-class-and-interface
+                         (map #(.. ^SootClass % getName))
+                         set)))</pre></td></tr><tr><td class="docs"><p>get methodref's root implicit-cf classes' names</p>
 </td><td class="codes"><pre class="brush: clojure">(defn get-implicit-cf-root-class-names
   [implicit-cf ^SootMethodRef methodref]
   (let [methodref-class (.. methodref declaringClass)
@@ -4230,30 +4229,75 @@ net.brehaut.ClojureTools = (function (SH) {
 </td><td class="codes"><pre class="brush: clojure">(defmacro with-soot
   [g-objgetter reset? &amp; body]
   `(locking soot-mutex
-     (try
-       (System/setSecurityManager noexit-security-manager)
-       (when (instance? G$GlobalObjectGetter ~g-objgetter)
-         (G/setGlobalObjectGetter ~g-objgetter))
-       (let [~'g (G/v)
-             ~'scene (Scene/v)
-             ~'pack-manager (PackManager/v)
-             ~'options (Options/v)
-             ~'phase-options (PhaseOptions/v)]
-         ~@body
-         ~(when reset?
-            `(G/reset)))
-       (catch Exception e#
-         ;; reset Soot state
-         (G/reset)
-         (throw e#))
-       (finally
-         (System/setSecurityManager system-security-manager)))))</pre></td></tr><tr><td class="docs"><p>create a new Soot context (G$GlobalObjectGetter)</p>
+     (let [get-transitive-super-class-and-interface#
+           (memoize
+            (fn [class-or-interface#]
+              (let [known# (atom #{})]
+                (loop [worklist# #{class-or-interface#}
+                       visited# #{}]
+                  (when-not (empty? worklist#)
+                    (let [new-worklist# (atom #{})]
+                      (doseq [item# worklist#
+                              :when (not (visited# item#))]
+                        (swap! known# conj item#)
+                        ;; interfaces
+                        (swap! new-worklist# into (-&gt;&gt; (.. item# getInterfaces snapshotIterator)
+                                                       iterator-seq
+                                                       doall))
+                        ;; superclass?
+                        (when (.. item# hasSuperclass)
+                          (swap! new-worklist# conj (.. item# getSuperclass))))
+                      (recur (set/difference @new-worklist# worklist#)
+                             (set/union visited# worklist#)))))
+                @known#)))
+           transitive-ancestor?#
+           (memoize
+            (fn [name-or-class-a# class-b#]
+              (contains? (-&gt;&gt; class-b#
+                              get-transitive-super-class-and-interface
+                              (map #(.. ^SootClass % getName))
+                              set)
+                         (if (instance? SootClass name-or-class-a#)
+                           (.. name-or-class-a# getName)
+                           (str name-or-class-a#)))))
+           soot-init# (fn []
+                        ;; set up memoize functions so that they won't retain objects across
+                        (alter-var-root #'get-transitive-super-class-and-interface
+                                        (fn [_#] get-transitive-super-class-and-interface#))
+                        (alter-var-root #'transitive-ancestor?
+                                        (fn [_#] transitive-ancestor?#)))
+           ;; we have to use this instead of clean# due to the use in ~(when reset? ...)           
+           ~'_soot-clean_ (fn []
+                            (alter-var-root #'get-transitive-super-class-and-interface
+                                            (constantly nil))
+                            (alter-var-root #'transitive-ancestor?
+                                            (constantly nil))
+                            (G/setGlobalObjectGetter nil))]
+       (try
+         (soot-init#)
+         (System/setSecurityManager noexit-security-manager)
+         (when (instance? G$GlobalObjectGetter ~g-objgetter)
+           (G/setGlobalObjectGetter ~g-objgetter))
+         (let [~'g (G/v)
+               ~'scene (Scene/v)
+               ~'pack-manager (PackManager/v)
+               ~'options (Options/v)
+               ~'phase-options (PhaseOptions/v)]
+           ~@body
+           ~(when reset?
+              `(~'_soot-clean_)))
+         (catch Exception e#
+           ;; reset Soot state
+           (~'_soot-clean_)
+           (throw e#))
+         (finally
+           (System/setSecurityManager system-security-manager))))))</pre></td></tr><tr><td class="docs"><p>create a new Soot context (G$GlobalObjectGetter)</p>
 </td><td class="codes"><pre class="brush: clojure">(defn new-g-objgetter
   []
   (let [g (new G)]
     (reify G$GlobalObjectGetter
       (getG [this] g)
-      (reset [this] (new G)))))</pre></td></tr><tr><td class="docs"><p>get application classes in scene</p>
+      (reset [this]))))</pre></td></tr><tr><td class="docs"><p>get application classes in scene</p>
 </td><td class="codes"><pre class="brush: clojure">(defn get-application-classes
   [scene]
   (-&gt;&gt; (.. scene getApplicationClasses snapshotIterator)
@@ -4343,36 +4387,9 @@ net.brehaut.ClojureTools = (function (SH) {
          (map #(.. ^Edge % getTgt))
          set)))</pre></td></tr><tr><td class="docs"><p>get transitive super class and interfaces known to Soot</p>
 </td><td class="codes"><pre class="brush: clojure">(def get-transitive-super-class-and-interface
-  (memoize
-   (fn [class-or-interface]
-     (let [known (atom #{})]
-       (loop [worklist #{class-or-interface}
-              visited #{}]
-         (when-not (empty? worklist)
-           (let [new-worklist (atom #{})]
-             (doseq [item worklist
-                     :when (not (visited item))]
-               (swap! known conj item)
-               ;; interfaces
-               (swap! new-worklist into (-&gt;&gt; (.. item getInterfaces snapshotIterator)
-                                             iterator-seq
-                                             doall))
-               ;; superclass?
-               (when (.. item hasSuperclass)
-                 (swap! new-worklist conj (.. item getSuperclass))))
-             (recur (set/difference @new-worklist worklist)
-                    (set/union visited worklist)))))
-       @known))))</pre></td></tr><tr><td class="docs"><p>name-or-class-a is a transitive ancestor (super class/interface) of class-b</p>
+  nil)</pre></td></tr><tr><td class="docs"><p>name-or-class-a is a transitive ancestor (super class/interface) of class-b</p>
 </td><td class="codes"><pre class="brush: clojure">(def transitive-ancestor?
-  (memoize
-   (fn [name-or-class-a class-b]
-     (contains? (-&gt;&gt; class-b
-                     get-transitive-super-class-and-interface
-                     (map #(.. ^SootClass % getName))
-                     set)
-                (if (instance? SootClass name-or-class-a)
-                  (.. name-or-class-a getName)
-                  (str name-or-class-a))))))</pre></td></tr><tr><td class="docs"><p>filter interesting methodrefs</p>
+  nil)</pre></td></tr><tr><td class="docs"><p>filter interesting methodrefs</p>
 </td><td class="codes"><pre class="brush: clojure">(defn filter-interesting-methodrefs
   [interesting-methodref? methodrefs]
   (-&gt;&gt; methodrefs
@@ -4475,8 +4492,8 @@ net.brehaut.ClojureTools = (function (SH) {
       (with-soot
         ;; use the current thread's Soot context
         g-objgetter
-        ;; no need to reset Soot context at the end --- as long as everyone uses its own Context
-        false
+        ;; reset at the end to release the Soot Objects built up during the analysis
+        true
         ;; the real work begins from here
         (when (or (not verbose)
                   (&lt;= verbose 1))
@@ -4625,12 +4642,30 @@ net.brehaut.ClojureTools = (function (SH) {
                                                         (fn [form]
                                                           (cond
                                                             (instance? soot.SootMethodRef form)
-                                                            [(.. form declaringClass getName)
-                                                             (.. form name)]
+                                                            (list
+                                                             :method
+                                                             [(.. form declaringClass getName)
+                                                              (.. form name)])
+                                                            (instance? soot.SootFieldRef form)
+                                                            (list
+                                                             :field
+                                                             [(.. form declaringClass getName)
+                                                              (.. form name)])
                                                             (instance? soot.SootClass form)
-                                                            (.. form getName)
+                                                            (list
+                                                             :type
+                                                             (.. form getName))
                                                             (instance? soot.RefType form)
-                                                            (.. form getClassName)
+                                                            (list
+                                                             :type
+                                                             (.. form getClassName))
+                                                            (instance? soot.ArrayType form)
+                                                            (list
+                                                             :array
+                                                             [(.. form baseType)
+                                                              (.. form numDimensions)])
+                                                            (instance? soot.NullType form)
+                                                            nil
                                                             (and (list? form)
                                                                  (= (first form) :invoke))
                                                             (-&gt;&gt; form second second)
@@ -4872,7 +4907,6 @@ net.brehaut.ClojureTools = (function (SH) {
   ;; special libs
   (:require [clojure.tools.cli :refer [parse-opts]])
   (:require [clojure.java.shell :refer [sh]])
-  (:require [clojure.core.async :as async :refer [thread]])
   (:require [me.raynes.fs :as fs])
   (:require [clojure.tools.nrepl.server :refer [start-server stop-server]])
   (:require [cider.nrepl :refer [cider-nrepl-handler]])
@@ -4900,7 +4934,6 @@ net.brehaut.ClojureTools = (function (SH) {
    ;; nREPL config
    [nil &quot;--nrepl-port PORT&quot; &quot;REPL port&quot;
     :parse-fn #(Integer/parseInt %)
-    :default 12321
     :validate [#(&lt; 0 % 0x10000)
                (format &quot;Must be a number between 0 and %d (exclusively)&quot;
                        0x10000)]]   
@@ -4944,6 +4977,8 @@ net.brehaut.ClojureTools = (function (SH) {
            dump-manifest]
     :as options}]
   (when (and apk-name (fs/readable? apk-name))
+    (when (and verbose (&gt; verbose 1))
+      (println &quot;processing&quot; apk-name))
     (let [start-time (System/currentTimeMillis)]
       (try
         (when dump-manifest
@@ -4992,21 +5027,23 @@ net.brehaut.ClojureTools = (function (SH) {
       ;; whether help is requested
       (if help
         (do
-          (println &quot;Revision: &lt;COMMIT&gt;&quot;)
+          (println &quot;&lt;BUILDINFO&gt;&quot;)
           (println summary))
         ;; if help is not requested, do the real work
         (do
-          ;; use separate thread to start nREPL, so do not delay other task
-          (thread
-            (when nrepl-port
-              (try
-                (start-server :port nrepl-port
-                              :handler cider-nrepl-handler)
-                (catch Exception e
-                  (when (&gt; verbose 1)
-                    (binding [*out* *err*]
-                      (println &quot;error: nREPL server cannot start at port&quot;
-                               nrepl-port)))))))
+          (when nrepl-port
+            ;; use separate thread to start nREPL, so do not delay other task
+            (.. (Thread.
+                 (fn []
+                   (try
+                     (start-server :port nrepl-port
+                                   :handler cider-nrepl-handler)
+                     (catch Exception e
+                       (when (&gt; verbose 1)
+                         (binding [*out* *err*]
+                           (println &quot;error: nREPL server cannot start at port&quot;
+                                    nrepl-port)))))))
+                start))
           (when neo4j-task-populate
             ;; &quot;create index&quot; only need to executed once if populate-neo4j is requested
             (when (&gt; verbose 1)
@@ -5020,11 +5057,17 @@ net.brehaut.ClojureTools = (function (SH) {
             (when line
               (let [[apk-name &amp; raw-labels] (str/split line #&quot;\s+&quot;)
                     labels (map str/capitalize raw-labels)]
-                (when (and apk-name (fs/readable? apk-name))
-                  ;; do the real work
-                  (work apk-name labels options))
-                (when apk-name
-                  (recur (read-line))))))
+                (try
+                  (when (and apk-name (fs/readable? apk-name))
+                    ;; do the real work using a fresh Thread
+                    (let [t (Thread. #(work apk-name labels options))]
+                      (doto t
+                        (.start)
+                        ;; wait till the thread dies
+                        (.join))))
+                  (catch Exception e
+                    (print-stack-trace-if-verbose e verbose)))
+                (recur (read-line)))))
           (when neo4j-task-populate
             (when (&gt; verbose 1)
               (with-mutex-locked
@@ -5070,77 +5113,86 @@ net.brehaut.ClojureTools = (function (SH) {
 </td><td class="codes"><pre class="brush: clojure">(defn populate-from-parsed-apk
   [apk {:keys []
         :as options}]
-  (let [statements (atom [])]
-    (let [manifest (:manifest apk)
-          dex-sha256 (:dex-sha256 apk)
-          cert-sha256 (:cert-sha256 apk)
-          apk-sha256 (:sha256 apk)
-          apk-package (:package manifest)
-          apk-version-name (:android:versionName manifest)
-          apk-version-code (:android:versionCode manifest)
-          dex (:dex apk)]
+  (let [manifest (:manifest apk)
+        dex-sha256 (:dex-sha256 apk)
+        cert-sha256 (:cert-sha256 apk)
+        apk-sha256 (:sha256 apk)
+        apk-package (:package manifest)
+        apk-version-name (:android:versionName manifest)
+        apk-version-code (:android:versionCode manifest)
+        dex (:dex apk)
+        conn (connect options)
+        transaction (ntx/begin-tx conn)]
+    (ntx/with-transaction
+      conn
+      transaction
+      true
+      ;; do not stack up the query strings for memory efficiency: execute as soon as possible
       ;; overall structure
-      (swap! statements conj
-             (ntx/statement
-              (str/join &quot; &quot;
-                        [&quot;MERGE (signkey:SigningKey {sha256:{certsha256}})&quot;
-                         &quot;MERGE (apk:Apk {sha256:{apksha256},package:{apkpackage},versionCode:{apkversioncode},versionName:{apkversionname}})&quot;
-                         &quot;MERGE (dex:Dex {sha256:{dexsha256}})&quot;
-                         &quot;MERGE (signkey)-[:Sign]-&gt;(apk)-[:Contain]-&gt;(dex)&quot;
-                         &quot;FOREACH (&quot;
-                         &quot;perm in {usespermission} |&quot;
-                         &quot;  MERGE (n:Permission {name:perm})&quot;
-                         &quot;  MERGE (n)&lt;-[:Use]-(apk)&quot;
-                         &quot;)&quot;
-                         &quot;FOREACH (&quot;
-                         &quot;perm in {permission} |&quot;
-                         &quot;  MERGE (n:Permission {name:perm})&quot;
-                         &quot;  MERGE (n)&lt;-[:Define]-(apk)&quot;
-                         &quot;)&quot;])
-              {:certsha256 cert-sha256
-               :apksha256 apk-sha256
-               :dexsha256 dex-sha256
-               :usespermission (-&gt;&gt; manifest
-                                    :uses-permission
-                                    (map name)
-                                    ;; only consider Android internal API ones
-                                    ;;(filter android-api?))
-               :permission (-&gt;&gt; manifest
-                                :permission
-                                (map name)
-                                ;; only consider API ones
-                                ;;(filter android-api?))
-               :apkpackage apk-package
-               :apkversionname apk-version-name
-               :apkversioncode apk-version-code}))
+      (ntx/execute
+       conn transaction
+       [(ntx/statement
+         (str/join &quot; &quot;
+                   [&quot;MERGE (signkey:SigningKey {sha256:{certsha256}})&quot;
+                    &quot;MERGE (apk:Apk {sha256:{apksha256},package:{apkpackage},versionCode:{apkversioncode},versionName:{apkversionname}})&quot;
+                    &quot;MERGE (dex:Dex {sha256:{dexsha256}})&quot;
+                    &quot;MERGE (signkey)-[:Sign]-&gt;(apk)-[:Contain]-&gt;(dex)&quot;
+                    &quot;FOREACH (&quot;
+                    &quot;perm in {usespermission} |&quot;
+                    &quot;  MERGE (n:Permission {name:perm})&quot;
+                    &quot;  MERGE (n)&lt;-[:Use]-(apk)&quot;
+                    &quot;)&quot;
+                    &quot;FOREACH (&quot;
+                    &quot;perm in {permission} |&quot;
+                    &quot;  MERGE (n:Permission {name:perm})&quot;
+                    &quot;  MERGE (n)&lt;-[:Define]-(apk)&quot;
+                    &quot;)&quot;])
+         {:certsha256 cert-sha256
+          :apksha256 apk-sha256
+          :dexsha256 dex-sha256
+          :usespermission (-&gt;&gt; manifest
+                               :uses-permission
+                               (map name)
+                               ;; only consider Android internal API ones
+                               ;;(filter android-api?))
+          :permission (-&gt;&gt; manifest
+                           :permission
+                           (map name)
+                           ;; only consider API ones
+                           ;;(filter android-api?))
+          :apkpackage apk-package
+          :apkversionname apk-version-name
+          :apkversioncode apk-version-code})])
       (doseq [package-name (-&gt;&gt; dex keys)]
         (doseq [class-name (-&gt;&gt; (get-in dex [package-name]) keys)]
-          (swap! statements conj
-                 (ntx/statement
-                  (str/join &quot; &quot;
-                            [&quot;MERGE (dex:Dex {sha256:{dexsha256}})&quot;
-                             &quot;MERGE (package:Package {name:{packagename}})&quot;
-                             &quot;MERGE (class:Class {name:{classname}})&quot;
-                             &quot;MERGE (dex)-[:Contain]-&gt;(package)-[:Contain]-&gt;(class)&quot;
-                             &quot;MERGE (dex)-[:Contain]-&gt;(class)&quot;])
-                  {:dexsha256 dex-sha256
-                   :packagename package-name
-                   :classname class-name}))
+          (ntx/execute
+           conn transaction
+           [(ntx/statement
+             (str/join &quot; &quot;
+                       [&quot;MERGE (dex:Dex {sha256:{dexsha256}})&quot;
+                        &quot;MERGE (package:Package {name:{packagename}})&quot;
+                        &quot;MERGE (class:Class {name:{classname}})&quot;
+                        &quot;MERGE (dex)-[:Contain]-&gt;(package)-[:Contain]-&gt;(class)&quot;
+                        &quot;MERGE (dex)-[:Contain]-&gt;(class)&quot;])
+             {:dexsha256 dex-sha256
+              :packagename package-name
+              :classname class-name})])
           (let [{:keys [android-api-ancestors callbacks]} (-&gt;&gt; (get-in dex [package-name class-name]))]
             (doseq [base android-api-ancestors]
               (let [ancestor-package (:package base)
                     ancestor-class (:class base)]
-                (swap! statements conj
-                       (ntx/statement
-                        (str/join &quot; &quot;
-                                  [&quot;MERGE (class:Class {name:{classname}})&quot;
-                                   &quot;MERGE (ancestorpackage:AndroidAPI:Package {name:{ancestorpackage}})&quot;
-                                   &quot;MERGE (ancestorclass:AndroidAPI:Class {name:{ancestorclass}})&quot;
-                                   &quot;MERGE (ancestorpackage)-[:Contain]-&gt;(ancestorclass)&quot;
-                                   &quot;MERGE (class)-[:Descend]-&gt;(ancestorclass)&quot;])
-                        {:classname class-name
-                         :ancestorpackage ancestor-package
-                         :ancestorclass ancestor-class}))))
+                (ntx/execute
+                 conn transaction
+                 [(ntx/statement
+                   (str/join &quot; &quot;
+                             [&quot;MERGE (class:Class {name:{classname}})&quot;
+                              &quot;MERGE (ancestorpackage:AndroidAPI:Package {name:{ancestorpackage}})&quot;
+                              &quot;MERGE (ancestorclass:AndroidAPI:Class {name:{ancestorclass}})&quot;
+                              &quot;MERGE (ancestorpackage)-[:Contain]-&gt;(ancestorclass)&quot;
+                              &quot;MERGE (class)-[:Descend]-&gt;(ancestorclass)&quot;])
+                   {:classname class-name
+                    :ancestorpackage ancestor-package
+                    :ancestorclass ancestor-class})])))
             (doseq [callback-name (-&gt;&gt; callbacks keys)]
               (let [path [package-name class-name :callbacks callback-name]]
                 ;; explicit control flow
@@ -5149,22 +5201,23 @@ net.brehaut.ClojureTools = (function (SH) {
                     (let [invoke-package-name (:package callback-invoke)
                           invoke-class-name (:class callback-invoke)
                           invoke-name (:method callback-invoke)]
-                      (swap! statements conj
-                             (ntx/statement
-                              (str/join &quot; &quot;
-                                        [&quot;MERGE (class:Class {name:{classname}})&quot;
-                                         &quot;MERGE (callback:Method:Callback {name:{callbackname}})&quot;
-                                         &quot;MERGE (invokepackage:Package {name:{invokepackagename}})&quot;
-                                         &quot;MERGE (invokeclass:Class {name:{invokeclassname}})&quot;
-                                         &quot;MERGE (invokename:Method {name:{invokename}})&quot;
-                                         &quot;MERGE (class)-[:Contain]-&gt;(callback)&quot;
-                                         &quot;MERGE (invokepackage)-[:Contain]-&gt;(invokeclass)-[:Contain]-&gt;(invokename)&quot;
-                                         &quot;MERGE (callback)-[:ExplicitInvoke]-&gt;(invokename)&quot;])
-                              {:classname class-name
-                               :callbackname (str class-name &quot;.&quot; callback-name)
-                               :invokepackagename invoke-package-name
-                               :invokeclassname invoke-class-name
-                               :invokename (str invoke-class-name &quot;.&quot; invoke-name)})))))
+                      (ntx/execute
+                       conn transaction
+                       [(ntx/statement
+                         (str/join &quot; &quot;
+                                   [&quot;MERGE (class:Class {name:{classname}})&quot;
+                                    &quot;MERGE (callback:Method:Callback {name:{callbackname}})&quot;
+                                    &quot;MERGE (invokepackage:Package {name:{invokepackagename}})&quot;
+                                    &quot;MERGE (invokeclass:Class {name:{invokeclassname}})&quot;
+                                    &quot;MERGE (invokename:Method {name:{invokename}})&quot;
+                                    &quot;MERGE (class)-[:Contain]-&gt;(callback)&quot;
+                                    &quot;MERGE (invokepackage)-[:Contain]-&gt;(invokeclass)-[:Contain]-&gt;(invokename)&quot;
+                                    &quot;MERGE (callback)-[:ExplicitInvoke]-&gt;(invokename)&quot;])
+                         {:classname class-name
+                          :callbackname (str class-name &quot;.&quot; callback-name)
+                          :invokepackagename invoke-package-name
+                          :invokeclassname invoke-class-name
+                          :invokename (str invoke-class-name &quot;.&quot; invoke-name)})]))))
                 ;; implicit control flow
                 (let [path (conj path :implicit)]
                   (doseq [category (keys (get-in dex path))]
@@ -5173,21 +5226,22 @@ net.brehaut.ClojureTools = (function (SH) {
                             type (:type implicit-invoke)
                             method (:method implicit-invoke)
                             instance (:instance implicit-invoke)]
-                        (swap! statements conj
-                               (ntx/statement
-                                (str/join &quot; &quot;
-                                          [&quot;MERGE (callback:Method:Callback {name:{callbackname}})&quot;
-                                           &quot;MERGE (type:Class {name:{type}})&quot;
-                                           (str &quot;MERGE (instance:&quot; category
-                                                &quot; {instance:{instance}&quot;
-                                                (if method
-                                                  ;; must use single quote to avoid quote clash
-                                                  (format &quot;,method:'%1$s'})&quot; method)
-                                                  &quot;})&quot;))
-                                           &quot;MERGE (callback)-[:ImplicitInvoke]-&gt;(instance)-[:Descend]-&gt;(type)&quot;])
-                                {:callbackname (str class-name &quot;.&quot; callback-name)
-                                 :type type
-                                 :instance instance})))))))))))
+                        (ntx/execute
+                         conn transaction
+                         [(ntx/statement
+                           (str/join &quot; &quot;
+                                     [&quot;MERGE (callback:Method:Callback {name:{callbackname}})&quot;
+                                      &quot;MERGE (type:Class {name:{type}})&quot;
+                                      (str &quot;MERGE (instance:&quot; category
+                                           &quot; {instance:{instance}&quot;
+                                           (if method
+                                             ;; must use single quote to avoid quote clash
+                                             (format &quot;,method:'%1$s'})&quot; method)
+                                             &quot;})&quot;))
+                                      &quot;MERGE (callback)-[:ImplicitInvoke]-&gt;(instance)-[:Descend]-&gt;(type)&quot;])
+                           {:callbackname (str class-name &quot;.&quot; callback-name)
+                            :type type
+                            :instance instance})]))))))))))
       ;; app components
       (doseq [comp-type [:activity :service :receiver]]
         (doseq [[comp-name {:keys [intent-filter-action
@@ -5197,35 +5251,33 @@ net.brehaut.ClojureTools = (function (SH) {
           (let [comp-name (name comp-name)
                 intent-filter-action (map name intent-filter-action)
                 intent-filter-category (map name intent-filter-category)]
-            (swap! statements conj
-                   (ntx/statement
-                    (str/join &quot; &quot;
-                              [&quot;MERGE (dex:Dex {sha256:{dexsha256}})&quot;
-                               &quot;MERGE (ic:Class {name:{compname}})&quot;
-                               (format (str/join &quot; &quot;
-                                                 [&quot;ON CREATE SET ic:%1$s:Component&quot;
-                                                  &quot;ON MATCH SET ic:%1$s:Component&quot;])
-                                       (-&gt;&gt; comp-type name str/capitalize))
-                               &quot;MERGE (dex)-[:Contain]-&gt;(ic)&quot;
-                               &quot;FOREACH (&quot;
-                               &quot;action IN {intentfilteraction} |&quot;
-                               &quot;  MERGE (n:IntentFilterAction {name:action})&quot;
-                               &quot;  MERGE (n)-[:Trigger]-&gt;(ic)&quot;
-                               &quot;)&quot;
-                               &quot;FOREACH (&quot;
-                               &quot;category IN {intentfiltercategory} |&quot;
-                               &quot;  MERGE (n:IntentFilterCategory {name:category})&quot;
-                               &quot;  MERGE (n)-[:Trigger]-&gt;(ic)&quot;
-                               &quot;)&quot;
-                               ])
-                    {:dexsha256 dex-sha256
-                     :compname comp-name
-                     :intentfilteraction intent-filter-action
-                     :intentfiltercategory intent-filter-category})))))
-      ;; any more?)
-    (let [conn (connect options)
-          transaction (ntx/begin-tx conn)]
-      (ntx/commit conn transaction @statements))))</pre></td></tr><tr><td class="docs"><p>tag an existing Apk node with the labelsuntag an existing Apk node with the labels</p>
+            (ntx/execute
+             conn transaction
+             [(ntx/statement
+               (str/join &quot; &quot;
+                         [&quot;MERGE (dex:Dex {sha256:{dexsha256}})&quot;
+                          &quot;MERGE (ic:Class {name:{compname}})&quot;
+                          (format (str/join &quot; &quot;
+                                            [&quot;ON CREATE SET ic:%1$s:Component&quot;
+                                             &quot;ON MATCH SET ic:%1$s:Component&quot;])
+                                  (-&gt;&gt; comp-type name str/capitalize))
+                          &quot;MERGE (dex)-[:Contain]-&gt;(ic)&quot;
+                          &quot;FOREACH (&quot;
+                          &quot;action IN {intentfilteraction} |&quot;
+                          &quot;  MERGE (n:IntentFilterAction {name:action})&quot;
+                          &quot;  MERGE (n)-[:Trigger]-&gt;(ic)&quot;
+                          &quot;)&quot;
+                          &quot;FOREACH (&quot;
+                          &quot;category IN {intentfiltercategory} |&quot;
+                          &quot;  MERGE (n:IntentFilterCategory {name:category})&quot;
+                          &quot;  MERGE (n)-[:Trigger]-&gt;(ic)&quot;
+                          &quot;)&quot;
+                          ])
+               {:dexsha256 dex-sha256
+                :compname comp-name
+                :intentfilteraction intent-filter-action
+                :intentfiltercategory intent-filter-category})]))))
+      ;; any more query within the transaction?)))</pre></td></tr><tr><td class="docs"><p>tag an existing Apk node with the labelsuntag an existing Apk node with the labels</p>
 </td><td class="codes"><pre class="brush: clojure">(let [common (fn [apk labels options op]
                (when-not (empty? labels)
                  (let [statements (atom [])]
