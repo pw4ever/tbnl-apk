@@ -77,15 +77,14 @@ Suppose Neo4j server listens on TCP port 7475.
 
 ```sh
 tbnl-apk-prep-label 'Testlabel' 01sample | \
-        JVM_OPTS='-Xmx6g -Xms6g -XX:NewSize=5g -XX:+UseG1GC' \
+        JVM_OPTS='-Xmx4g -Xms4g -XX:NewSize=3g' \
         tbnl-apk-with-jmx 2014 -dsntvv --neo4j-port 7475 --nrepl-port 12321 --interactive
 ```
 
 This will process all `*.apk` (recursively) under the `01sample` directory.
-* [Start the JVM with the options](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BGBCIEFC) `-Xmx6g -Xms6g -XX:NewSize=5g -XX:+UseG1GC`. 
-  - Give as much as memory as possible with eager commit, e.g., `-Xmx6g -Xms6g`.
-  - Give most memory to the young generation with just enough left for the old generation, e.g., `-XX:NewSize=5g`.
-  - Use garbage-first garbage collector (G1GC): `-XX:+UseG1GC`.
+* [Start the JVM with the options](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BGBCIEFC) `-Xmx4g -Xms4g -XX:NewSize=3g`. 
+  - Allocate enough memory for JVM heap with eager commit, e.g., `-Xmx4g -Xms4g`.
+  - Give most memory to the young generation with just enough left for the old generation, e.g., `-XX:NewSize=3g`.
 * First decompile and dump its `AndroidManifest.xml` (`-d`).
 * Build its graphical model using [Soot]() (`-s`).
 * Send the graphical model to Neo4j at port 7475 (`--neo4j-port 7475`).
@@ -105,7 +104,7 @@ tbnl-apk -h
 * To start the program with [JVM JMX](http://docs.oracle.com/javase/8/docs/technotes/guides/visualvm/jmx_connections.html) on port 2014 (so that you can [point VisualVM to this port for dynamically monitoring the JVM hosting `tbnl-apk.jar`](http://theholyjava.wordpress.com/2012/09/21/visualvm-monitoring-remote-jvm-over-ssh-jmx-or-not/) and [Clojure nREPL port](https://github.com/clojure/tools.nrepl) 12321 (so you can dynamically interact with application in [Clojure REPL](https://www.youtube.com/watch?v=fnn8JeKfzWY)), the `--interactive` argument instructs `tbnl-apk` to enter "interactive" mode, i.e., do not quit at then end, to allow nREPL to be connected. You can tune the JVM with the `JVM_OPTS` environment variable.
 
 ```sh
-JVM_OPTS='-Xmx6g -Xms6g -XX:NewSize=5g -XX:+UseG1GC' \
+JVM_OPTS='-Xmx4g -Xms4g -XX:NewSize=3g' \
          tbnl-apk-with-jmx 2014 --nrepl-port 12321 --interactive
 ```
 
@@ -114,15 +113,15 @@ If the first parameter of is not a valid TCP port number, `tbnl-apk-with-jmx` wi
 * (Or) With `java` and `tbnl-apk.jar` (make sure the `android.jar` is at the same directory as `tbnl-apk.jar`, or prepare to specify its path with <argument>)
 ```sh
 java -jar tbnl-apk.jar \
-         -Xmx6g -Xms6g -XX:NewSize=5g -XX:+UseG1GC \
+         -Xmx4g -Xms4g -XX:NewSize=3g \
          tbnl-apk.core <argument> 
 ```
 
 Take input APK file names line-by-line as a [Unix filter](https://en.wikipedia.org/wiki/Filter_(software)#Unix) (e.g., use `find dir -name '*.apk' -type f` to find APKs to feed into `tbnl-apk`).
 
-Use `-h` for valid arguments.
+Again, use `-h` for valid arguments.
 
-More (exciting) usage to come on [project Wiki](https://github.com/pw4ever/tbnl-apk/wiki)
+More to come on [project Wiki](https://github.com/pw4ever/tbnl-apk/wiki)
 
 
 ## Build
