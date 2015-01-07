@@ -31,7 +31,7 @@ Take your Android packages (APKs) apart and build a Neo4j database for them.
 * [Android SDK](https://developer.android.com/sdk/index.html): `aapt` (see [the Travis CI config](https://github.com/pw4ever/tbnl-apk/blob/gh-pages/.travis.yml#L21) for example command-line installation procedure).
 * [Neo4j 2.1+](http://neo4j.com/): Neo4j 2.1+ (not an earlier version) is needed due to the Cypher query language used in the implementation.
 
-The shell script `tbnl-apk`, `tbnl-apk-with-jmx`, and `tbnl-apk-prep-label` are self-bootstrapping, but requires [`bash`](https://www.gnu.org/software/bash/) and assumes a Linux/Unix shell environment.
+The shell script `tbnl-apk` and `tbnl-apk-with-jmx` are self-bootstrapping; they require [`bash`](https://www.gnu.org/software/bash/) and assume a Linux/Unix shell environment.
 
 `tbnl-apk.jar` (produced by the build process) and `android.jar` are [Java jars](https://en.wikipedia.org/wiki/JAR_%28file_format%29), and hence are cross-platform. But they are launched through the `java` command-line launcher.
 
@@ -76,7 +76,8 @@ It is recommended that `$HOME/bin/` being added to your `PATH` environment varia
 Suppose Neo4j server listens on TCP port 7475.
 
 ```sh
-tbnl-apk-prep-label 'Testlabel' 01sample | \
+find 01sample -type f | \
+        tbnl-apk --prep-tags '{"Dataset" "My Sample Dataset"}' | \
         JVM_OPTS='-Xmx4g -Xms4g -XX:NewSize=3g' \
         tbnl-apk-with-jmx 2014 -dsntvv --neo4j-port 7475 --nrepl-port 12321 --interactive
 ```
@@ -95,11 +96,14 @@ This will process all `*.apk` (recursively) under the `01sample` directory.
 
 ### Basics
 
-* Get help.
+Get help.
 
 ```sh
 tbnl-apk -h
 ```
+
+* Inputs come from standard input (`stdin`). Each line corresponds to one input APK sample, and is in [Clojure edn format](https://github.com/edn-format/edn). Say you have an APK file in the path `01sample/test.apk`, and you want to attach tags with types (types must be [valid Neo4j Cypher identifier names](http://neo4j.com/docs/stable/cypher-identifiers.html)) "Dataset" and "Source" with identifiers "My Dataset" and "Internet" respectively, the input line should be: `{:file-path "01sample/test.apk" :tags {"Dataset" "My Dataset" "Source" "Internet"}}`.
+In the final Neo4j database after applying these tags, you can find Neo4j nodes with labels of `:Tag:Dataset` and `:Tag:Source` that point to the `:Apk` node representing the APK sample. You can use `tbnl-apk --prep-tags` to ease the tag preparation task: See the [Quick Test](#quick-test) example above.
 
 * To start the program with [JVM JMX](http://docs.oracle.com/javase/8/docs/technotes/guides/visualvm/jmx_connections.html) on port 2014 (so that you can [point VisualVM to this port for dynamically monitoring the JVM hosting `tbnl-apk.jar`](http://theholyjava.wordpress.com/2012/09/21/visualvm-monitoring-remote-jvm-over-ssh-jmx-or-not/) and [Clojure nREPL port](https://github.com/clojure/tools.nrepl) 12321 (so you can dynamically interact with application in [Clojure REPL](https://www.youtube.com/watch?v=fnn8JeKfzWY)), the `--interactive` argument instructs `tbnl-apk` to enter "interactive" mode, i.e., do not quit at then end, to allow nREPL to be connected. You can tune the JVM with the `JVM_OPTS` environment variable.
 

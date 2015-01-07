@@ -203,21 +203,26 @@
       ;; any more query within the transaction?
       )))
 
-(let [common (fn [apk labels options op]
-               (when-not (empty? labels)
-                 (let [statements (atom [])]
-                   (let [manifest (:manifest apk)
-                         apk-sha256 (:sha256 apk)]
+(let [common (fn [apk tags options op]
+               (when-not (empty? tags)
+                 (let [statements (atom [])
+                       apk-sha256 (:sha256 apk)]
+                   (doseq [[type id] tags]
                      (swap! statements conj
                             (ntx/statement
                              (str/join " "
-                                       ["MATCH (n:Apk)"
-                                        "WHERE n.sha256={apksha256}"
-                                        ;; set the labels
-                                        (str/join " "
-                                                  (map #(format "%1$s n:%2$s" op %)
-                                                       labels))])
-                             {:apksha256 apk-sha256})))
+                                       ["MATCH (a:Apk {sha256:{apksha256}})"
+                                        (format "MERGE (l:%1$s:Tag {id:{id}})"
+                                                ;; Neo4j label requirement
+                                                (str/replace (str type)
+                                                             #"\s+" ""))
+                                        "MERGE (l)-[r:Tag]->(a)"
+                                        (case op
+                                          :untag "DELETE r"
+                                          :tag ""
+                                          "")])
+                             {:apksha256 apk-sha256
+                              :id id})))
                    (let [conn (connect options)
                          transaction (ntx/begin-tx conn)]
                      (try
@@ -226,15 +231,15 @@
                          (print-stack-trace e)))))))]
   
   (defn tag-apk
-  "tag an existing Apk node with the labels"
-  [apk labels
+  "tag an existing Apk node with the tags"
+  [apk tags
    {:keys [] :as options}]
-  (common apk labels options "SET"))
+  (common apk tags options :tag))
   (defn untag-apk
-  "untag an existing Apk node with the labels"
-  [apk labels
+  "untag an existing Apk node with the tags"
+  [apk tags
    {:keys [] :as options}]
-  (common apk labels options "REMOVE")))
+  (common apk tags options :untag)))
 
 (defn create-index
   "create index"

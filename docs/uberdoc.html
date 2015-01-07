@@ -4922,6 +4922,7 @@ net.brehaut.ClojureTools = (function (SH) {
    [&quot;-v&quot; &quot;--verbose&quot; &quot;be verbose (more \&quot;v\&quot; for more verbosity)&quot;
     :default 0
     :assoc-fn (fn [m k _] (update-in m [k] inc))]
+   [nil &quot;--prep-tags LABEL-MAP&quot; &quot;LABEL-MAP is a Clojure map from label type to id (.e.g, {\&quot;Dataset\&quot; \&quot;My Dataset Name\&quot;})&quot;]
    [&quot;-i&quot; &quot;--interactive&quot; &quot;do not exit (i.e., shutdown-agents) at the end&quot;]
    ;; does not work with Soot
    #_[&quot;-j&quot; &quot;--jobs JOBS&quot;
@@ -4968,7 +4969,7 @@ net.brehaut.ClojureTools = (function (SH) {
   `(locking mutex
      ~@body))</pre></td></tr><tr><td class="docs"><p>do the real work on apk</p>
 </td><td class="codes"><pre class="brush: clojure">(defn work
-  [apk-name
+  [file-path
    labels
    {:keys [verbose
            soot-task-build-model
@@ -4976,16 +4977,16 @@ net.brehaut.ClojureTools = (function (SH) {
            neo4j-task-populate neo4j-task-tag neo4j-task-untag
            dump-manifest]
     :as options}]
-  (when (and apk-name (fs/readable? apk-name))
+  (when (and file-path (fs/readable? file-path))
     (when (and verbose (&gt; verbose 1))
-      (println &quot;processing&quot; apk-name))
+      (println &quot;processing&quot; file-path))
     (let [start-time (System/currentTimeMillis)]
       (try
         (when dump-manifest
-          (print (aapt-parse/get-manifest-xml apk-name))
+          (print (aapt-parse/get-manifest-xml file-path))
           (flush))
         (when soot-task-build-model
-          (let [apk (soot-parse/parse-apk apk-name options)]
+          (let [apk (soot-parse/parse-apk file-path options)]
             (when neo4j-task-populate
               (neo4j/populate-from-parsed-apk apk
                                               options))))
@@ -4995,9 +4996,9 @@ net.brehaut.ClojureTools = (function (SH) {
               (println &quot;Neo4j:&quot; (cond
                                   neo4j-task-tag &quot;tag&quot;
                                   neo4j-task-untag &quot;untag&quot;)
-                       apk-name
-                       labels)))
-          (let [apk (apk-parse/parse-apk apk-name)]
+                       file-path
+                       (pr-str labels))))
+          (let [apk (apk-parse/parse-apk file-path)]
             (cond
               neo4j-task-tag (neo4j/tag-apk apk labels options)
               neo4j-task-untag (neo4j/untag-apk apk labels options))))
@@ -5006,7 +5007,7 @@ net.brehaut.ClojureTools = (function (SH) {
             (swap! completed-task-counter inc)
             (println (format &quot;%1$d: %2$s processed in %3$.3f seconds&quot;
                              @completed-task-counter
-                             apk-name
+                             file-path
                              (/ (- (System/currentTimeMillis) start-time)
                                 1000.0)))))
         (catch Exception e
@@ -5015,7 +5016,7 @@ net.brehaut.ClojureTools = (function (SH) {
   [&amp; args]
   (let [raw (parse-opts args cli-options)
         {:keys [options summary errors]} raw
-        {:keys [verbose interactive #_jobs help
+        {:keys [verbose interactive help prep-tags
                 nrepl-port
                 neo4j-task-populate]} options]
     (try
@@ -5025,11 +5026,18 @@ net.brehaut.ClojureTools = (function (SH) {
           (doseq [error errors]
             (println error))))
       ;; whether help is requested
-      (if help
+      (cond
+        help
         (do
           (println &quot;&lt;BUILDINFO&gt;&quot;)
           (println summary))
-        ;; if help is not requested, do the real work
+        prep-tags
+        (let [prep-tags (read-string prep-tags)]
+          (loop [line (read-line)]
+            (when line
+              (prn {:file-path line :tags prep-tags})
+              (recur (read-line)))))
+        :otherwise
         (do
           (when nrepl-port
             ;; use separate thread to start nREPL, so do not delay other task
@@ -5055,12 +5063,12 @@ net.brehaut.ClojureTools = (function (SH) {
                 (println &quot;Neo4j:&quot; &quot;index created&quot;))))
           (loop [line (read-line)]
             (when line
-              (let [[apk-name &amp; raw-labels] (str/split line #&quot;\s+&quot;)
-                    labels (map str/capitalize raw-labels)]
+              ;; ex.: {:file-path &quot;a/b.apk&quot; :labels {&quot;Dataset&quot; &quot;AMGP&quot;, &quot;Label&quot; &quot;malware&quot;}}
+              (let [{:keys [file-path labels]} (read-string line)]
                 (try
-                  (when (and apk-name (fs/readable? apk-name))
+                  (when (and file-path (fs/readable? file-path))
                     ;; do the real work using a fresh Thread
-                    (let [t (Thread. #(work apk-name labels options))]
+                    (let [t (Thread. #(work file-path labels options))]
                       (doto t
                         (.start)
                         ;; wait till the thread dies
@@ -5277,22 +5285,27 @@ net.brehaut.ClojureTools = (function (SH) {
                 :compname comp-name
                 :intentfilteraction intent-filter-action
                 :intentfiltercategory intent-filter-category})]))))
-      ;; any more query within the transaction?)))</pre></td></tr><tr><td class="docs"><p>tag an existing Apk node with the labelsuntag an existing Apk node with the labels</p>
-</td><td class="codes"><pre class="brush: clojure">(let [common (fn [apk labels options op]
-               (when-not (empty? labels)
-                 (let [statements (atom [])]
-                   (let [manifest (:manifest apk)
-                         apk-sha256 (:sha256 apk)]
+      ;; any more query within the transaction?)))</pre></td></tr><tr><td class="docs"><p>tag an existing Apk node with the tagsuntag an existing Apk node with the tags</p>
+</td><td class="codes"><pre class="brush: clojure">(let [common (fn [apk tags options op]
+               (when-not (empty? tags)
+                 (let [statements (atom [])
+                       apk-sha256 (:sha256 apk)]
+                   (doseq [[type id] tags]
                      (swap! statements conj
                             (ntx/statement
                              (str/join &quot; &quot;
-                                       [&quot;MATCH (n:Apk)&quot;
-                                        &quot;WHERE n.sha256={apksha256}&quot;
-                                        ;; set the labels
-                                        (str/join &quot; &quot;
-                                                  (map #(format &quot;%1$s n:%2$s&quot; op %)
-                                                       labels))])
-                             {:apksha256 apk-sha256})))
+                                       [&quot;MATCH (a:Apk {sha256:{apksha256}})&quot;
+                                        (format &quot;MERGE (l:%1$s:Tag {id:{id}})&quot;
+                                                ;; Neo4j label requirement
+                                                (str/replace (str type)
+                                                             #&quot;\s+&quot; &quot;&quot;))
+                                        &quot;MERGE (l)-[r:Tag]-&gt;(a)&quot;
+                                        (case op
+                                          :untag &quot;DELETE r&quot;
+                                          :tag &quot;&quot;
+                                          &quot;&quot;)])
+                             {:apksha256 apk-sha256
+                              :id id})))
                    (let [conn (connect options)
                          transaction (ntx/begin-tx conn)]
                      (try
@@ -5300,13 +5313,13 @@ net.brehaut.ClojureTools = (function (SH) {
                        (catch Exception e
                          (print-stack-trace e)))))))]
   (defn tag-apk
-  [apk labels
+  [apk tags
    {:keys [] :as options}]
-  (common apk labels options &quot;SET&quot;))
+  (common apk tags options :tag))
   (defn untag-apk
-  [apk labels
+  [apk tags
    {:keys [] :as options}]
-  (common apk labels options &quot;REMOVE&quot;)))</pre></td></tr><tr><td class="docs"><p>create index</p>
+  (common apk tags options :untag)))</pre></td></tr><tr><td class="docs"><p>create index</p>
 </td><td class="codes"><pre class="brush: clojure">(defn create-index
   [{:keys []
     :as options}]

@@ -38,6 +38,7 @@
    ["-v" "--verbose" "be verbose (more \"v\" for more verbosity)"
     :default 0
     :assoc-fn (fn [m k _] (update-in m [k] inc))]
+   [nil "--prep-tags LABEL-MAP" "LABEL-MAP is a Clojure map from label type to id (.e.g, {\"Dataset\" \"My Dataset Name\"})"]
    ["-i" "--interactive" "do not exit (i.e., shutdown-agents) at the end"]
 
    ;; does not work with Soot
@@ -101,7 +102,7 @@
 
 (defn work
   "do the real work on apk"
-  [apk-name
+  [file-path
    labels
    {:keys [verbose
 
@@ -112,18 +113,18 @@
            
            dump-manifest]
     :as options}]
-  (when (and apk-name (fs/readable? apk-name))
+  (when (and file-path (fs/readable? file-path))
     (when (and verbose (> verbose 1))
-      (println "processing" apk-name))
+      (println "processing" file-path))
     
     (let [start-time (System/currentTimeMillis)]
       (try
         (when dump-manifest
-          (print (aapt-parse/get-manifest-xml apk-name))
+          (print (aapt-parse/get-manifest-xml file-path))
           (flush))
         
         (when soot-task-build-model
-          (let [apk (soot-parse/parse-apk apk-name options)]
+          (let [apk (soot-parse/parse-apk file-path options)]
             (when neo4j-task-populate
               (neo4j/populate-from-parsed-apk apk
                                               options))))
@@ -134,10 +135,10 @@
               (println "Neo4j:" (cond
                                   neo4j-task-tag "tag"
                                   neo4j-task-untag "untag")
-                       apk-name
-                       labels)))
+                       file-path
+                       (pr-str labels))))
           
-          (let [apk (apk-parse/parse-apk apk-name)]
+          (let [apk (apk-parse/parse-apk file-path)]
             (cond
               neo4j-task-tag (neo4j/tag-apk apk labels options)
               neo4j-task-untag (neo4j/untag-apk apk labels options))))
@@ -147,7 +148,7 @@
             (swap! completed-task-counter inc)
             (println (format "%1$d: %2$s processed in %3$.3f seconds"
                              @completed-task-counter
-                             apk-name
+                             file-path
                              (/ (- (System/currentTimeMillis) start-time)
                                 1000.0)))))
         
@@ -159,7 +160,7 @@
   [& args]
   (let [raw (parse-opts args cli-options)
         {:keys [options summary errors]} raw
-        {:keys [verbose interactive #_jobs help
+        {:keys [verbose interactive help prep-tags
                 nrepl-port
                 neo4j-task-populate]} options]
     (try
@@ -169,11 +170,20 @@
           (doseq [error errors]
             (println error))))
       ;; whether help is requested
-      (if help
+      (cond
+        help
         (do
           (println "<BUILDINFO>")
           (println summary))
-        ;; if help is not requested, do the real work
+
+        prep-tags
+        (let [prep-tags (read-string prep-tags)]
+          (loop [line (read-line)]
+            (when line
+              (prn {:file-path line :tags prep-tags})
+              (recur (read-line)))))
+
+        :otherwise
         (do
           (when nrepl-port
             ;; use separate thread to start nREPL, so do not delay other task
@@ -201,12 +211,12 @@
 
           (loop [line (read-line)]
             (when line
-              (let [[apk-name & raw-labels] (str/split line #"\s+")
-                    labels (map str/capitalize raw-labels)]
+              ;; ex.: {:file-path "a/b.apk" :labels {"Dataset" "AMGP", "Label" "malware"}}
+              (let [{:keys [file-path labels]} (read-string line)]
                 (try
-                  (when (and apk-name (fs/readable? apk-name))
+                  (when (and file-path (fs/readable? file-path))
                     ;; do the real work using a fresh Thread
-                    (let [t (Thread. #(work apk-name labels options))]
+                    (let [t (Thread. #(work file-path labels options))]
                       (doto t
                         (.start)
                         ;; wait till the thread dies

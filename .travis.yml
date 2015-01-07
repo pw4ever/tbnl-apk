@@ -35,4 +35,4 @@ script:
 - tbnl-apk-prep-label
 - tbnl-apk-with-jmx 2014 -h
 - tbnl-apk -h
-- tbnl-apk-prep-label 'Testlabel' 01sample | tbnl-apk-with-jmx 2014 -dsvvv
+- find 01sample -type f | tbnl-apk --prep-tags '{"Dataset" "my sample dataset"}' | tbnl-apk-with-jmx 2014 -dsvvv

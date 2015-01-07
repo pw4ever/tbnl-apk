@@ -31,11 +31,11 @@ development-build: development.touch
 development.touch: $(SRC)
 	$(LEIN) uberjar && touch $@ || { rm -f $@; false; }
 
-development-package: bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | development-build
+development-package: bin/$(NAME) bin/$(NAME).jar bin/$(NAME)-with-jmx bin/android.jar | development-build
 	cp target/uberjar/$(NAME).jar bin/$(NAME).jar
 	tar cvf $(NAME).tar bin
 
-development-install: bin/$(NAME).jar bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | development-build
+development-install: bin/$(NAME) bin/$(NAME).jar bin/$(NAME)-with-jmx bin/android.jar | development-build
 	cp target/uberjar/$(NAME).jar bin/$(NAME).jar
 	mkdir -p ~/bin/
 	cp bin/* ~/bin/
@@ -52,11 +52,11 @@ release.touch: $(SRC)
 	    cp -f $(SRC_MAIN).bak $(SRC_MAIN);\
 	    if [ $$RET -eq 0 ]; then touch $@; else rm -f $@; false; fi; 
 
-release-package: bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | release-build
+release-package: bin/$(NAME) bin/$(NAME).jar bin/$(NAME)-with-jmx bin/android.jar | release-build
 	cp target/uberjar/$(NAME).jar bin/$(NAME).jar
 	tar cvf $(NAME).tar bin
 
-release-install: bin/$(NAME) bin/$(NAME)-with-jmx bin/$(NAME)-prep-label bin/android.jar | release-build
+release-install: bin/$(NAME) bin/$(NAME).jar bin/$(NAME)-with-jmx bin/android.jar | release-build
 	cp target/uberjar/$(NAME).jar bin/$(NAME).jar
 	mkdir -p ~/bin/
 	cp bin/* ~/bin/
@@ -67,8 +67,10 @@ doc: docs/uberdoc.html
 docs/uberdoc.html: $(SRC)
 	$(LEIN) marg
 
-test:
-	bin/tbnl-apk-prep-label 'Testware' 01sample | tbnl-apk-with-jmx 2014 -svvv
+test: 
+	find 01sample -type f | \
+	    tbnl-apk --prep-tags '{"Dataset" "my sample dataset"}' | \
+	    tbnl-apk-with-jmx 2014 -dsvvv
 
 # localrepo cannot use grench wrapper, otherwise directory may be wrong
 prepare: prepare-asmdex prepare-soot
