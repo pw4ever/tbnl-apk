@@ -179,9 +179,7 @@
                (str/join " "
                          ["MERGE (dex:Dex {sha256:{dexsha256}})"
                           "MERGE (ic:Class {name:{compname}})"
-                          (format (str/join " "
-                                            ["ON CREATE SET ic:%1$s:Component"
-                                             "ON MATCH SET ic:%1$s:Component"])
+                          (format "SET ic:%1$s:Component"
                                   (->> comp-type name str/capitalize))
                           "MERGE (dex)-[:Contain]->(ic)"
                           "FOREACH ("
@@ -207,22 +205,23 @@
                (when-not (empty? tags)
                  (let [statements (atom [])
                        apk-sha256 (:sha256 apk)]
-                   (doseq [[type id] tags]
+                   (doseq [[type prop] tags]
                      (swap! statements conj
                             (ntx/statement
                              (str/join " "
                                        ["MATCH (a:Apk {sha256:{apksha256}})"
-                                        (format "MERGE (l:%1$s:Tag {id:{id}})"
-                                                ;; Neo4j label requirement
+                                        (format "MERGE (l:%1$s:Tag {id:{prop}.id})"
+                                                ;; Neo4j identifier requirement
                                                 (str/replace (str type)
                                                              #"\s+" ""))
+                                        "SET l={prop}"
                                         "MERGE (l)-[r:Tag]->(a)"
                                         (case op
                                           :untag "DELETE r"
                                           :tag ""
                                           "")])
                              {:apksha256 apk-sha256
-                              :id id})))
+                              :prop prop})))
                    (let [conn (connect options)
                          transaction (ntx/begin-tx conn)]
                      (try
@@ -262,7 +261,8 @@
                               "Receiver" "name"
                               "IntentFilterAction" "name"
                               "IntentFilterCategory" "name"
-                              "AndroidAPI" "name"}))]
+                              "AndroidAPI" "name"
+                              "Tag" "id"}))]
     (let [conn (connect options)
           transaction (ntx/begin-tx conn)]
       (ntx/commit conn transaction statements))))

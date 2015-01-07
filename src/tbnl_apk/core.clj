@@ -103,7 +103,7 @@
 (defn work
   "do the real work on apk"
   [file-path
-   labels
+   tags
    {:keys [verbose
 
            soot-task-build-model
@@ -136,12 +136,12 @@
                                   neo4j-task-tag "tag"
                                   neo4j-task-untag "untag")
                        file-path
-                       (pr-str labels))))
+                       (pr-str tags))))
           
           (let [apk (apk-parse/parse-apk file-path)]
             (cond
-              neo4j-task-tag (neo4j/tag-apk apk labels options)
-              neo4j-task-untag (neo4j/untag-apk apk labels options))))
+              neo4j-task-tag (neo4j/tag-apk apk tags options)
+              neo4j-task-untag (neo4j/untag-apk apk tags options))))
         
         (when (and verbose (> verbose 0))
           (with-mutex-locked
@@ -211,12 +211,13 @@
 
           (loop [line (read-line)]
             (when line
-              ;; ex.: {:file-path "a/b.apk" :labels {"Dataset" "AMGP", "Label" "malware"}}
-              (let [{:keys [file-path labels]} (read-string line)]
+              ;; ex.: {:file-path "a/b.apk" :tags {"Dataset" {"id" "dst-my" "name" "my dataset"}}}
+              ;; must have an "id" node property
+              (let [{:keys [file-path tags]} (read-string line)]
                 (try
                   (when (and file-path (fs/readable? file-path))
                     ;; do the real work using a fresh Thread
-                    (let [t (Thread. #(work file-path labels options))]
+                    (let [t (Thread. #(work file-path tags options))]
                       (doto t
                         (.start)
                         ;; wait till the thread dies

@@ -4970,7 +4970,7 @@ net.brehaut.ClojureTools = (function (SH) {
      ~@body))</pre></td></tr><tr><td class="docs"><p>do the real work on apk</p>
 </td><td class="codes"><pre class="brush: clojure">(defn work
   [file-path
-   labels
+   tags
    {:keys [verbose
            soot-task-build-model
            neo4j-port neo4j-protocol
@@ -4997,11 +4997,11 @@ net.brehaut.ClojureTools = (function (SH) {
                                   neo4j-task-tag &quot;tag&quot;
                                   neo4j-task-untag &quot;untag&quot;)
                        file-path
-                       (pr-str labels))))
+                       (pr-str tags))))
           (let [apk (apk-parse/parse-apk file-path)]
             (cond
-              neo4j-task-tag (neo4j/tag-apk apk labels options)
-              neo4j-task-untag (neo4j/untag-apk apk labels options))))
+              neo4j-task-tag (neo4j/tag-apk apk tags options)
+              neo4j-task-untag (neo4j/untag-apk apk tags options))))
         (when (and verbose (&gt; verbose 0))
           (with-mutex-locked
             (swap! completed-task-counter inc)
@@ -5063,12 +5063,13 @@ net.brehaut.ClojureTools = (function (SH) {
                 (println &quot;Neo4j:&quot; &quot;index created&quot;))))
           (loop [line (read-line)]
             (when line
-              ;; ex.: {:file-path &quot;a/b.apk&quot; :labels {&quot;Dataset&quot; &quot;AMGP&quot;, &quot;Label&quot; &quot;malware&quot;}}
-              (let [{:keys [file-path labels]} (read-string line)]
+              ;; ex.: {:file-path &quot;a/b.apk&quot; :tags {&quot;Dataset&quot; {&quot;id&quot; &quot;dst-my&quot; &quot;name&quot; &quot;my dataset&quot;}}}
+              ;; must have an &quot;id&quot; node property
+              (let [{:keys [file-path tags]} (read-string line)]
                 (try
                   (when (and file-path (fs/readable? file-path))
                     ;; do the real work using a fresh Thread
-                    (let [t (Thread. #(work file-path labels options))]
+                    (let [t (Thread. #(work file-path tags options))]
                       (doto t
                         (.start)
                         ;; wait till the thread dies
@@ -5265,9 +5266,7 @@ net.brehaut.ClojureTools = (function (SH) {
                (str/join &quot; &quot;
                          [&quot;MERGE (dex:Dex {sha256:{dexsha256}})&quot;
                           &quot;MERGE (ic:Class {name:{compname}})&quot;
-                          (format (str/join &quot; &quot;
-                                            [&quot;ON CREATE SET ic:%1$s:Component&quot;
-                                             &quot;ON MATCH SET ic:%1$s:Component&quot;])
+                          (format &quot;SET ic:%1$s:Component&quot;
                                   (-&gt;&gt; comp-type name str/capitalize))
                           &quot;MERGE (dex)-[:Contain]-&gt;(ic)&quot;
                           &quot;FOREACH (&quot;
@@ -5290,22 +5289,23 @@ net.brehaut.ClojureTools = (function (SH) {
                (when-not (empty? tags)
                  (let [statements (atom [])
                        apk-sha256 (:sha256 apk)]
-                   (doseq [[type id] tags]
+                   (doseq [[type prop] tags]
                      (swap! statements conj
                             (ntx/statement
                              (str/join &quot; &quot;
                                        [&quot;MATCH (a:Apk {sha256:{apksha256}})&quot;
-                                        (format &quot;MERGE (l:%1$s:Tag {id:{id}})&quot;
-                                                ;; Neo4j label requirement
+                                        (format &quot;MERGE (l:%1$s:Tag {id:{prop}.id})&quot;
+                                                ;; Neo4j identifier requirement
                                                 (str/replace (str type)
                                                              #&quot;\s+&quot; &quot;&quot;))
+                                        &quot;SET l={prop}&quot;
                                         &quot;MERGE (l)-[r:Tag]-&gt;(a)&quot;
                                         (case op
                                           :untag &quot;DELETE r&quot;
                                           :tag &quot;&quot;
                                           &quot;&quot;)])
                              {:apksha256 apk-sha256
-                              :id id})))
+                              :prop prop})))
                    (let [conn (connect options)
                          transaction (ntx/begin-tx conn)]
                      (try
@@ -5340,7 +5340,8 @@ net.brehaut.ClojureTools = (function (SH) {
                               &quot;Receiver&quot; &quot;name&quot;
                               &quot;IntentFilterAction&quot; &quot;name&quot;
                               &quot;IntentFilterCategory&quot; &quot;name&quot;
-                              &quot;AndroidAPI&quot; &quot;name&quot;}))]
+                              &quot;AndroidAPI&quot; &quot;name&quot;
+                              &quot;Tag&quot; &quot;id&quot;}))]
     (let [conn (connect options)
           transaction (ntx/begin-tx conn)]
       (ntx/commit conn transaction statements))))</pre></td></tr><tr><td class="docs"><p>label =~'^(?:com.)?android' nodes as AndroidAPI; should be infrequently used</p>

@@ -34,4 +34,4 @@ script:
 - make -j3 release
 - tbnl-apk-with-jmx 2014 -h
 - tbnl-apk -h
-- find 01sample -type f | tbnl-apk --prep-tags '{"Dataset" "my sample dataset"}' | tbnl-apk-with-jmx 2014 -dsvvv
+- find 01sample -type f | tbnl-apk --prep-tags '{"Dataset" {"id" "dst-sample" "name" "my sample database"}}' | tbnl-apk-with-jmx 2014 -dsvvv
