@@ -114,7 +114,7 @@
                   (<= verbose 1))
           (mute))
         (try
-          (doto options
+          (doto soot-options
             (.set_src_prec (Options/src_prec_apk))
             (.set_process_dir [apk-path])
             (.set_force_android_jar android-jar-path)
@@ -125,10 +125,10 @@
             
             (.set_whole_program true)
             (.set_output_format (Options/output_format_none)))
-          (doto phase-options)
+          (doto soot-phase-options)
           ;; do it manually --- barebone
-          (run-body-packs :scene scene
-                                 :pack-manager pack-manager
+          (run-body-packs :scene soot-scene
+                                 :pack-manager soot-pack-manager
                                  :body-packs ["jb"]
                                  :verbose verbose)
           
@@ -137,7 +137,7 @@
           
           ;; start working on the bodies
           (let [step1 (fn []
-                        (let [application-classes (get-application-classes scene)
+                        (let [application-classes (get-application-classes soot-scene)
                               android-api-descendants (->> application-classes
                                                            (filter (fn [class]
                                                                      (->> (get-transitive-super-class-and-interface class)
@@ -166,7 +166,7 @@
                                                                    :package (.. super getPackageName)})
                                                                 set)}))
                           ;; cg will only see parts reachable from these entry points
-                          (.. scene
+                          (.. soot-scene
                               (setEntryPoints (seq android-api-descendant-callbacks)))
                           ;; return the result
                           {:android-api-descendants android-api-descendants
@@ -174,9 +174,9 @@
                 step1-result (step1)
                 ;; step 2
                 step2 (fn [{:keys [android-api-descendants android-api-descendant-callbacks] :as prev-step-result}]
-                        (let [cg (get-cg scene)
-                              application-classes (get-application-classes scene)
-                              application-methods (get-application-methods scene)
+                        (let [cg (get-cg soot-scene)
+                              application-classes (get-application-classes soot-scene)
+                              application-methods (get-application-methods soot-scene)
 
                               interesting-methodref? (memoize
                                                       (fn [^SootMethodRef methodref]

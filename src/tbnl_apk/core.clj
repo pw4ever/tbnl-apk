@@ -72,6 +72,10 @@
    ["-s" "--soot-task-build-model" "build APK model with Soot"]
    [nil "--soot-android-jar-path" "path of android.jar for Soot's Dexpler"]
    [nil "--soot-no-implicit-cf" "do not detect implicit control flows"]
+   [nil "--soot-method-emulation-guard NUM" "basic block emulation will run at most NUM times"
+    :parse-fn #(Long/parseLong %)
+    :default 1000]
+   
 
    ;; Neo4j config
    [nil "--neo4j-port PORT" "Neo4j server port"
@@ -200,7 +204,8 @@
                          
                          
                          (update-in [:tags] into
-                                    (when prep-tags
+                                    (when (and prep-tags
+                                               (not (str/blank? prep-tags)))
                                       (read-string prep-tags)))
                          
                          

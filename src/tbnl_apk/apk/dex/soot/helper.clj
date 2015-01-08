@@ -140,11 +140,11 @@ process takes a worklist as input, and outputs the new worklist"
          (System/setSecurityManager noexit-security-manager)
          (when (instance? G$GlobalObjectGetter ~g-objgetter)
            (G/setGlobalObjectGetter ~g-objgetter))
-         (let [~'g (G/v)
-               ~'scene (Scene/v)
-               ~'pack-manager (PackManager/v)
-               ~'options (Options/v)
-               ~'phase-options (PhaseOptions/v)]
+         (let [~'soot-g (G/v)
+               ~'soot-scene (Scene/v)
+               ~'soot-pack-manager (PackManager/v)
+               ~'soot-options (Options/v)
+               ~'soot-phase-options (PhaseOptions/v)]
            ~@body
            ~(when reset?
               `(~'_soot-clean_)))

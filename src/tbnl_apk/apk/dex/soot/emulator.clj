@@ -62,7 +62,7 @@
 (defn get-method-detailed-invokes
   "get method's detailed invokes"
   [^SootMethod method
-   {:keys [verbose]
+   {:keys [verbose soot-method-emulation-guard]
     :as options}]
   (when (.. method hasActiveBody)
     (let [body (.. method getActiveBody)
@@ -76,7 +76,8 @@
              :stmt-2-index stmt-2-index})
           
           all-invokes (atom #{})
-          all-visited-stmts (atom #{})]
+          method-emulation-guard (atom soot-method-emulation-guard)]
+      
       (process-worklist
        ;; the initial worklist
        #{{:emulator (create-emulator)
@@ -84,19 +85,21 @@
 
        ;; the process
        (fn [worklist]
-         (->> worklist
-              (mapcat (fn [{:keys [emulator start-stmt]}]
-                        (let [{:keys [emulator visited-stmts next-start-stmts]}
-                              (emulate-a-basic-block emulator stmt-info start-stmt
-                                                     :host-method method
-                                                     :verbose verbose)]
-                          (swap! all-visited-stmts set/union (set visited-stmts))
-                          (swap! all-invokes into (:invoke emulator))
-                          (for [start-stmt (set/difference (set next-start-stmts)
-                                                           @all-visited-stmts)]
-                            ;; use the emulator snapshot at this branch --- control flow sensitive!
-                            {:emulator (assoc-in emulator [:invoke] #{})
-                             :start-stmt start-stmt})))))))
+         (when (and @method-emulation-guard
+                    (> @method-emulation-guard 0))
+           (->> worklist
+                (mapcat (fn [{:keys [emulator start-stmt]}]
+                          (let [{:keys [emulator visited-stmts next-start-stmts]}
+                                (emulate-a-basic-block emulator stmt-info start-stmt
+                                                       :host-method method
+                                                       :verbose verbose)]
+                            ;; decrement method emulation guard to avoid infinite recursion!!
+                            (swap! method-emulation-guard dec)
+                            (swap! all-invokes into (:invoke emulator))
+                            (for [start-stmt (set next-start-stmts)]
+                              ;; use the emulator snapshot at this branch --- control flow sensitive!
+                              {:emulator (assoc-in emulator [:invoke] #{})
+                               :start-stmt start-stmt}))))))))
       @all-invokes)))
 
 (defn filter-implicit-cf-invoke-methods
