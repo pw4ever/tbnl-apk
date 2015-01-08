@@ -2866,7 +2866,7 @@ net.brehaut.ClojureTools = (function (SH) {
   };
 })(SyntaxHighlighter);
 </script><title>tbnl-apk -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name"><a href="https://github.com/pw4ever/tbnl-apk">tbnl-apk</a></h1><h2 class="project-version">0.1.0-SNAPSHOT</h2><br />
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.6.0</td></tr><tr><td class="dep-name">org.clojure/core.typed</td><td class="dotted"><hr /></td><td class="dep-version">0.2.72</td></tr><tr><td class="dep-name">org.clojure/tools.cli</td><td class="dotted"><hr /></td><td class="dep-version">0.3.1</td></tr><tr><td class="dep-name">org.clojure/tools.nrepl</td><td class="dotted"><hr /></td><td class="dep-version">0.2.5</td></tr><tr><td class="dep-name">org.clojure/core.async</td><td class="dotted"><hr /></td><td class="dep-version">0.1.346.0-17112a-alpha</td></tr><tr><td class="dep-name">asmdex/asmdex</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">soot/soot</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">pandect</td><td class="dotted"><hr /></td><td class="dep-version">0.4.1</td></tr><tr><td class="dep-name">commons-io/commons-io</td><td class="dotted"><hr /></td><td class="dep-version">2.4</td></tr><tr><td class="dep-name">me.raynes/fs</td><td class="dotted"><hr /></td><td class="dep-version">1.4.6</td></tr><tr><td class="dep-name">com.taoensso/nippy</td><td class="dotted"><hr /></td><td class="dep-version">2.7.1</td></tr><tr><td class="dep-name">clojurewerkz/neocons</td><td class="dotted"><hr /></td><td class="dep-version">3.0.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</a></li><li><a href="#tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.emulator">tbnl-apk.apk.dex.soot.emulator</a></li><li><a href="#tbnl-apk.apk.dex.soot.helper">tbnl-apk.apk.dex.soot.helper</a></li><li><a href="#tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</a></li><li><a href="#tbnl-apk.apk.parse">tbnl-apk.apk.parse</a></li><li><a href="#tbnl-apk.apk.util">tbnl-apk.apk.util</a></li><li><a href="#tbnl-apk.core">tbnl-apk.core</a></li><li><a href="#tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</a></li><li><a href="#tbnl-apk.util">tbnl-apk.util</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.aapt.parse" name="tbnl-apk.apk.aapt.parse"><h1 class="project-name">tbnl-apk.apk.aapt.parse</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.6.0</td></tr><tr><td class="dep-name">org.clojure/tools.cli</td><td class="dotted"><hr /></td><td class="dep-version">0.3.1</td></tr><tr><td class="dep-name">org.clojure/tools.nrepl</td><td class="dotted"><hr /></td><td class="dep-version">0.2.5</td></tr><tr><td class="dep-name">org.clojure/data.json</td><td class="dotted"><hr /></td><td class="dep-version">0.2.5</td></tr><tr><td class="dep-name">org.clojure/core.async</td><td class="dotted"><hr /></td><td class="dep-version">0.1.346.0-17112a-alpha</td></tr><tr><td class="dep-name">asmdex/asmdex</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">soot/soot</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">pandect</td><td class="dotted"><hr /></td><td class="dep-version">0.4.1</td></tr><tr><td class="dep-name">commons-io/commons-io</td><td class="dotted"><hr /></td><td class="dep-version">2.4</td></tr><tr><td class="dep-name">me.raynes/fs</td><td class="dotted"><hr /></td><td class="dep-version">1.4.6</td></tr><tr><td class="dep-name">com.taoensso/nippy</td><td class="dotted"><hr /></td><td class="dep-version">2.7.1</td></tr><tr><td class="dep-name">clojurewerkz/neocons</td><td class="dotted"><hr /></td><td class="dep-version">3.0.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</a></li><li><a href="#tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.emulator">tbnl-apk.apk.dex.soot.emulator</a></li><li><a href="#tbnl-apk.apk.dex.soot.helper">tbnl-apk.apk.dex.soot.helper</a></li><li><a href="#tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</a></li><li><a href="#tbnl-apk.apk.parse">tbnl-apk.apk.parse</a></li><li><a href="#tbnl-apk.apk.util">tbnl-apk.apk.util</a></li><li><a href="#tbnl-apk.core">tbnl-apk.core</a></li><li><a href="#tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</a></li><li><a href="#tbnl-apk.util">tbnl-apk.util</a></li><li><a href="#tbnl-apk.virustotal.core">tbnl-apk.virustotal.core</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.aapt.parse" name="tbnl-apk.apk.aapt.parse"><h1 class="project-name">tbnl-apk.apk.aapt.parse</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.apk.aapt.parse
   ;; internal libs
   ;; common libs
@@ -4895,7 +4895,9 @@ net.brehaut.ClojureTools = (function (SH) {
             [tbnl-apk.neo4j.core
              :as neo4j]
             [tbnl-apk.apk.dex.soot.parse
-             :as soot-parse])
+             :as soot-parse]
+            [tbnl-apk.virustotal.core
+             :as vt])
   ;; common libs
   (:require [clojure.string :as str]
             [clojure.set :as set]
@@ -4922,7 +4924,6 @@ net.brehaut.ClojureTools = (function (SH) {
    [&quot;-v&quot; &quot;--verbose&quot; &quot;be verbose (more \&quot;v\&quot; for more verbosity)&quot;
     :default 0
     :assoc-fn (fn [m k _] (update-in m [k] inc))]
-   [nil &quot;--prep-tags LABEL-MAP&quot; &quot;LABEL-MAP is a Clojure map from label type to id (.e.g, {\&quot;Dataset\&quot; \&quot;My Dataset Name\&quot;})&quot;]
    [&quot;-i&quot; &quot;--interactive&quot; &quot;do not exit (i.e., shutdown-agents) at the end&quot;]
    ;; does not work with Soot
    #_[&quot;-j&quot; &quot;--jobs JOBS&quot;
@@ -4937,7 +4938,15 @@ net.brehaut.ClojureTools = (function (SH) {
     :parse-fn #(Integer/parseInt %)
     :validate [#(&lt; 0 % 0x10000)
                (format &quot;Must be a number between 0 and %d (exclusively)&quot;
-                       0x10000)]]   
+                       0x10000)]]
+   ;; prepations
+   [nil &quot;--prep-tags TAGS&quot; &quot;TAGS is a Clojure vector of pairs of label types to properties, e.g., [{[\&quot;Dataset\&quot;] {\&quot;id\&quot; \&quot;dataset-my\&quot; \&quot;name\&quot; \&quot;my dataset\&quot;}}]&quot;]
+   [nil &quot;--prep-virustotal&quot; &quot;obtain VirusTotal tags&quot;]
+   [nil &quot;--virustotal-apikey APIKEY&quot; &quot;VirusTotal API key&quot;]
+   [nil &quot;--virustotal-rate-limit LIMIT-PER-MIN&quot; &quot;number of maximal API calls per minute&quot;
+    :parse-fn #(Integer/parseInt %)
+    :default 4]
+   [nil &quot;--virustotal-submit&quot; &quot;whether submit sample to VirusTotal if not found&quot;]
    ;; Soot config
    [&quot;-s&quot; &quot;--soot-task-build-model&quot; &quot;build APK model with Soot&quot;]
    [nil &quot;--soot-android-jar-path&quot; &quot;path of android.jar for Soot's Dexpler&quot;]
@@ -4969,8 +4978,8 @@ net.brehaut.ClojureTools = (function (SH) {
   `(locking mutex
      ~@body))</pre></td></tr><tr><td class="docs"><p>do the real work on apk</p>
 </td><td class="codes"><pre class="brush: clojure">(defn work
-  [file-path
-   tags
+  [{:keys [file-path tags]
+    :as task}
    {:keys [verbose
            soot-task-build-model
            neo4j-port neo4j-protocol
@@ -5016,7 +5025,9 @@ net.brehaut.ClojureTools = (function (SH) {
   [&amp; args]
   (let [raw (parse-opts args cli-options)
         {:keys [options summary errors]} raw
-        {:keys [verbose interactive help prep-tags
+        {:keys [verbose interactive help
+                prep-tags
+                prep-virustotal virustotal-rate-limit virustotal-submit
                 nrepl-port
                 neo4j-task-populate]} options]
     (try
@@ -5031,12 +5042,55 @@ net.brehaut.ClojureTools = (function (SH) {
         (do
           (println &quot;&lt;BUILDINFO&gt;&quot;)
           (println summary))
-        prep-tags
-        (let [prep-tags (read-string prep-tags)]
-          (loop [line (read-line)]
-            (when line
-              (prn {:file-path line :tags prep-tags})
-              (recur (read-line)))))
+        (or prep-tags prep-virustotal)
+        (do
+          ;; for API rate limit
+          (let [vt-api-call-counter (atom virustotal-rate-limit)
+                vt-start-time (atom (System/currentTimeMillis))]
+            (loop [line (read-line)]
+              (when line
+                (prn (-&gt; {:file-path line :tags []}
+                         (update-in [:tags] into
+                                    (when prep-tags
+                                      (read-string prep-tags)))
+                         (update-in [:tags] into
+                                    (when prep-virustotal
+                                      (let [apk (apk-parse/parse-apk line)
+                                            try-backoff
+                                            (fn []
+                                              (when (&lt;= @vt-api-call-counter 0)
+                                                (let [now (System/currentTimeMillis)
+                                                      sleep-time
+                                                      ;; minimum sleep 5 seconds
+                                                      (max (* 5 1000)
+                                                           (- (+ @vt-start-time
+                                                                 (* 60 1000))
+                                                              now))]
+                                                  (reset! vt-api-call-counter
+                                                          virustotal-rate-limit)
+                                                  (reset! vt-start-time
+                                                          now)
+                                                  (Thread/sleep sleep-time))))]
+                                        (when-let [sha256 (:sha256 apk)]
+                                          (try-backoff)
+                                          (when-let [result (vt/get-report {:sha256 sha256}
+                                                                           options)]
+                                            (swap! vt-api-call-counter dec)
+                                            ;; obtain result
+                                            (cond
+                                              ;; if result is a map, the result is returned
+                                              (map? result)
+                                              (let [tag (vt/make-report-result-into-tags result)]
+                                                tag)
+                                              :status-exceed-api-limit
+                                              (try-backoff)
+                                              :otherwise
+                                              (when virustotal-submit
+                                                (try-backoff)
+                                                (vt/submit-file {:file-content (io/file line)}
+                                                                options)
+                                                (swap! vt-api-call-counter dec))))))))))
+                (recur (read-line))))))
         :otherwise
         (do
           (when nrepl-port
@@ -5063,13 +5117,13 @@ net.brehaut.ClojureTools = (function (SH) {
                 (println &quot;Neo4j:&quot; &quot;index created&quot;))))
           (loop [line (read-line)]
             (when line
-              ;; ex.: {:file-path &quot;a/b.apk&quot; :tags {&quot;Dataset&quot; {&quot;id&quot; &quot;dst-my&quot; &quot;name&quot; &quot;my dataset&quot;}}}
-              ;; must have an &quot;id&quot; node property
-              (let [{:keys [file-path tags]} (read-string line)]
+              ;; ex.: {:file-path &quot;a/b.apk&quot; :tags [{[&quot;Dataset&quot;] {&quot;id&quot; &quot;dst-my&quot; &quot;name&quot; &quot;my dataset&quot;}}]}
+              ;; tags must have &quot;id&quot; node property
+              (let [{:keys [file-path tags] :as task} (read-string line)]
                 (try
                   (when (and file-path (fs/readable? file-path))
                     ;; do the real work using a fresh Thread
-                    (let [t (Thread. #(work file-path tags options))]
+                    (let [t (Thread. #(work task options))]
                       (doto t
                         (.start)
                         ;; wait till the thread dies
@@ -5181,7 +5235,7 @@ net.brehaut.ClojureTools = (function (SH) {
                        [&quot;MERGE (dex:Dex {sha256:{dexsha256}})&quot;
                         &quot;MERGE (package:Package {name:{packagename}})&quot;
                         &quot;MERGE (class:Class {name:{classname}})&quot;
-                        &quot;MERGE (dex)-[:Contain]-&gt;(package)-[:Contain]-&gt;(class)&quot;
+                        &quot;MERGE (package)-[:Contain]-&gt;(class)&quot;
                         &quot;MERGE (dex)-[:Contain]-&gt;(class)&quot;])
              {:dexsha256 dex-sha256
               :packagename package-name
@@ -5289,15 +5343,18 @@ net.brehaut.ClojureTools = (function (SH) {
                (when-not (empty? tags)
                  (let [statements (atom [])
                        apk-sha256 (:sha256 apk)]
-                   (doseq [[type prop] tags]
+                   (doseq [[types prop] tags]
                      (swap! statements conj
                             (ntx/statement
                              (str/join &quot; &quot;
                                        [&quot;MATCH (a:Apk {sha256:{apksha256}})&quot;
                                         (format &quot;MERGE (l:%1$s:Tag {id:{prop}.id})&quot;
-                                                ;; Neo4j identifier requirement
-                                                (str/replace (str type)
-                                                             #&quot;\s+&quot; &quot;&quot;))
+                                                (-&gt;&gt; types
+                                                     ;; to satisfy Neo4j identifier requirement
+                                                     (map #(-&gt; (str %)
+                                                               (str/replace #&quot;\s+&quot; &quot;&quot;)
+                                                               (str/replace #&quot;-&quot; &quot;_&quot;)))
+                                                     (str/join &quot;:&quot;)))
                                         &quot;SET l={prop}&quot;
                                         &quot;MERGE (l)-[r:Tag]-&gt;(a)&quot;
                                         (case op
@@ -5396,7 +5453,149 @@ net.brehaut.ClojureTools = (function (SH) {
     (binding [*out* *err*]
       (print-stack-trace e)
       ;; flush is critical for timely output
-      (flush))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.emulator">tbnl-apk.apk.dex.soot.emulator</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.helper">tbnl-apk.apk.dex.soot.helper</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.parse">tbnl-apk.apk.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.util">tbnl-apk.apk.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.core">tbnl-apk.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.util">tbnl-apk.util</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+      (flush))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.virustotal.core" name="tbnl-apk.virustotal.core"><h1 class="project-name">tbnl-apk.virustotal.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>https://www.virustotal.com/en/documentation/public-api/</p>
+</td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.virustotal.core
+  ;; internal libs
+  ;; common libs
+  (:require [clojure.string :as str]
+            [clojure.set :as set]
+            [clojure.walk :as walk]
+            [clojure.zip :as zip]
+            [clojure.java.io :as io]
+            [clojure.pprint :refer [pprint print-table]]
+            [clojure.stacktrace :refer [print-stack-trace]])
+  ;; special libs
+  (:require [clj-http.client :as http-client]
+            [clojure.data.json :as json]))</pre></td></tr><tr><td class="docs"><p>declaration</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(declare submit-file
+         request-rescan
+         make-report-result-into-tags get-report
+         ;; plumbing
+         jsonfy-map clojurefy-map
+         interpret-response-code interpret-status)</pre></td></tr><tr><td class="docs"><p>implementation</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>porcelain</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>submit file for checking</p>
+</td><td class="codes"><pre class="brush: clojure">(defn submit-file
+  [{:keys [file-content]
+    :as resource}
+   {:keys [virustotal-apikey]
+    :as options}]
+  (let [url &quot;https://www.virustotal.com/vtapi/v2/file/scan&quot;]
+    ;; basic safety check
+    (when (and file-content)
+      (let [{:keys [status body]
+             :as http-response}
+            (http-client/post url
+                              {:multipart [{:name &quot;apikey&quot;
+                                            :content virustotal-apikey}
+                                           {:name &quot;file&quot;
+                                            :content file-content}]
+                               :throw-exceptions false})
+            i-status (interpret-status status)]
+        (if (= i-status :status-ok)
+          (let [result (-&gt;&gt; body json/read-str clojurefy-map)
+                {:keys [response-code]} result
+                i-response-code (interpret-response-code response-code)]
+            (if (= i-response-code :response-ok)
+              (assoc-in result [:response-code]
+                        i-response-code)
+              i-response-code))
+          i-status)))))</pre></td></tr><tr><td class="docs"><p>obtain report result</p>
+</td><td class="codes"><pre class="brush: clojure">(defn request-rescan
+  [{:keys [md5 sha1 sha256 scan-id]
+    :as resource}
+   {:keys [virustotal-apikey]
+    :as options}]
+  (let [url &quot;https://www.virustotal.com/vtapi/v2/file/rescan&quot;]
+    (when-let [resource (or md5 sha1 sha256 scan-id)]
+      (let [{:keys [status body]
+             :as http-response}
+            (http-client/post url
+                              {:form-params {:apikey virustotal-apikey
+                                             :resource resource}
+                               :throw-exceptions false})
+            i-status (interpret-status status)]
+        (if (= i-status :status-ok)
+          (let [result (-&gt;&gt; body json/read-str clojurefy-map)
+                {:keys [response-code]} result
+                i-response-code (interpret-response-code response-code)]
+            (if (= i-response-code :response-ok)
+              (assoc-in result [:response-code]
+                        i-response-code)
+              i-response-code))
+          i-status)))))</pre></td></tr><tr><td class="docs"><p>make report-result into the form suitable to supply as app :tags on command-line</p>
+</td><td class="codes"><pre class="brush: clojure">(defn make-report-result-into-tags
+  [report-result]
+  (when-let [scans (:scans report-result)]
+    (-&gt;&gt; scans
+         (filter (fn [[_ v]]
+                   (get v &quot;detected&quot;)))
+         (map (fn [[k v]]
+                [[&quot;Malware&quot; &quot;VirusTotal&quot;]
+                 (let [result (get v &quot;result&quot;)]
+                   (merge (dissoc v &quot;detected&quot;)
+                          {&quot;id&quot; (str/join &quot;-&quot;
+                                          [&quot;malware&quot; k result])
+                           &quot;source&quot; k}))]))
+         vec)))</pre></td></tr><tr><td class="docs"><p>obtain report result</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-report
+  [{:keys [md5 sha1 sha256 scan-id]
+    :as resource}
+   {:keys [virustotal-apikey]
+    :as options}]
+  (let [url &quot;https://www.virustotal.com/vtapi/v2/file/report&quot;]
+    (when-let [resource (or md5 sha1 sha256 scan-id)]
+      (let [{:keys [status body]
+             :as http-response}
+            (http-client/post url
+                              {:form-params {:apikey virustotal-apikey
+                                             :resource resource}
+                               :throw-exceptions false})
+            i-status (interpret-status status)]
+        (if (= i-status :status-ok)
+          (let [result (-&gt;&gt; body json/read-str clojurefy-map)
+                {:keys [response-code]} result
+                i-response-code (interpret-response-code response-code)]
+            (if (= i-response-code :response-ok)
+              (assoc-in result [:response-code]
+                        i-response-code)
+              i-response-code))
+          i-status)))))</pre></td></tr><tr><td class="docs"><p>plumbing</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>interpret HTTP response code from VirusTotal</p>
+</td><td class="codes"><pre class="brush: clojure">(defn interpret-response-code
+  [response-code]
+  (case response-code
+    0 :response-not-found
+    1 :response-ok
+    -2 :response-still-queued
+    (list :response-code response-code)))</pre></td></tr><tr><td class="docs"><p>interpret HTTP status from VirusTotal</p>
+</td><td class="codes"><pre class="brush: clojure">(defn interpret-status
+  [status]
+  (case status
+    200 :status-ok
+    204 :status-exceed-api-limit
+    403 :status-exceed-priviledge
+    (list :status status)))</pre></td></tr><tr><td class="docs"><p>use underscored string as key</p>
+</td><td class="codes"><pre class="brush: clojure">(defn jsonfy-map
+  [the-map]
+  (-&gt;&gt; the-map
+       (map (fn [[k v]]
+              [(-&gt; (cond
+                     (keyword? k) (name k)
+                     :otherwise (str k))
+                   (str/replace &quot;-&quot; &quot;_&quot;))
+               v]))
+       (into {})))</pre></td></tr><tr><td class="docs"><p>use dashed keyword as key</p>
+</td><td class="codes"><pre class="brush: clojure">(defn clojurefy-map
+  [the-map]
+  (-&gt;&gt; the-map
+       (map (fn [[k v]]
+              [(-&gt; k
+                   (str/replace &quot;_&quot; &quot;-&quot;)
+                   keyword)
+               v]))
+       (into {})))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.emulator">tbnl-apk.apk.dex.soot.emulator</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.helper">tbnl-apk.apk.dex.soot.helper</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.parse">tbnl-apk.apk.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.util">tbnl-apk.apk.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.core">tbnl-apk.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.util">tbnl-apk.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.virustotal.core">tbnl-apk.virustotal.core</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
 SyntaxHighlighter.all();
 
 // hackity hack

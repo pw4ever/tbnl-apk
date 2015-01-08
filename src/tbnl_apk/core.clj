@@ -1,6 +1,5 @@
 (ns tbnl-apk.core
   ;; internal libs
-  
   (:require [tbnl-apk.util
              :refer [print-stack-trace-if-verbose]]
             [tbnl-apk.apk.parse
@@ -10,7 +9,10 @@
             [tbnl-apk.neo4j.core
              :as neo4j]
             [tbnl-apk.apk.dex.soot.parse
-             :as soot-parse])
+             :as soot-parse]
+            [tbnl-apk.virustotal.core
+             :as vt]
+            )
   ;; common libs
   (:require [clojure.string :as str]
             [clojure.set :as set]
@@ -38,7 +40,7 @@
    ["-v" "--verbose" "be verbose (more \"v\" for more verbosity)"
     :default 0
     :assoc-fn (fn [m k _] (update-in m [k] inc))]
-   [nil "--prep-tags LABEL-MAP" "LABEL-MAP is a Clojure map from label type to id (.e.g, {\"Dataset\" \"My Dataset Name\"})"]
+   
    ["-i" "--interactive" "do not exit (i.e., shutdown-agents) at the end"]
 
    ;; does not work with Soot
@@ -55,8 +57,17 @@
     :parse-fn #(Integer/parseInt %)
     :validate [#(< 0 % 0x10000)
                (format "Must be a number between 0 and %d (exclusively)"
-                       0x10000)]]   
-
+                       0x10000)]]
+   
+   ;; prepations
+   [nil "--prep-tags TAGS" "TAGS is a Clojure vector of pairs of label types to properties, e.g., [{[\"Dataset\"] {\"id\" \"dataset-my\" \"name\" \"my dataset\"}}]"]
+   [nil "--prep-virustotal" "obtain VirusTotal tags"]
+   [nil "--virustotal-apikey APIKEY" "VirusTotal API key"]
+   [nil "--virustotal-rate-limit LIMIT-PER-MIN" "number of maximal API calls per minute"
+    :parse-fn #(Integer/parseInt %)
+    :default 4]
+   [nil "--virustotal-submit" "whether submit sample to VirusTotal if not found"]
+   
    ;; Soot config
    ["-s" "--soot-task-build-model" "build APK model with Soot"]
    [nil "--soot-android-jar-path" "path of android.jar for Soot's Dexpler"]
@@ -102,8 +113,8 @@
 
 (defn work
   "do the real work on apk"
-  [file-path
-   tags
+  [{:keys [file-path tags]
+    :as task}
    {:keys [verbose
 
            soot-task-build-model
@@ -160,7 +171,9 @@
   [& args]
   (let [raw (parse-opts args cli-options)
         {:keys [options summary errors]} raw
-        {:keys [verbose interactive help prep-tags
+        {:keys [verbose interactive help
+                prep-tags
+                prep-virustotal virustotal-rate-limit virustotal-submit
                 nrepl-port
                 neo4j-task-populate]} options]
     (try
@@ -176,12 +189,64 @@
           (println "<BUILDINFO>")
           (println summary))
 
-        prep-tags
-        (let [prep-tags (read-string prep-tags)]
-          (loop [line (read-line)]
-            (when line
-              (prn {:file-path line :tags prep-tags})
-              (recur (read-line)))))
+        (or prep-tags prep-virustotal)
+        (do
+          ;; for API rate limit
+          (let [vt-api-call-counter (atom virustotal-rate-limit)
+                vt-start-time (atom (System/currentTimeMillis))]
+            (loop [line (read-line)]
+              (when line
+                (prn (-> {:file-path line :tags []}
+                         
+                         
+                         (update-in [:tags] into
+                                    (when prep-tags
+                                      (read-string prep-tags)))
+                         
+                         
+                         (update-in [:tags] into
+                                    (when prep-virustotal
+                                      (let [apk (apk-parse/parse-apk line)
+                                            
+                                            try-backoff
+                                            (fn []
+                                              (when (<= @vt-api-call-counter 0)
+                                                (let [now (System/currentTimeMillis)
+                                                      
+                                                      sleep-time
+                                                      ;; minimum sleep 5 seconds
+                                                      (max (* 5 1000)
+                                                           (- (+ @vt-start-time
+                                                                 (* 60 1000))
+                                                              now))]
+                                                  (reset! vt-api-call-counter
+                                                          virustotal-rate-limit)
+                                                  (reset! vt-start-time
+                                                          now)
+                                                  (Thread/sleep sleep-time))))]
+                                        (when-let [sha256 (:sha256 apk)]
+                                          (try-backoff)
+                                          (when-let [result (vt/get-report {:sha256 sha256}
+                                                                           options)]
+                                            (swap! vt-api-call-counter dec)
+                                            
+                                            ;; obtain result
+                                            (cond
+                                              ;; if result is a map, the result is returned
+                                              (map? result)
+                                              (let [tag (vt/make-report-result-into-tags result)]
+                                                tag)
+                                              
+                                              :status-exceed-api-limit
+                                              (try-backoff)
+
+                                              :otherwise
+                                              (when virustotal-submit
+                                                (try-backoff)
+                                                (vt/submit-file {:file-content (io/file line)}
+                                                                options)
+                                                (swap! vt-api-call-counter dec))))))))))
+                (recur (read-line))))))
 
         :otherwise
         (do
@@ -211,13 +276,13 @@
 
           (loop [line (read-line)]
             (when line
-              ;; ex.: {:file-path "a/b.apk" :tags {"Dataset" {"id" "dst-my" "name" "my dataset"}}}
-              ;; must have an "id" node property
-              (let [{:keys [file-path tags]} (read-string line)]
+              ;; ex.: {:file-path "a/b.apk" :tags [{["Dataset"] {"id" "dst-my" "name" "my dataset"}}]}
+              ;; tags must have "id" node property
+              (let [{:keys [file-path tags] :as task} (read-string line)]
                 (try
                   (when (and file-path (fs/readable? file-path))
                     ;; do the real work using a fresh Thread
-                    (let [t (Thread. #(work file-path tags options))]
+                    (let [t (Thread. #(work task options))]
                       (doto t
                         (.start)
                         ;; wait till the thread dies

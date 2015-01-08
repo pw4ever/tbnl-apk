@@ -77,7 +77,7 @@ Suppose Neo4j server listens on TCP port 7475.
 
 ```sh
 find 01sample -type f | \
-        tbnl-apk --prep-tags '{"Dataset" {"id" "dst-my" "name" "My Dataset"}}' | \
+        tbnl-apk --prep-tags '[[["Dataset"] {"id" "dst-my" "name" "My Dataset"}]]' | \
         JVM_OPTS='-Xmx4g -Xms4g -XX:NewSize=3g' \
         tbnl-apk-with-jmx 2014 -dsntvv --neo4j-port 7475 --nrepl-port 12321 --interactive
 ```
@@ -102,7 +102,7 @@ Get help.
 tbnl-apk -h
 ```
 
-* Inputs come from standard input (`stdin`). Each line corresponds to one input APK sample, and is in [Clojure edn format](https://github.com/edn-format/edn). Say you have an APK file in the path `01sample/test.apk`, and you want to attach tags with types (types must be [valid Neo4j Cypher identifier names](http://neo4j.com/docs/stable/cypher-identifiers.html)) "Dataset" and "Source" with names "My Dataset" and "Internet" respectively, the input line should be: `{:file-path "01sample/test.apk" :tags {"Dataset" {"id" "dst-my" "name" "My Dataset"} "Source" {"id" "src-inet" "name" "Internet"}}}`. NOTE: Each tag must has an `id` property to uniquely identify the tag; other properties are optional. In the final Neo4j database after applying these tags, you can find Neo4j nodes with labels of `:Tag:Dataset` and `:Tag:Source` that point to the `:Apk` node representing the APK sample. Use `tbnl-apk --prep-tags` to ease the tag preparation task: See the [Quick Test](#quick-test) example above.
+* Inputs come from standard input (`stdin`). Each line corresponds to one input APK sample, and is in [Clojure edn format](https://github.com/edn-format/edn). Say you have an APK file in the path `01sample/test.apk`, and you want to attach tags with types (types must be [valid Neo4j Cypher identifier names](http://neo4j.com/docs/stable/cypher-identifiers.html)) "Dataset" and "Source" with names "My Dataset" and "Internet" respectively, the input line should be: `{:file-path "01sample/test.apk" :tags [[["Dataset"] {"id" "dst-my" "name" "My Dataset"}] [["Source"] {"id" "src-inet" "name" "Internet"}]]}`. NOTE: Each tag must has an `id` property to uniquely identify the tag; other properties are optional. In the final Neo4j database after applying these tags, you can find Neo4j nodes with labels of `:Tag:Dataset` and `:Tag:Source` that point to the `:Apk` node representing the APK sample. Use `tbnl-apk --prep-tags` to ease the tag preparation task: See the [Quick Test](#quick-test) example above.
 
 * To start the program with [JVM JMX](http://docs.oracle.com/javase/8/docs/technotes/guides/visualvm/jmx_connections.html) on port 2014 (so that you can [point VisualVM to this port for dynamically monitoring the JVM hosting `tbnl-apk.jar`](http://theholyjava.wordpress.com/2012/09/21/visualvm-monitoring-remote-jvm-over-ssh-jmx-or-not/) and [Clojure nREPL port](https://github.com/clojure/tools.nrepl) 12321 (so you can dynamically interact with application in [Clojure REPL](https://www.youtube.com/watch?v=fnn8JeKfzWY)), the `--interactive` argument instructs `tbnl-apk` to enter "interactive" mode, i.e., do not quit at then end, to allow nREPL to be connected. You can tune the JVM with the `JVM_OPTS` environment variable.
 

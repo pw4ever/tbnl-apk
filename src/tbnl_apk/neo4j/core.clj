@@ -90,7 +90,7 @@
                        ["MERGE (dex:Dex {sha256:{dexsha256}})"
                         "MERGE (package:Package {name:{packagename}})"
                         "MERGE (class:Class {name:{classname}})"
-                        "MERGE (dex)-[:Contain]->(package)-[:Contain]->(class)"
+                        "MERGE (package)-[:Contain]->(class)"
                         "MERGE (dex)-[:Contain]->(class)"])
              {:dexsha256 dex-sha256
               :packagename package-name
@@ -205,15 +205,18 @@
                (when-not (empty? tags)
                  (let [statements (atom [])
                        apk-sha256 (:sha256 apk)]
-                   (doseq [[type prop] tags]
+                   (doseq [[types prop] tags]
                      (swap! statements conj
                             (ntx/statement
                              (str/join " "
                                        ["MATCH (a:Apk {sha256:{apksha256}})"
                                         (format "MERGE (l:%1$s:Tag {id:{prop}.id})"
-                                                ;; Neo4j identifier requirement
-                                                (str/replace (str type)
-                                                             #"\s+" ""))
+                                                (->> types
+                                                     ;; to satisfy Neo4j identifier requirement
+                                                     (map #(-> (str %)
+                                                               (str/replace #"\s+" "")
+                                                               (str/replace #"-" "_")))
+                                                     (str/join ":")))
                                         "SET l={prop}"
                                         "MERGE (l)-[r:Tag]->(a)"
                                         (case op
