@@ -2866,7 +2866,7 @@ net.brehaut.ClojureTools = (function (SH) {
   };
 })(SyntaxHighlighter);
 </script><title>tbnl-apk -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name"><a href="https://github.com/pw4ever/tbnl-apk">tbnl-apk</a></h1><h2 class="project-version">0.1.0-SNAPSHOT</h2><br />
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.6.0</td></tr><tr><td class="dep-name">org.clojure/tools.cli</td><td class="dotted"><hr /></td><td class="dep-version">0.3.1</td></tr><tr><td class="dep-name">org.clojure/tools.nrepl</td><td class="dotted"><hr /></td><td class="dep-version">0.2.5</td></tr><tr><td class="dep-name">org.clojure/data.json</td><td class="dotted"><hr /></td><td class="dep-version">0.2.5</td></tr><tr><td class="dep-name">org.clojure/core.async</td><td class="dotted"><hr /></td><td class="dep-version">0.1.346.0-17112a-alpha</td></tr><tr><td class="dep-name">asmdex/asmdex</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">soot/soot</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">pandect</td><td class="dotted"><hr /></td><td class="dep-version">0.4.1</td></tr><tr><td class="dep-name">commons-io/commons-io</td><td class="dotted"><hr /></td><td class="dep-version">2.4</td></tr><tr><td class="dep-name">me.raynes/fs</td><td class="dotted"><hr /></td><td class="dep-version">1.4.6</td></tr><tr><td class="dep-name">com.taoensso/nippy</td><td class="dotted"><hr /></td><td class="dep-version">2.7.1</td></tr><tr><td class="dep-name">clojurewerkz/neocons</td><td class="dotted"><hr /></td><td class="dep-version">3.0.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</a></li><li><a href="#tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.emulator">tbnl-apk.apk.dex.soot.emulator</a></li><li><a href="#tbnl-apk.apk.dex.soot.helper">tbnl-apk.apk.dex.soot.helper</a></li><li><a href="#tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</a></li><li><a href="#tbnl-apk.apk.parse">tbnl-apk.apk.parse</a></li><li><a href="#tbnl-apk.apk.util">tbnl-apk.apk.util</a></li><li><a href="#tbnl-apk.core">tbnl-apk.core</a></li><li><a href="#tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</a></li><li><a href="#tbnl-apk.util">tbnl-apk.util</a></li><li><a href="#tbnl-apk.virustotal.core">tbnl-apk.virustotal.core</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.aapt.parse" name="tbnl-apk.apk.aapt.parse"><h1 class="project-name">tbnl-apk.apk.aapt.parse</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.6.0</td></tr><tr><td class="dep-name">org.clojure/tools.cli</td><td class="dotted"><hr /></td><td class="dep-version">0.3.1</td></tr><tr><td class="dep-name">org.clojure/tools.nrepl</td><td class="dotted"><hr /></td><td class="dep-version">0.2.5</td></tr><tr><td class="dep-name">org.clojure/data.json</td><td class="dotted"><hr /></td><td class="dep-version">0.2.5</td></tr><tr><td class="dep-name">org.clojure/core.async</td><td class="dotted"><hr /></td><td class="dep-version">0.1.346.0-17112a-alpha</td></tr><tr><td class="dep-name">asmdex/asmdex</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">soot/soot</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">pandect</td><td class="dotted"><hr /></td><td class="dep-version">0.4.1</td></tr><tr><td class="dep-name">commons-io/commons-io</td><td class="dotted"><hr /></td><td class="dep-version">2.4</td></tr><tr><td class="dep-name">me.raynes/fs</td><td class="dotted"><hr /></td><td class="dep-version">1.4.6</td></tr><tr><td class="dep-name">com.taoensso/nippy</td><td class="dotted"><hr /></td><td class="dep-version">2.7.1</td></tr><tr><td class="dep-name">clojurewerkz/neocons</td><td class="dotted"><hr /></td><td class="dep-version">3.0.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</a></li><li><a href="#tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.emulator">tbnl-apk.apk.dex.soot.emulator</a></li><li><a href="#tbnl-apk.apk.dex.soot.helper">tbnl-apk.apk.dex.soot.helper</a></li><li><a href="#tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</a></li><li><a href="#tbnl-apk.apk.parse">tbnl-apk.apk.parse</a></li><li><a href="#tbnl-apk.apk.util">tbnl-apk.apk.util</a></li><li><a href="#tbnl-apk.core">tbnl-apk.core</a></li><li><a href="#tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</a></li><li><a href="#tbnl-apk.neo4j.recipe">tbnl-apk.neo4j.recipe</a></li><li><a href="#tbnl-apk.util">tbnl-apk.util</a></li><li><a href="#tbnl-apk.virustotal.core">tbnl-apk.virustotal.core</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.aapt.parse" name="tbnl-apk.apk.aapt.parse"><h1 class="project-name">tbnl-apk.apk.aapt.parse</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.apk.aapt.parse
   ;; internal libs
   ;; common libs
@@ -3621,7 +3621,7 @@ net.brehaut.ClojureTools = (function (SH) {
       all-implicit-invokes)))</pre></td></tr><tr><td class="docs"><p>get method's detailed invokes</p>
 </td><td class="codes"><pre class="brush: clojure">(defn get-method-detailed-invokes
   [^SootMethod method
-   {:keys [verbose]
+   {:keys [verbose soot-method-emulation-guard]
     :as options}]
   (when (.. method hasActiveBody)
     (let [body (.. method getActiveBody)
@@ -3633,26 +3633,28 @@ net.brehaut.ClojureTools = (function (SH) {
             {:stmts stmts
              :stmt-2-index stmt-2-index})
           all-invokes (atom #{})
-          all-visited-stmts (atom #{})]
+          method-emulation-guard (atom soot-method-emulation-guard)]
       (process-worklist
        ;; the initial worklist
        #{{:emulator (create-emulator)
           :start-stmt (first (:stmts stmt-info))}}
        ;; the process
        (fn [worklist]
-         (-&gt;&gt; worklist
-              (mapcat (fn [{:keys [emulator start-stmt]}]
-                        (let [{:keys [emulator visited-stmts next-start-stmts]}
-                              (emulate-a-basic-block emulator stmt-info start-stmt
-                                                     :host-method method
-                                                     :verbose verbose)]
-                          (swap! all-visited-stmts set/union (set visited-stmts))
-                          (swap! all-invokes into (:invoke emulator))
-                          (for [start-stmt (set/difference (set next-start-stmts)
-                                                           @all-visited-stmts)]
-                            ;; use the emulator snapshot at this branch --- control flow sensitive!
-                            {:emulator (assoc-in emulator [:invoke] #{})
-                             :start-stmt start-stmt})))))))
+         (when (and @method-emulation-guard
+                    (&gt; @method-emulation-guard 0))
+           (-&gt;&gt; worklist
+                (mapcat (fn [{:keys [emulator start-stmt]}]
+                          (let [{:keys [emulator visited-stmts next-start-stmts]}
+                                (emulate-a-basic-block emulator stmt-info start-stmt
+                                                       :host-method method
+                                                       :verbose verbose)]
+                            ;; decrement method emulation guard to avoid infinite recursion!!
+                            (swap! method-emulation-guard dec)
+                            (swap! all-invokes into (:invoke emulator))
+                            (for [start-stmt (set next-start-stmts)]
+                              ;; use the emulator snapshot at this branch --- control flow sensitive!
+                              {:emulator (assoc-in emulator [:invoke] #{})
+                               :start-stmt start-stmt}))))))))
       @all-invokes)))</pre></td></tr><tr><td class="docs"><p>filter methods that contain implicit control flow invokes</p>
 </td><td class="codes"><pre class="brush: clojure">(defn filter-implicit-cf-invoke-methods
   [implicit-cf methods]
@@ -4278,11 +4280,11 @@ net.brehaut.ClojureTools = (function (SH) {
          (System/setSecurityManager noexit-security-manager)
          (when (instance? G$GlobalObjectGetter ~g-objgetter)
            (G/setGlobalObjectGetter ~g-objgetter))
-         (let [~'g (G/v)
-               ~'scene (Scene/v)
-               ~'pack-manager (PackManager/v)
-               ~'options (Options/v)
-               ~'phase-options (PhaseOptions/v)]
+         (let [~'soot-g (G/v)
+               ~'soot-scene (Scene/v)
+               ~'soot-pack-manager (PackManager/v)
+               ~'soot-options (Options/v)
+               ~'soot-phase-options (PhaseOptions/v)]
            ~@body
            ~(when reset?
               `(~'_soot-clean_)))
@@ -4499,7 +4501,7 @@ net.brehaut.ClojureTools = (function (SH) {
                   (&lt;= verbose 1))
           (mute))
         (try
-          (doto options
+          (doto soot-options
             (.set_src_prec (Options/src_prec_apk))
             (.set_process_dir [apk-path])
             (.set_force_android_jar android-jar-path)
@@ -4508,17 +4510,17 @@ net.brehaut.ClojureTools = (function (SH) {
             (.set_ignore_resolution_errors true)
             (.set_whole_program true)
             (.set_output_format (Options/output_format_none)))
-          (doto phase-options)
+          (doto soot-phase-options)
           ;; do it manually --- barebone
-          (run-body-packs :scene scene
-                                 :pack-manager pack-manager
+          (run-body-packs :scene soot-scene
+                                 :pack-manager soot-pack-manager
                                  :body-packs [&quot;jb&quot;]
                                  :verbose verbose)
           (when (and verbose (&gt; verbose 3))
             (println &quot;body pack finished&quot;))
           ;; start working on the bodies
           (let [step1 (fn []
-                        (let [application-classes (get-application-classes scene)
+                        (let [application-classes (get-application-classes soot-scene)
                               android-api-descendants (-&gt;&gt; application-classes
                                                            (filter (fn [class]
                                                                      (-&gt;&gt; (get-transitive-super-class-and-interface class)
@@ -4544,7 +4546,7 @@ net.brehaut.ClojureTools = (function (SH) {
                                                                    :package (.. super getPackageName)})
                                                                 set)}))
                           ;; cg will only see parts reachable from these entry points
-                          (.. scene
+                          (.. soot-scene
                               (setEntryPoints (seq android-api-descendant-callbacks)))
                           ;; return the result
                           {:android-api-descendants android-api-descendants
@@ -4552,9 +4554,9 @@ net.brehaut.ClojureTools = (function (SH) {
                 step1-result (step1)
                 ;; step 2
                 step2 (fn [{:keys [android-api-descendants android-api-descendant-callbacks] :as prev-step-result}]
-                        (let [cg (get-cg scene)
-                              application-classes (get-application-classes scene)
-                              application-methods (get-application-methods scene)
+                        (let [cg (get-cg soot-scene)
+                              application-classes (get-application-classes soot-scene)
+                              application-methods (get-application-methods soot-scene)
                               interesting-methodref? (memoize
                                                       (fn [^SootMethodRef methodref]
                                                         (let [method-name (.. methodref name)
@@ -4951,6 +4953,9 @@ net.brehaut.ClojureTools = (function (SH) {
    [&quot;-s&quot; &quot;--soot-task-build-model&quot; &quot;build APK model with Soot&quot;]
    [nil &quot;--soot-android-jar-path&quot; &quot;path of android.jar for Soot's Dexpler&quot;]
    [nil &quot;--soot-no-implicit-cf&quot; &quot;do not detect implicit control flows&quot;]
+   [nil &quot;--soot-method-emulation-guard NUM&quot; &quot;basic block emulation will run at most NUM times&quot;
+    :parse-fn #(Long/parseLong %)
+    :default 1000]
    ;; Neo4j config
    [nil &quot;--neo4j-port PORT&quot; &quot;Neo4j server port&quot;
     :parse-fn #(Integer/parseInt %)
@@ -5051,7 +5056,8 @@ net.brehaut.ClojureTools = (function (SH) {
               (when line
                 (prn (-&gt; {:file-path line :tags []}
                          (update-in [:tags] into
-                                    (when prep-tags
+                                    (when (and prep-tags
+                                               (not (str/blank? prep-tags)))
                                       (read-string prep-tags)))
                          (update-in [:tags] into
                                     (when prep-virustotal
@@ -5432,7 +5438,62 @@ net.brehaut.ClojureTools = (function (SH) {
 </td><td class="codes"><pre class="brush: clojure">(defn android-api?
   [name]
   (let [name (str name)]
-    (re-find #&quot;^L?(?:android\.|com\.android\.|dalvik\.)&quot; name)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.util" name="tbnl-apk.util"><h1 class="project-name">tbnl-apk.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+    (re-find #&quot;^L?(?:android\.|com\.android\.|dalvik\.)&quot; name)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.neo4j.recipe" name="tbnl-apk.neo4j.recipe"><h1 class="project-name">tbnl-apk.neo4j.recipe</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>recipes for queries</p>
+</td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.neo4j.recipe
+  ;; common libs
+  (:require [clojure.string :as str]
+            [clojure.set :as set]
+            [clojure.walk :as walk]
+            [clojure.zip :as zip]
+            [clojure.java.io :as io]
+            [clojure.pprint :refer [pprint print-table]]
+            [clojure.stacktrace :refer [print-stack-trace]]))</pre></td></tr><tr><td class="docs"><p>declaration</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(declare get-app-skeleton)</pre></td></tr><tr><td class="docs"><p>implementation</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>get the skeleton of an app</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-app-skeleton
+  [{:keys [sha256 package versionCode versionName]
+    :as apk}
+   &amp;
+   {:keys [return?]
+    :as options}]
+  (str/join &quot; &quot;
+            [(format &quot;MATCH (apk:Apk%1$s)&quot;
+                     (if apk
+                       (format &quot;{%1$s}&quot;
+                               (str/join &quot;,&quot;
+                                         (-&gt;&gt; apk
+                                              (map (fn [[k v]]
+                                                     (str (name k) &quot;:&quot;
+                                                          (format &quot;\&quot;%1$s\&quot;&quot;
+                                                                  v)))))))
+                       &quot;&quot;))
+             &quot;OPTIONAL MATCH (signingKey:SigningKey)&quot;
+             &quot;-[:Sign]-&gt; (apk)&quot;
+             &quot;-[:Contain]-&gt; (dex:Dex)&quot;
+             &quot;-[:Contain]-&gt; (class:Class)&quot;
+             &quot;-[:Contain]-&gt; (callback:Callback)&quot;
+             &quot;OPTIONAL MATCH (explicitInvoke) &lt;-[:ExplicitInvoke]- (callback) -[:ImplicitInvoke]-&gt; (implicitInvoke)&quot;
+             (if return?
+               &quot;RETURN signingKey, apk, dex, class, callback, explicitInvoke, implicitInvoke&quot;
+               &quot;&quot;)]))</pre></td></tr><tr><td class="docs"><p>sort apps by how many component classes they have</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-app-by-class-complexity
+  [&amp;
+   {:keys [skip limit desc where return?]
+    :as options
+    :or {limit 5}}]
+  (str/join &quot; &quot;
+            [&quot;MATCH (apk:Apk)&quot;
+             &quot;-[:Contain]-&gt; (:Dex)&quot;
+             &quot;-[:Contain]-&gt; (class:Class)&quot;
+             &quot;WITH apk, count(class) as cc&quot;
+             (if where (format &quot;WHERE %1$s&quot; where) &quot;&quot;)
+             (if return? &quot;RETURN apk, cc&quot; &quot;&quot;)
+             &quot;ORDER BY cc&quot;
+             (if desc &quot;DESC&quot; &quot;&quot;)
+             (if limit (format &quot;LIMIT %1$d&quot; limit) &quot;&quot;)
+             (if skip (format &quot;SKIP %1$d&quot; skip) &quot;&quot;)
+             ]))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.util" name="tbnl-apk.util"><h1 class="project-name">tbnl-apk.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.util
   ;; common libs
   (:require [clojure.string :as str]
@@ -5595,7 +5656,7 @@ net.brehaut.ClojureTools = (function (SH) {
                    (str/replace &quot;_&quot; &quot;-&quot;)
                    keyword)
                v]))
-       (into {})))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.emulator">tbnl-apk.apk.dex.soot.emulator</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.helper">tbnl-apk.apk.dex.soot.helper</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.parse">tbnl-apk.apk.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.util">tbnl-apk.apk.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.core">tbnl-apk.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.util">tbnl-apk.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.virustotal.core">tbnl-apk.virustotal.core</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+       (into {})))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.emulator">tbnl-apk.apk.dex.soot.emulator</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.helper">tbnl-apk.apk.dex.soot.helper</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.parse">tbnl-apk.apk.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.util">tbnl-apk.apk.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.core">tbnl-apk.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.neo4j.recipe">tbnl-apk.neo4j.recipe</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.util">tbnl-apk.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.virustotal.core">tbnl-apk.virustotal.core</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
 SyntaxHighlighter.all();
 
 // hackity hack
