@@ -66,6 +66,9 @@
    [nil "--virustotal-rate-limit LIMIT-PER-MIN" "number of maximal API calls per minute"
     :parse-fn #(Integer/parseInt %)
     :default 4]
+   [nil "--virustotal-backoff SEC" "number of seconds to backoff when exceeding rate limit"
+    :parse-fn #(Integer/parseInt %)
+    :default 5]   
    [nil "--virustotal-submit" "whether submit sample to VirusTotal if not found"]
    
    ;; Soot config
@@ -74,7 +77,7 @@
    [nil "--soot-no-implicit-cf" "do not detect implicit control flows"]
    [nil "--soot-method-emulation-guard NUM" "basic block emulation will run at most NUM times"
     :parse-fn #(Long/parseLong %)
-    :default 1000]
+    :default 50]
    
 
    ;; Neo4j config
@@ -177,7 +180,8 @@
         {:keys [options summary errors]} raw
         {:keys [verbose interactive help
                 prep-tags
-                prep-virustotal virustotal-rate-limit virustotal-submit
+                prep-virustotal
+                virustotal-rate-limit virustotal-backoff virustotal-submit
                 nrepl-port
                 neo4j-task-populate]} options]
     (try
@@ -200,57 +204,66 @@
                 vt-start-time (atom (System/currentTimeMillis))]
             (loop [line (read-line)]
               (when line
-                (prn (-> {:file-path line :tags []}
-                         
-                         
-                         (update-in [:tags] into
-                                    (when (and prep-tags
-                                               (not (str/blank? prep-tags)))
-                                      (read-string prep-tags)))
-                         
-                         
-                         (update-in [:tags] into
-                                    (when prep-virustotal
-                                      (let [apk (apk-parse/parse-apk line)
-                                            
-                                            try-backoff
-                                            (fn []
-                                              (when (<= @vt-api-call-counter 0)
-                                                (let [now (System/currentTimeMillis)
-                                                      
-                                                      sleep-time
-                                                      ;; minimum sleep 5 seconds
-                                                      (max (* 5 1000)
-                                                           (- (+ @vt-start-time
-                                                                 (* 60 1000))
-                                                              now))]
-                                                  (reset! vt-api-call-counter
-                                                          virustotal-rate-limit)
-                                                  (reset! vt-start-time
-                                                          now)
-                                                  (Thread/sleep sleep-time))))]
-                                        (when-let [sha256 (:sha256 apk)]
-                                          (try-backoff)
-                                          (when-let [result (vt/get-report {:sha256 sha256}
-                                                                           options)]
-                                            (swap! vt-api-call-counter dec)
-                                            
-                                            ;; obtain result
-                                            (cond
-                                              ;; if result is a map, the result is returned
-                                              (map? result)
-                                              (let [tag (vt/make-report-result-into-tags result)]
-                                                tag)
+                (try
+                  (prn (-> {:file-path line :tags []}
+                           
+                           
+                           (update-in [:tags] into
+                                      (when (and prep-tags
+                                                 (not (str/blank? prep-tags)))
+                                        (read-string prep-tags)))
+                           
+                           
+                           (update-in [:tags] into
+                                      (when prep-virustotal
+                                        (let [apk (apk-parse/parse-apk line)
                                               
-                                              :status-exceed-api-limit
-                                              (try-backoff)
+                                              try-backoff
+                                              (fn []
+                                                (when (<= @vt-api-call-counter 0)
+                                                  (let [now (System/currentTimeMillis)
+                                                        
+                                                        sleep-time
+                                                        (max (* virustotal-backoff 1000)
+                                                             (- (+ @vt-start-time
+                                                                   (* 60 1000))
+                                                                now))]
+                                                    (reset! vt-api-call-counter
+                                                            virustotal-rate-limit)
+                                                    (reset! vt-start-time
+                                                            now)
+                                                    (Thread/sleep sleep-time))))]
+                                          (when-let [sha256 (:sha256 apk)]
+                                            (try-backoff)
+                                            (when-let [result (vt/get-report {:sha256 sha256}
+                                                                             options)]
+                                              (swap! vt-api-call-counter dec)
+                                              (when (and verbose (> verbose 2))
+                                                (binding [*out* *err*]
+                                                  (println "virustotal report" result)))
+                                              (let [ret (atom nil)]
+                                                  (cond
+                                                    ;; if result is a map, the result is returned
+                                                    (map? result)
+                                                    (reset! ret
+                                                            (vt/make-report-result-into-tags result))
+                                                    
+                                                    (= result :status-exceed-api-limit)
+                                                    (try-backoff)
 
-                                              :otherwise
-                                              (when virustotal-submit
-                                                (try-backoff)
-                                                (vt/submit-file {:file-content (io/file line)}
-                                                                options)
-                                                (swap! vt-api-call-counter dec))))))))))
+                                                    (= result :response-not-found)
+                                                    (when virustotal-submit
+                                                      (try-backoff)
+                                                      (let [result
+                                                            (vt/submit-file {:file-content (io/file line)}
+                                                                            options)]
+                                                        (when (and verbose (> verbose 2))
+                                                          (binding [*out* *err*]
+                                                            (println "virustotal submit" result))))
+                                                      (swap! vt-api-call-counter dec)))
+                                                  @ret))))))))
+                  (catch Exception e
+                    (print-stack-trace-if-verbose e verbose)))
                 (recur (read-line))))))
 
         :otherwise

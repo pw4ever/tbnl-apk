@@ -43,7 +43,6 @@
                "RETURN signingKey, apk, dex, class, callback, explicitInvoke, implicitInvoke"
                "")]))
 
-
 (defn get-app-by-class-complexity
   "sort apps by how many component classes they have"
   [&

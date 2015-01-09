@@ -72,7 +72,15 @@ node.Component {
   caption: '{instance}';
 }
 
+node.IntentFilterCategory {
+  color: #00FF4C;
+  caption: '{name}';
+}
 
+node.IntentFilterAction {
+  color: #00FF4C;
+  caption: '{name}';
+}
 
 node.Task {
   color: #FF00FB;
