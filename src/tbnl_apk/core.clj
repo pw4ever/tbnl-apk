@@ -74,11 +74,16 @@
    ;; Soot config
    ["-s" "--soot-task-build-model" "build APK model with Soot"]
    [nil "--soot-android-jar-path" "path of android.jar for Soot's Dexpler"]
-   [nil "--soot-no-implicit-cf" "do not detect implicit control flows"]
-   [nil "--soot-method-emulation-guard NUM" "basic block emulation will run at most NUM times"
+   [nil "--soot-basic-block-simulation-budget BUDGET" "basic block simulation budget"
     :parse-fn #(Long/parseLong %)
-    :default 50]
-   
+    :default 100]
+   [nil "--soot-method-simulation-depth-budget BUDGET" "method invocation simulation budget"
+    :parse-fn #(Long/parseLong %)
+    :default 10]
+   [nil "--soot-result-include-invoke-arguments" "include invoke arguments (for comparison)"]
+   [nil "--soot-no-implicit-cf" "do not detect implicit control flows (for comparison)"]
+   [nil "--soot-dump-all-invokes" "dump all invokes"]
+   [nil "--soot-result-exclude-app-methods" "exclude app internal methods from the result"]
 
    ;; Neo4j config
    [nil "--neo4j-port PORT" "Neo4j server port"

@@ -2866,7 +2866,7 @@ net.brehaut.ClojureTools = (function (SH) {
   };
 })(SyntaxHighlighter);
 </script><title>tbnl-apk -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name"><a href="https://github.com/pw4ever/tbnl-apk">tbnl-apk</a></h1><h2 class="project-version">0.1.0-SNAPSHOT</h2><br />
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.6.0</td></tr><tr><td class="dep-name">org.clojure/tools.cli</td><td class="dotted"><hr /></td><td class="dep-version">0.3.1</td></tr><tr><td class="dep-name">org.clojure/tools.nrepl</td><td class="dotted"><hr /></td><td class="dep-version">0.2.5</td></tr><tr><td class="dep-name">org.clojure/data.json</td><td class="dotted"><hr /></td><td class="dep-version">0.2.5</td></tr><tr><td class="dep-name">org.clojure/core.async</td><td class="dotted"><hr /></td><td class="dep-version">0.1.346.0-17112a-alpha</td></tr><tr><td class="dep-name">asmdex/asmdex</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">soot/soot</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">pandect</td><td class="dotted"><hr /></td><td class="dep-version">0.4.1</td></tr><tr><td class="dep-name">commons-io/commons-io</td><td class="dotted"><hr /></td><td class="dep-version">2.4</td></tr><tr><td class="dep-name">me.raynes/fs</td><td class="dotted"><hr /></td><td class="dep-version">1.4.6</td></tr><tr><td class="dep-name">com.taoensso/nippy</td><td class="dotted"><hr /></td><td class="dep-version">2.7.1</td></tr><tr><td class="dep-name">clojurewerkz/neocons</td><td class="dotted"><hr /></td><td class="dep-version">3.0.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</a></li><li><a href="#tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.emulator">tbnl-apk.apk.dex.soot.emulator</a></li><li><a href="#tbnl-apk.apk.dex.soot.helper">tbnl-apk.apk.dex.soot.helper</a></li><li><a href="#tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</a></li><li><a href="#tbnl-apk.apk.parse">tbnl-apk.apk.parse</a></li><li><a href="#tbnl-apk.apk.util">tbnl-apk.apk.util</a></li><li><a href="#tbnl-apk.core">tbnl-apk.core</a></li><li><a href="#tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</a></li><li><a href="#tbnl-apk.neo4j.recipe">tbnl-apk.neo4j.recipe</a></li><li><a href="#tbnl-apk.util">tbnl-apk.util</a></li><li><a href="#tbnl-apk.virustotal.core">tbnl-apk.virustotal.core</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.aapt.parse" name="tbnl-apk.apk.aapt.parse"><h1 class="project-name">tbnl-apk.apk.aapt.parse</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.6.0</td></tr><tr><td class="dep-name">org.clojure/tools.cli</td><td class="dotted"><hr /></td><td class="dep-version">0.3.1</td></tr><tr><td class="dep-name">org.clojure/tools.nrepl</td><td class="dotted"><hr /></td><td class="dep-version">0.2.5</td></tr><tr><td class="dep-name">org.clojure/data.json</td><td class="dotted"><hr /></td><td class="dep-version">0.2.5</td></tr><tr><td class="dep-name">org.clojure/core.async</td><td class="dotted"><hr /></td><td class="dep-version">0.1.346.0-17112a-alpha</td></tr><tr><td class="dep-name">asmdex/asmdex</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">soot/soot</td><td class="dotted"><hr /></td><td class="dep-version">1.0</td></tr><tr><td class="dep-name">pandect</td><td class="dotted"><hr /></td><td class="dep-version">0.4.1</td></tr><tr><td class="dep-name">commons-io/commons-io</td><td class="dotted"><hr /></td><td class="dep-version">2.4</td></tr><tr><td class="dep-name">me.raynes/fs</td><td class="dotted"><hr /></td><td class="dep-version">1.4.6</td></tr><tr><td class="dep-name">com.taoensso/nippy</td><td class="dotted"><hr /></td><td class="dep-version">2.7.1</td></tr><tr><td class="dep-name">clojurewerkz/neocons</td><td class="dotted"><hr /></td><td class="dep-version">3.0.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</a></li><li><a href="#tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</a></li><li><a href="#tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</a></li><li><a href="#tbnl-apk.apk.dex.soot.sexp">tbnl-apk.apk.dex.soot.sexp</a></li><li><a href="#tbnl-apk.apk.dex.soot.simulator">tbnl-apk.apk.dex.soot.simulator</a></li><li><a href="#tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</a></li><li><a href="#tbnl-apk.apk.parse">tbnl-apk.apk.parse</a></li><li><a href="#tbnl-apk.apk.util">tbnl-apk.apk.util</a></li><li><a href="#tbnl-apk.core">tbnl-apk.core</a></li><li><a href="#tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</a></li><li><a href="#tbnl-apk.neo4j.recipe">tbnl-apk.neo4j.recipe</a></li><li><a href="#tbnl-apk.util">tbnl-apk.util</a></li><li><a href="#tbnl-apk.virustotal.core">tbnl-apk.virustotal.core</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.aapt.parse" name="tbnl-apk.apk.aapt.parse"><h1 class="project-name">tbnl-apk.apk.aapt.parse</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.apk.aapt.parse
   ;; internal libs
   ;; common libs
@@ -3571,12 +3571,360 @@ net.brehaut.ClojureTools = (function (SH) {
   (extract-apk-file apk the-dex output-file-name))</pre></td></tr><tr><td class="docs"><p>get sha256 digest of the dex in apk</p>
 </td><td class="codes"><pre class="brush: clojure">(defn get-the-dex-sha256-digest
   [apk]
-  (get-apk-file-sha256-digest apk the-dex))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.dex.soot.emulator" name="tbnl-apk.apk.dex.soot.emulator"><h1 class="project-name">tbnl-apk.apk.dex.soot.emulator</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.apk.dex.soot.emulator
+  (get-apk-file-sha256-digest apk the-dex))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.dex.soot.parse" name="tbnl-apk.apk.dex.soot.parse"><h1 class="project-name">tbnl-apk.apk.dex.soot.parse</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.apk.dex.soot.parse
+  ;; internal libs
+  (:require [tbnl-apk.util
+             :refer [print-stack-trace-if-verbose]])
+  (:require [tbnl-apk.apk.dex.soot.util
+             :as util
+             :refer :all])
+  (:require [tbnl-apk.apk.dex.soot.simulator
+             :as simulator
+             :refer :all])  
+  (:require [tbnl-apk.apk.parse
+             :as apk-parse])
+  ;; common libs
+  (:require [clojure.string :as str]
+            [clojure.set :as set]
+            [clojure.walk :as walk]
+            [clojure.zip :as zip]
+            [clojure.java.io :as io]
+            [clojure.pprint :refer [pprint print-table]]
+            [clojure.stacktrace :refer [print-stack-trace]])  
+  ;; special lib
+  (:require [me.raynes.fs :as fs])  
+  ;; imports
+  (:import (soot Unit
+                 SootField
+                 SootClass
+                 SootMethod
+                 SootMethodRef)
+           (soot.jimple Stmt)
+           (soot.options Options)))</pre></td></tr><tr><td class="docs"><p>declaration</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>func</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(declare parse-apk
+         get-apk-interesting-invokes)</pre></td></tr><tr><td class="docs"><p>implementation</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>parse apk with soot</p>
+</td><td class="codes"><pre class="brush: clojure">(defn parse-apk
+  [apk-name options]
+  (merge (apk-parse/parse-apk apk-name)
+         {:dex (get-apk-interesting-invokes apk-name {}
+                                            options)}))</pre></td></tr><tr><td class="docs"><p>get App components and their (transitive) interesting invokes</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-apk-interesting-invokes
+  [apk-name
+   {:keys [exclusion-name-patterns
+           exclusion-name-pattern-exceptions]
+    :as params
+    :or {exclusion-name-patterns [#&quot;^java\.&quot;
+                                  #&quot;^javax\.&quot;
+                                  #&quot;^junit\.&quot;
+                                  #&quot;^org\.json&quot;
+                                  #&quot;^org\.w3c\.&quot;
+                                  #&quot;^org\.xmlpull\.&quot;]
+         exclusion-name-pattern-exceptions [#&quot;^android\.&quot;
+                                            #&quot;^com\.android\.&quot;
+                                            #&quot;^dalvik\.&quot;
+                                            #&quot;^java\.lang\.System&quot;
+                                            #&quot;^java\.lang\.Class&quot;
+                                            #&quot;^java\.lang\.ClassLoader&quot;
+                                            #&quot;^java\.lang\.reflect&quot;
+                                            #&quot;^java\.security&quot;]}}
+   {:keys [soot-android-jar-path
+           soot-result-include-invoke-arguments
+           soot-result-exclude-app-methods
+           verbose]
+    :as options}]
+  (when (and apk-name (fs/readable? apk-name))
+    (let [apk-path (.getPath (io/file apk-name))
+          get-android-jar-path #(let [res-name &quot;EMPTY&quot;
+                                      ;; hack to get &quot;tbnl-apk.jar&quot; dir
+                                      [_ path] (re-find (re-pattern (str &quot;^file:(.*)/[^/]+!/&quot;
+                                                                         res-name &quot;$&quot;))
+                                                        (.getPath (io/resource res-name)))]
+                                  (str/join (System/getProperty &quot;file.separator&quot;)
+                                            [path &quot;android.jar&quot;]))
+          android-jar-path (if soot-android-jar-path
+                             soot-android-jar-path
+                             (get-android-jar-path))
+          result (atom {})
+          ;; the current thread's Soot context
+          g-objgetter (new-g-objgetter)]
+      ;; unfortunately, Singleton is so deeply embedded in Soot's implementation, we have to work in critical Section altogether
+      (with-soot
+        ;; use the current thread's Soot context
+        g-objgetter
+        ;; reset at the end to release the Soot Objects built up during the analysis
+        true
+        ;; the real work begins from here
+        (when (or (not verbose)
+                  (&lt;= verbose 1))
+          (mute))
+        (try
+          (doto soot-options
+            (.set_src_prec (Options/src_prec_apk))
+            (.set_process_dir [apk-path])
+            (.set_force_android_jar android-jar-path)
+            (.set_allow_phantom_refs true)
+            (.set_no_bodies_for_excluded true)
+            (.set_ignore_resolution_errors true)
+            (.set_whole_program true)
+            (.set_output_format (Options/output_format_none)))
+          (doto soot-phase-options)
+          ;; do it manually --- barebone
+          (run-body-packs :scene soot-scene
+                          :pack-manager soot-pack-manager
+                          :body-packs [&quot;jb&quot;]
+                          :verbose verbose)
+          (when (and verbose (&gt; verbose 3))
+            (println &quot;body pack finished&quot;))
+          ;; start working on the bodies
+          (let [step1 (fn []
+                        (let [application-classes (get-application-classes soot-scene)
+                              android-api-descendants
+                              (-&gt;&gt; application-classes
+                                   (filter (fn [class]
+                                             (-&gt;&gt; (get-transitive-super-class-and-interface
+                                                   class)
+                                                  (filter android-api?)
+                                                  not-empty))))
+                              android-api-descendant-callbacks
+                              (-&gt;&gt; android-api-descendants
+                                   (remove #(.. ^SootClass % isPhantom))
+                                   (mapcat #(-&gt;&gt; (.. ^SootClass % getMethods)
+                                                 (filter (fn [method]
+                                                           (and (.hasActiveBody method)
+                                                                (re-find #&quot;^on[A-Z]&quot;
+                                                                         (.getName method)))))))
+                                   set)]
+                          ;; descendant relations
+                          (doseq [descendant android-api-descendants]
+                            (when (and verbose (&gt; verbose 3))
+                              (println &quot;descendant&quot; descendant))
+                            (swap! result assoc-in
+                                   [(.. descendant getPackageName) (.. descendant getName)]
+                                   {:android-api-ancestors
+                                    (-&gt;&gt; (for [super (get-transitive-super-class-and-interface
+                                                      descendant)
+                                               :when (android-api? super)]
+                                           {:class (.. super getName)
+                                            :package (.. super getPackageName)})
+                                         set)}))
+                          ;; cg will only see parts reachable from these entry points
+                          (.. soot-scene
+                              (setEntryPoints (seq android-api-descendant-callbacks)))
+                          ;; return the result
+                          {:android-api-descendants android-api-descendants
+                           :android-api-descendant-callbacks android-api-descendant-callbacks}))
+                step1-result (step1)
+                step2 (fn [{:keys [android-api-descendants
+                                   android-api-descendant-callbacks]
+                            :as prev-step-result}]
+                        (let [application-classes (get-application-classes soot-scene)
+                              application-methods (get-application-methods soot-scene)
+                              interesting-method?
+                              (memoize
+                               (fn [method]
+                                 (let [method-name (-&gt; method get-soot-name)
+                                       class (-&gt; method get-soot-class)
+                                       ;;super (-&gt; class get-transitive-super-class-and-interface)
+                                       ]
+                                   ;; interestingness criteria
+                                   (and true
+                                        (if soot-result-exclude-app-methods
+                                          ;; external
+                                          (not (contains? application-methods method))
+                                          true)
+                                        ;; not in exclusion-name-patterns
+                                        (or (-&gt;&gt; [class]
+                                                 (filter
+                                                  (fn [x]
+                                                    (some #(re-find % (-&gt; x get-soot-class-name))
+                                                          exclusion-name-patterns)))
+                                                 empty?)
+                                            ;; ... unless in exclusion-name-pattern-exceptions
+                                            (-&gt;&gt; [class]
+                                                 (filter
+                                                  (fn [x]
+                                                    (some #(re-find % (-&gt; x get-soot-class-name))
+                                                          exclusion-name-pattern-exceptions)))
+                                                 not-empty))
+                                        ;; not &lt;init&gt; or &lt;clinit&gt;
+                                        (not (re-find #&quot;&lt;[^&gt;]+&gt;&quot; method-name))))))]
+                          (initialize-classes {:classes application-classes
+                                               :circumscription application-methods}
+                                              options)
+                          ;; may be parallelized later
+                          (doseq [callback android-api-descendant-callbacks]
+                            (let [callback-class (.. callback getDeclaringClass)]
+                              (when (and verbose (&gt; verbose 3))
+                                (println &quot;callback&quot; callback))
+                              (let [{:keys [explicit-invokes
+                                            implicit-invokes
+                                            component-invokes]}
+                                    (get-all-interesting-invokes callback
+                                                                 interesting-method?
+                                                                 application-methods
+                                                                 options)]
+                                (doseq [[type invokes] [[:explicit explicit-invokes]
+                                                        [:implicit implicit-invokes]
+                                                        [:component component-invokes]]]
+                                  (swap! result assoc-in
+                                         [(.. callback-class getPackageName)
+                                          (.. callback-class getName)
+                                          :callbacks
+                                          (.. callback getName)
+                                          type]
+                                         (-&gt;&gt; invokes
+                                              (map #(if soot-result-include-invoke-arguments
+                                                      (let [{:keys [method args]} %
+                                                            class (-&gt; method get-soot-class)]
+                                                        {:method (-&gt; method get-soot-name)
+                                                         :class (-&gt; method get-soot-class-name)
+                                                         :package (.. class getPackageName)
+                                                         :args args})
+                                                      (let [method %
+                                                            class (-&gt; method get-soot-class)]
+                                                        {:method (-&gt; method get-soot-name)
+                                                         :class (-&gt; method get-soot-class-name)
+                                                         :package (.. class getPackageName)})))
+                                              set)))
+                                ;; add explicit link between invokes and their Android API ancestor
+                                (let [path [(.. callback-class getPackageName)
+                                            (.. callback-class getName)
+                                            :callbacks
+                                            (.. callback getName)
+                                            :descend]]
+                                  (doseq [invoke (set/union explicit-invokes implicit-invokes)]
+                                    (let [method (if soot-result-include-invoke-arguments
+                                                   (first invoke)
+                                                   invoke)]
+                                      (when-not (android-api? method)
+                                        (let [method-name (-&gt; method get-soot-name)
+                                              method-class (-&gt; method get-soot-class)
+                                              v {:method method-name
+                                                 :class (-&gt; method get-soot-class-name)
+                                                 :package (.. method-class getPackageName)}
+                                              ;; Android API supers
+                                              supers (-&gt;&gt; method-class
+                                                          get-transitive-super-class-and-interface
+                                                          (filter android-api?))]
+                                          (when-let [super (some #(try
+                                                                    (if (.. ^soot.SootClass %
+                                                                            (getMethodByNameUnsafe
+                                                                             method-name))
+                                                                      %
+                                                                      false)
+                                                                    ;; Soot implementation: Ambiguious 
+                                                                    (catch RuntimeException e
+                                                                      %))
+                                                                 supers)]
+                                            (let [k {:method method-name
+                                                     :class (-&gt; super get-soot-class-name)
+                                                     :package (.. super getPackageName)}]
+                                              (swap! result update-in (conj path k)
+                                                     #(conj (set %1) %2) v)))))))))))
+                          ;; must be in Soot body to ensure content/arguments can be printed
+                          (when (and verbose (&gt; verbose 2))
+                            (pprint @result))))
+                step2-result (step2 step1-result)])
+          ;; catch Exception to prevent disrupting outer threads
+          (catch Exception e
+            (print-stack-trace-if-verbose e verbose))
+          (finally
+            (unmute))))
+      @result)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.dex.soot.sexp" name="tbnl-apk.apk.dex.soot.sexp"><h1 class="project-name">tbnl-apk.apk.dex.soot.sexp</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>define symbolic expression (sexp)</p>
+</td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.apk.dex.soot.sexp
+  ;; internal libs
+  (:use tbnl-apk.apk.dex.soot.util)
+  ;; common libs
+  (:require [clojure.string :as str]
+            [clojure.set :as set]
+            [clojure.walk :as walk]
+            [clojure.zip :as zip]
+            [clojure.java.io :as io]
+            [clojure.pprint :refer [pprint print-table]]
+            [clojure.stacktrace :refer [print-stack-trace]]))</pre></td></tr><tr><td class="docs"><p>declaration</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>implementation</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defprotocol Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord ErrorSexp [type info]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-error-sexp
+  [type info]
+  (ErrorSexp. type info))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord ExternalSexp [type info]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-external-sexp
+  [type info]
+  (ExternalSexp. type info))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord BinaryOperationSexp [operator operands]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-binary-operator-sexp
+  [operator operands]
+  (BinaryOperationSexp. operator operands))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord UnaryOperationSexp [operator operands]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-unary-operator-sexp
+  [operator operands]
+  (UnaryOperationSexp. operator operands))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord InvokeSexp [invoke-type method base args]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-invoke-sexp
+  [invoke-type method base args]
+  (InvokeSexp. invoke-type method base args))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord InstanceSexp [class instance]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-instance-sexp
+  [class instance]
+  (InstanceSexp. class instance))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord ClassSexp [class]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-class-sexp
+  [class]
+  (ClassSexp. class))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord MethodSexp [instance method]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-method-sexp
+  [instance method]
+  (MethodSexp. instance method))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord FieldSexp [instance field]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-field-sexp
+  [instance field]
+  (FieldSexp. instance field))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord LocalSexp [local]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-local-sexp
+  [local]
+  (LocalSexp. local))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord InstanceOfSexp [class instance]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-instance-of-sexp
+  [class instance]
+  (InstanceOfSexp. class instance))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord NewArraySexp [base-type size]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-new-array-sexp
+  [base-type size]
+  (NewArraySexp. base-type size))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord NewMultiArraySexp [base-type sizes]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-new-multi-array-sexp
+  [base-type sizes]
+  (NewMultiArraySexp. base-type sizes))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord ArrayRefSexp [base index]
+  Sexp)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn make-array-ref-sexp
+  [base index]
+  (ArrayRefSexp. base index))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.dex.soot.simulator" name="tbnl-apk.apk.dex.soot.simulator"><h1 class="project-name">tbnl-apk.apk.dex.soot.simulator</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.apk.dex.soot.simulator
   ;; internal libs
   (:require [tbnl-apk.util
              :refer [print-stack-trace-if-verbose]])   
-  (:use tbnl-apk.apk.dex.soot.helper)
+  (:use tbnl-apk.apk.dex.soot.util)
+  (:use tbnl-apk.apk.dex.soot.sexp)
   ;; common libs
   (:require [clojure.string :as str]
             [clojure.set :as set]
@@ -3598,523 +3946,372 @@ net.brehaut.ClojureTools = (function (SH) {
            (soot.jimple Stmt
                         StmtSwitch
                         JimpleValueSwitch)))</pre></td></tr><tr><td class="docs"><p>declaration</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(declare  get-method-implicit-cf get-method-detailed-invokes
-         filter-implicit-cf-invoke-methods implicit-cf-methodref? implicit-cf-class?
+</td><td class="codes"></td></tr><tr><td class="docs"><p>public</p>
+</td><td class="codes"><pre class="brush: clojure">(declare get-all-interesting-invokes)</pre></td></tr><tr><td class="docs"><p>private</p>
 
-         ;; plumbing
-         emulate-a-basic-block create-emulator
-         get-transitive-implicit-cf-super-class-and-interface)</pre></td></tr><tr><td class="docs"><p>implementation</p>
-</td><td class="codes"></td></tr><tr><td class="docs"><p>use to work around Cannot Embed Object in Code exception in eval</p>
-</td><td class="codes"><pre class="brush: clojure">(def ^:dynamic *object-embedding-hack*
-  nil)</pre></td></tr><tr><td class="docs"><p>porcelain</p>
-</td><td class="codes"></td></tr><tr><td class="docs"><p>get method's implicit control flows (e.g., reflection)</p>
-</td><td class="codes"><pre class="brush: clojure">(defn get-method-implicit-cf
-  [implicit-cf ^SootMethod method
-   options]
-  (when (.. method hasActiveBody)
-    (let [all-implicit-invokes (-&gt;&gt; method
-                                    (#(get-method-detailed-invokes % options))
-                                    (filter (fn [i]
-                                              (-&gt;&gt; i first
-                                                   (implicit-cf-methodref? implicit-cf)))))]
-      all-implicit-invokes)))</pre></td></tr><tr><td class="docs"><p>get method's detailed invokes</p>
-</td><td class="codes"><pre class="brush: clojure">(defn get-method-detailed-invokes
-  [^SootMethod method
-   {:keys [verbose soot-method-emulation-guard]
+<p>workaround: Cannot Embed Object in Code exception in eval</p>
+</td><td class="codes"><pre class="brush: clojure">(declare init-instances initialize-classes)
+(declare simulate-method simulate-basic-block)
+(declare simulator-global-state create-simulator 
+         simulator-evaluate simulator-new-instance
+         simulator-get-field simulator-set-field
+         simulator-get-this simulator-get-param
+         simulator-set-local simulator-get-local
+         simulator-add-returns simulator-get-returns simulator-clear-returns
+         simulator-add-explicit-invokes simulator-get-explicit-invokes simulator-clear-explicit-invokes
+         simulator-add-implicit-invokes simulator-get-implicit-invokes simulator-clear-implicit-invokes
+         simulator-add-component-invokes simulator-get-component-invokes simulator-clear-component-invokes)
+(declare filter-implicit-cf-invoke-methods
+         implicit-cf-class? implicit-cf? implicit-cf-task? implicit-cf-component? 
+         get-transitive-implicit-cf-super-class-and-interface get-implicit-cf-root-class-names)
+(declare implicit-cf-marker implicit-cf-marker-task implicit-cf-marker-component)
+(declare safe-invokes)
+(def ^:dynamic *object-embedding-hack*
+  nil)</pre></td></tr><tr><td class="docs"><p>implementation</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>value resolver protocol</p>
+</td><td class="codes"><pre class="brush: clojure">(defprotocol SimulatorValueResolver
+  (simulator-resolve-value [obj simulator]))</pre></td></tr><tr><td class="docs"><p>the default case</p>
+</td><td class="codes"><pre class="brush: clojure">(extend-type nil
+  SimulatorValueResolver
+  (simulator-resolve-value [object simulator]
+    nil))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type Object
+  SimulatorValueResolver
+  (simulator-resolve-value [object simulator]
+    object))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.Local
+  SimulatorValueResolver
+  (simulator-resolve-value [local simulator]
+    (let [value (simulator-get-local simulator local)]
+      (if (= value :nil)
+        (make-local-sexp local)
+        (simulator-resolve-value value simulator)))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.SootField
+  SimulatorValueResolver
+  (simulator-resolve-value [field simulator]
+    (let [instance (simulator-get-this simulator)
+          value (simulator-get-field instance field)]
+      (if (= value :nil)
+        (make-field-sexp instance field)
+        (simulator-resolve-value value simulator)))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.SootFieldRef
+  SimulatorValueResolver
+  (simulator-resolve-value [field simulator]
+    (let [instance (simulator-get-this simulator)
+          value (simulator-get-field instance field)]
+      (if (= value :nil)
+        (make-field-sexp instance field)
+        (simulator-resolve-value value simulator)))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.jimple.InstanceFieldRef
+  SimulatorValueResolver
+  (simulator-resolve-value [field simulator]
+    (let [instance (simulator-resolve-value (.. field getBase) simulator)
+          field (.. field getFieldRef)
+          value (simulator-get-field instance field)]
+      (if (= value :nil)
+        (make-field-sexp instance field)
+        (simulator-resolve-value value simulator)))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.jimple.FieldRef
+  SimulatorValueResolver
+  (simulator-resolve-value [field simulator]
+    (let [instance (simulator-get-this simulator)
+          field (.. field getFieldRef)
+          value (simulator-get-field instance field)]
+      (if (= value :nil)
+        (make-field-sexp instance field)
+        (simulator-resolve-value value simulator)))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.jimple.MethodHandle
+  SimulatorValueResolver
+  (simulator-resolve-value [method-handle simulator]
+    (let [value (make-method-sexp (.. method-handle methodRef))]
+      (simulator-resolve-value value simulator))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.jimple.NullConstant
+  SimulatorValueResolver
+  (simulator-resolve-value [_ simulator]
+    nil))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.jimple.ClassConstant
+  SimulatorValueResolver
+  (simulator-resolve-value [const simulator]
+    (let [value (make-class-sexp (.. const getType getSootClass))]
+      (simulator-resolve-value value simulator))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.jimple.Constant
+  SimulatorValueResolver
+  (simulator-resolve-value [const simulator]
+    (.. const value)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type tbnl_apk.apk.dex.soot.sexp.InstanceSexp
+  SimulatorValueResolver
+  (simulator-resolve-value [this simulator]
+    (:instance this)))</pre></td></tr><tr><td class="docs"><p>simulator assignment protocol</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>simulator should be an atom to have persistent effect</p>
+</td><td class="codes"><pre class="brush: clojure">(defprotocol SimulatorAssignment
+  (simulator-assign [target value simulator]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.Local
+  SimulatorAssignment
+  (simulator-assign [local value simulator]
+    (swap! simulator simulator-set-local
+           local value)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.SootField
+  SimulatorAssignment
+  (simulator-assign [field value simulator]
+    (simulator-set-field (simulator-get-this @simulator)
+                         field value)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.SootFieldRef
+  SimulatorAssignment
+  (simulator-assign [field value simulator]
+    (simulator-set-field (simulator-get-this @simulator)
+                         field value)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.jimple.FieldRef
+  SimulatorAssignment
+  (simulator-assign [field value simulator]
+    (simulator-assign (.. field getFieldRef) value simulator)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.jimple.ArrayRef
+  SimulatorAssignment
+  (simulator-assign [field value simulator]
+    (let [base (.. field getBase)
+          base-value (-&gt; base (simulator-resolve-value @simulator))
+          index-value (-&gt; (.. field getIndex)
+                          (simulator-resolve-value @simulator))]
+      (simulator-assign base
+                        (assoc base-value index-value value)
+                        simulator))))</pre></td></tr><tr><td class="docs"><p>get method interesting invokes and helpers</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>initial instance of classes with circumscription</p>
+</td><td class="codes"><pre class="brush: clojure">(def ^:private init-instances
+  (atom {}))</pre></td></tr><tr><td class="docs"><p>initialize class by invoking <clinit></p>
+</td><td class="codes"><pre class="brush: clojure">(defn initialize-classes
+  [{:keys [classes circumscription]
+    :or {circumscription :all}
+    :as initialize-params}
+   {:keys [verbose]
     :as options}]
-  (when (.. method hasActiveBody)
-    (let [body (.. method getActiveBody)
+  (reset! simulator-global-state
+          {:fields {:static {}
+                    :instance {}}})
+  (doseq [^SootClass class classes]
+    (swap! init-instances assoc-in [class]
+           (simulator-new-instance class))
+    (doseq [^SootMethod clinit (.. (soot.EntryPoints/v) (clinitsOf class))]
+      (try
+        (simulate-method {:method clinit
+                          :this nil
+                          :params nil}
+                         (assoc-in options [:circumscription]
+                                   circumscription))
+        (catch Exception e
+          (print-stack-trace-if-verbose e verbose))))))</pre></td></tr><tr><td class="docs"><p>get both explicit and implicit interesting invokes</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-all-interesting-invokes
+  [^SootMethod root-method
+   interesting-method?
+   circumscription
+   {:keys [verbose]
+    :as options}]
+  (let [all-explicit-invokes (atom #{})
+        all-implicit-invokes (atom #{})
+        all-component-invokes (atom #{})]
+    (try
+      (let [{:keys [explicit-invokes
+                    implicit-invokes
+                    component-invokes]}
+            ;; full simulation
+            (simulate-method {:method
+                              root-method
+                              :this
+                              ;; use initial instance if available
+                              (let [root-method-class (-&gt; root-method get-soot-class)
+                                    instance (get-in @init-instances
+                                                     [root-method-class])]
+                                (if instance
+                                  instance
+                                  (simulator-new-instance root-method-class)))
+                              :params
+                              (-&gt;&gt; (.. root-method getParameterTypes)
+                                   (map #(make-external-sexp :instance
+                                                             {:type %})))
+                              :interesting-method?
+                              interesting-method?}
+                             (assoc-in options [:circumscription]
+                                       circumscription))]
+        ;; interesting invokes can be explicit or implicit
+        (swap! all-explicit-invokes into
+               explicit-invokes)
+        (swap! all-implicit-invokes into
+               implicit-invokes)
+        (swap! all-component-invokes into
+               component-invokes))
+      (catch Exception e
+        (print-stack-trace-if-verbose e verbose)))
+    ;; return result
+    {:explicit-invokes @all-explicit-invokes
+     :implicit-invokes @all-implicit-invokes
+     :component-invokes @all-component-invokes}))</pre></td></tr><tr><td class="docs"><p>simulate method</p>
+</td><td class="codes"><pre class="brush: clojure">(defn- simulate-method
+  [{:keys [^SootMethod method this params interesting-method?]
+    :or {interesting-method? (constantly true)}
+    :as simulation-params}
+   {:keys [circumscription
+           soot-basic-block-simulation-budget
+           soot-method-simulation-depth-budget]
+    :or {circumscription :all}
+    :as options}] 
+  (cond
+    ;; only simulate method within circumscription
+    (and (not= circumscription :all)
+         (not (contains? circumscription method)))
+    {:returns #{(make-external-sexp :invoke
+                                    {:method method
+                                     :this this
+                                     :params params})}
+     :explicit-invokes #{}
+     :implicit-invokes #{}
+     :component-invokes #{}}
+    (&lt; soot-method-simulation-depth-budget 0)
+    {:returns #{(make-error-sexp :no-budget
+                                 {:method method
+                                  :this this
+                                  :params params})}
+     :explicit-invokes #{}
+     :implicit-invokes #{}
+     :component-invokes #{}}
+    ;; no method body, cannot proceed
+    (not (.. method hasActiveBody))
+    {:returns #{(make-error-sexp :no-method-body
+                                 {:method method
+                                  :this this
+                                  :params params})}
+     :explicit-invokes #{}
+     :implicit-invokes #{}
+     :component-invokes #{}}
+    :otherwise
+    (let [all-returns (atom #{})
+          all-explicit-invokes (atom #{})
+          all-implicit-invokes (atom #{})
+          all-component-invokes (atom #{})
+          body (.. method getActiveBody)
           stmt-info
-          (let [stmts (-&gt;&gt; (.. body getUnits snapshotIterator) iterator-seq vec doall)
+          (let [stmts (-&gt;&gt; (.. body getUnits snapshotIterator) iterator-seq vec)
                 stmt-2-index (-&gt;&gt; stmts
                                   (map-indexed #(vector %2 %1))
                                   (into {}))]
             {:stmts stmts
              :stmt-2-index stmt-2-index})
-          all-invokes (atom #{})
-          method-emulation-guard (atom soot-method-emulation-guard)]
+          bb-budget (atom soot-basic-block-simulation-budget)]
       (process-worklist
        ;; the initial worklist
-       #{{:emulator (create-emulator)
+       #{{:simulator (create-simulator this params)
           :start-stmt (first (:stmts stmt-info))}}
        ;; the process
        (fn [worklist]
-         (when (and @method-emulation-guard
-                    (&gt; @method-emulation-guard 0))
+         (when (and @bb-budget
+                    (&gt; @bb-budget 0))
+           ;; width-first search to prevent malicious code exhaust bb-budget
            (-&gt;&gt; worklist
-                (mapcat (fn [{:keys [emulator start-stmt]}]
-                          (let [{:keys [emulator visited-stmts next-start-stmts]}
-                                (emulate-a-basic-block emulator stmt-info start-stmt
-                                                       :host-method method
-                                                       :verbose verbose)]
-                            ;; decrement method emulation guard to avoid infinite recursion!!
-                            (swap! method-emulation-guard dec)
-                            (swap! all-invokes into (:invoke emulator))
-                            (for [start-stmt (set next-start-stmts)]
-                              ;; use the emulator snapshot at this branch --- control flow sensitive!
-                              {:emulator (assoc-in emulator [:invoke] #{})
-                               :start-stmt start-stmt}))))))))
-      @all-invokes)))</pre></td></tr><tr><td class="docs"><p>filter methods that contain implicit control flow invokes</p>
-</td><td class="codes"><pre class="brush: clojure">(defn filter-implicit-cf-invoke-methods
-  [implicit-cf methods]
-  (-&gt;&gt; methods
-       (filter
-        (fn [^SootMethod method]
-          (-&gt;&gt; [method]
-               mapcat-invoke-methodrefs
-               (filter #(implicit-cf-methodref? implicit-cf %))
-               not-empty)))))</pre></td></tr><tr><td class="docs"><p>test whether class possibly contains implicit cf</p>
-</td><td class="codes"><pre class="brush: clojure">(defn implicit-cf-class?
-  [implicit-cf ^SootClass class]
-  (not-empty (get-transitive-implicit-cf-super-class-and-interface implicit-cf
-                                                                   class)))</pre></td></tr><tr><td class="docs"><p>get class's implicit cf super classes/interfaces</p>
-</td><td class="codes"><pre class="brush: clojure">(defn get-transitive-implicit-cf-super-class-and-interface
-  [implicit-cf ^SootClass class]
-  (set/intersection (set (keys implicit-cf))
-                    (-&gt;&gt; class
-                         get-transitive-super-class-and-interface
-                         (map #(.. ^SootClass % getName))
-                         set)))</pre></td></tr><tr><td class="docs"><p>get methodref's root implicit-cf classes' names</p>
-</td><td class="codes"><pre class="brush: clojure">(defn get-implicit-cf-root-class-names
-  [implicit-cf ^SootMethodRef methodref]
-  (let [methodref-class (.. methodref declaringClass)
-        methodref-name (.. methodref name)]
-    (-&gt;&gt; (get-transitive-implicit-cf-super-class-and-interface implicit-cf
-                                                               methodref-class)
-         (filter #(or (= (get implicit-cf %) :all)
-                      (contains? (get implicit-cf %)
-                                 methodref-name)))
-         not-empty)))</pre></td></tr><tr><td class="docs"><p>test whether methodref is possibly an implicit cf</p>
-</td><td class="codes"><pre class="brush: clojure">(def implicit-cf-methodref?
-  get-implicit-cf-root-class-names)</pre></td></tr><tr><td class="docs"><p>plumbing</p>
-</td><td class="codes"></td></tr><tr><td class="docs"><p>emulator emulate operation</p>
-</td><td class="codes"><pre class="brush: clojure">(defn emulate-a-basic-block
-  [emulator
-   {:keys [stmts stmt-2-index]}
-   start-stmt
-   &amp; {:keys [safe-invokes ^SootMethod host-method verbose]
-      ;; safe classes are the ones that can be simulated with Clojure
-      :or {safe-invokes {&quot;java.lang.String&quot; :all
-                         &quot;java.lang.StringBuilder&quot; :all
-                         &quot;java.lang.StringBuffer&quot; :all
-                         &quot;java.lang.Math&quot; :all
-                         &quot;java.lang.StrictMath&quot; :all
-                         &quot;java.lang.Integer&quot; :all
-                         &quot;java.lang.Long&quot; :all
-                         &quot;java.lang.Double&quot; :all
-                         &quot;java.lang.Float&quot; :all
-                         &quot;java.lang.Byte&quot; :all
-                         &quot;java.lang.Character&quot; :all
-                         &quot;java.lang.Short&quot; :all
-                         &quot;java.lang.Boolean&quot; :all
-                         &quot;java.lang.Void&quot; :all
-                         &quot;java.lang.System&quot; #{&quot;nanoTime&quot;
-                                              &quot;currentTimeMillis&quot;}}}}]
-  (let [;; the emulator state
-        emulator (atom emulator)
-        ;; parsing value expression
-        value-switch
-        (fn
-          ^{:doc &quot;return an *atom* (for scalar) or a *vector* (for arrays) if it is a value; otherwise, return a *list* beginning with a keyword identifying its type&quot;}
-          value-switch
-          [value]
-          (let [result (atom nil)
-                ;; resolve a soot.Value reference
-                resolve-value (fn [x]
-                                (try
-                                  (cond
-                                    (instance? soot.Local x)
-                                    (-&gt;&gt; @emulator :state (#(get % x)))
-                                    (instance? soot.jimple.MethodHandle x)
-                                    (.. x methodRef)
-                                    (instance? soot.jimple.NullConstant x)
-                                    nil
-                                    (instance? soot.jimple.Constant x)
-                                    (.. x value)
-                                    :default x)
-                                  (catch Exception e
-                                    (print-stack-trace-if-verbose e verbose 2)
-                                    x)))
-                ;; binary operation
-                bin-op-expr (fn [expr op-func op-kw]
-                              (let [op1 (.. expr getOp1)
-                                    op2 (.. expr getOp2)
-                                    default-ret (list op-kw [op1 op2])]
-                                (try
-                                  (let [op1 (resolve-value op1)
-                                        op2 (resolve-value op2)]
-                                    (op-func op1 op2))
-                                  (catch Exception e
-                                    (print-stack-trace-if-verbose e verbose 2)
-                                    default-ret))))
-                ;; unary operation
-                un-op-expr (fn [expr op-func op-kw]
-                             (let [op (.. expr getOp)
-                                   default-ret (list op-kw [op])]
-                               (try
-                                 (let [op (resolve-value op)]
-                                   (op-func op))
-                                 (catch Exception e
-                                   (print-stack-trace-if-verbose e verbose 2)
-                                   default-ret))))
-                ;; invoke operation
-                invoke-expr (fn [^SootMethodRef methodref base args invoke-kw]
-                              ;; first try evaluating safe classes
-                              (let [class-name (.. methodref declaringClass getName)
-                                    method-name (.. methodref name)
-                                    base (resolve-value base)
-                                    args (-&gt;&gt; args
-                                              (map resolve-value)
-                                              vec) 
-                                    default-ret (list :invoke
-                                                      (list invoke-kw
-                                                            (list methodref
-                                                                  base
-                                                                  args)))]
-                                (try
-                                  (if (let [t (get safe-invokes class-name)]
-                                        (or (= t :all)
-                                            (contains? t method-name)))
-                                    (cond
-                                      ;; special invokes: &lt;init&gt;
-                                      (= invoke-kw :special-invoke)
-                                      (eval `(new ~(symbol class-name) ~@args))
-                                      ;; interface and virtual invokes
-                                      (and base
-                                           (not (list? base)))
-                                      (do
-                                        (binding [*object-embedding-hack* (atom base)]
-                                          (eval `(. @*object-embedding-hack*
-                                                    (~(symbol method-name) ~@args)))))
-                                      ;; static invokes
-                                      (nil? base)
-                                      (eval `(. ~(symbol class-name)
-                                                (~(symbol method-name) ~@args)))
-                                      :default default-ret)
-                                    default-ret)
-                                  (catch Exception e
-                                    (print-stack-trace-if-verbose e verbose 2)
-                                    default-ret))))]
-            (try
-              (.. value
-                  (apply
-                   (proxy [JimpleValueSwitch] []
-                     ;; case local
-                     (caseLocal [^Local local]
-                       (reset! result
-                               (-&gt;&gt; @emulator :state (#(get % local)))))
-                     ;; ConstantSwitch
-                     (caseClassConstant [const]
-                       (reset! result
-                               (.. const getType getSootClass)))
-                     (caseDoubleConstant [const]
-                       (reset! result
-                               (.. const value)))
-                     (caseFloatConstant [const]
-                       (reset! result
-                               (.. const value)))
-                     (caseIntConstant [const]
-                       (reset! result
-                               (.. const value)))
-                     (caseLongConstant [const]
-                       (reset! result
-                               (.. const value)))
-                     (caseMethodHandle [const]
-                       (reset! result
-                               (.. const getMethodRef)))
-                     (caseNullConstant [const]
-                       (reset! result
-                               nil))
-                     (caseStringConstant [const]
-                       (reset! result
-                               (.. const value)))
-                     ;; ExprSwitch
-                     (caseAddExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr + :add)))
-                     (caseAndExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr bit-and :and)))
-                     (caseCastExpr [expr]
-                       ;; no effect on result)
-                     (caseCmpExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr compare :cmp)))
-                     (caseCmpgExpr [expr]
-                       ;; JVM-specific artifacts; N/A on Dalvik
-                       (reset! result
-                               (bin-op-expr expr compare :cmpg)))
-                     (caseCmplExpr [expr]
-                       ;; JVM-specific artifacts; N/A on Dalvik
-                       (reset! result
-                               (bin-op-expr expr compare :compl)))
-                     (caseDivExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr / :div)))
-                     (caseDynamicInvokeExpr [expr]
-                       ;; JVM8 specific; N/A on Dalvik
-                       (reset! result
-                               (invoke-expr (.. expr getBootstrapMethodRef)
-                                            nil
-                                            (.. expr getBootstrapArgs)
-                                            :dynamic-invoke)))
-                     (caseEqExpr [expr]
-                       (reset! result
-                               ;; only non-sexp can be meaningfully compared
-                               (bin-op-expr expr
-                                            (fn [op1 op2]
-                                              (if (and (not (list? op1))
-                                                       (not (list? op2)))
-                                                (== op1 op2)
-                                                (list :eq [op1 op2]))) 
-                                            :eq)))
-                     (caseGeExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr &gt;= :ge)))
-                     (caseGtExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr &gt; :gt)))
-                     (caseInstanceOfExpr [expr]
-                       (reset! result
-                               (let [op (.. expr getOp)
-                                     check-type (.. expr getCheckType)
-                                     default-ret (list :instance-of check-type op)]
-                                 (try
-                                   (let [op (-&gt;&gt; op resolve-value)
-                                         check-type-name (.. check-type getClassName)
-                                         check-type-class (.. check-type getSootClass)]
-                                     (cond
-                                       (#{:invoke} (first op))
-                                       (let [type-class (.. (-&gt;&gt; op second second first)
-                                                            declaringClass)]
-                                         (if (transitive-ancestor? check-type-class
-                                                                   type-class)
-                                           ;; only positive answer is certain
-                                           1
-                                           default-ret))
-                                       (#{:param-ref :this-ref} (first op))
-                                       (let [type-class (.. (-&gt;&gt; op second first)
-                                                            getSootClass)]
-                                         (if (transitive-ancestor? check-type-class
-                                                                   type-class)
-                                           ;; only positive answer is certain
-                                           1
-                                           default-ret))
-                                       :default default-ret))
-                                   (catch Exception e
-                                     (print-stack-trace-if-verbose e verbose 2)
-                                     default-ret)))))
-                     (caseInterfaceInvokeExpr [expr]
-                       (reset! result
-                               (invoke-expr (.. expr getMethodRef)
-                                            (.. expr getBase)
-                                            (.. expr getArgs)
-                                            :interface-invoke)))
-                     (caseLeExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr &lt;= :le)))
-                     (caseLengthExpr [expr]
-                       (reset! result
-                               (un-op-expr expr count :length)))
-                     (caseLtExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr &lt; :lt)))
-                     (caseMulExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr * :mul)))
-                     (caseNeExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr
-                                            ;; only non-sexp can be meaningfully compared
-                                            (fn [op1 op2]
-                                              (if (and (not (list? op1))
-                                                       (not (list? op2)))
-                                                (not= op1 op2)
-                                                (list :ne [op1 op2])))
-                                            :ne)))
-                     (caseNegExpr [expr]
-                       (reset! result
-                               (un-op-expr expr - :neg)))
-                     (caseNewArrayExpr [expr]
-                       (reset! result
-                               (let [base-type (.. expr getBaseType)
-                                     size (.. expr getSize)
-                                     default-ret (list :new-array [base-type size])]
-                                 (try
-                                   (let [size (cond
-                                                (instance? soot.Immediate size)
-                                                (.. size value)
-                                                (instance? soot.Local size)
-                                                (-&gt;&gt; @emulator :state (#(get % size))))]
-                                     ;; use Clojure vector to simulate Java array
-                                     (-&gt;&gt; (repeat size base-type)
-                                          vec))
-                                   (catch Exception e
-                                     (print-stack-trace-if-verbose e verbose 2)
-                                     default-ret)))))
-                     (caseNewExpr [expr]
-                       ;; will be evaluated in caseSpecialInvokeExpr where the arguments are ready)
-                     (caseNewMultiArrayExpr [expr]
-                       (reset! result
-                               (let [base-type (.. expr getBaseType)
-                                     sizes (-&gt;&gt; (.. expr getSizes) vec)
-                                     default-ret (list :new-multi-array [base-type sizes])]
-                                 (try
-                                   (let [total-size (-&gt;&gt; sizes
-                                                         (map (fn [size]
-                                                                (cond
-                                                                  (instance? soot.Immediate size)
-                                                                  (.. size value)
-                                                                  (instance? soot.Local size)
-                                                                  (-&gt;&gt; @emulator :state (#(get % size))))))
-                                                         (reduce *))]
-                                     (-&gt;&gt; (repeat total-size base-type)
-                                          vec))
-                                   (catch Exception e
-                                     (print-stack-trace-if-verbose e verbose 2)
-                                     default-ret)))))
-                     (caseOrExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr bit-or :or)))
-                     (caseRemExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr rem :rem)))
-                     (caseShlExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr not= :ne)))
-                     (caseShrExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr bit-shift-right :shr)))
-                     (caseSpecialInvokeExpr [expr]
-                       (reset! result
-                               (invoke-expr (.. expr getMethodRef)
-                                            (.. expr getBase)
-                                            (.. expr getArgs)
-                                            :special-invoke)))
-                     (caseStaticInvokeExpr [expr]
-                       (reset! result
-                               (invoke-expr (.. expr getMethodRef)
-                                            nil
-                                            (.. expr getArgs)
-                                            :static-invoke)))
-                     (caseSubExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr - :sub)))
-                     (caseUshrExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr unsigned-bit-shift-right :ushr)))
-                     (caseVirtualInvokeExpr [expr]
-                       (reset! result
-                               (invoke-expr (.. expr getMethodRef)
-                                            (.. expr getBase)
-                                            (.. expr getArgs)
-                                            :virtual-invoke)))
-                     (caseXorExpr [expr]
-                       (reset! result
-                               (bin-op-expr expr bit-xor :xor)))
-                     ;; RefSwitch
-                     (caseArrayRef [ref]
-                       (reset! result
-                               (let [base (-&gt;&gt; (.. ref getBase) resolve-value)
-                                     index (-&gt;&gt; (.. ref getIndex) resolve-value)
-                                     default-ret (list :array-ref [base index])]
-                                 (try
-                                   (get base index)
-                                   (catch Exception e
-                                     (print-stack-trace-if-verbose e verbose 2)
-                                     default-ret)))))
-                     (caseCaughtExceptionRef [ref]
-                       ;; irrelevant)
-                     (caseInstanceFieldRef [ref]
-                       (reset! result
-                               (.. ref getFieldRef)))
-                     (caseParameterRef [ref]
-                       (reset! result
-                               (list :param-ref [(.. ref getType) (.. ref getIndex)])))
-                     (caseStaticFieldRef [ref]
-                       (reset! result
-                               (.. ref getFieldRef)))
-                     (caseThisRef [ref]
-                       (reset! result
-                               (list :this-ref
-                                     [(if host-method
-                                        (.. host-method getDeclaringClass getType)
-                                        (.. ref getType))])))  
-                     ;; default case
-                     (defaultCase [expr]))))
-              (catch Exception e
-                (print-stack-trace-if-verbose e verbose)))
-            @result))
-        [basic-block residue] (split-with #(let [stmt ^Stmt %]
-                                             (and (.. stmt fallsThrough)
-                                                  (not (.. stmt branches))))
-                                          ;; all stmts from start-stmt to the end
-                                          (subvec stmts
-                                                  (get stmt-2-index
-                                                       start-stmt)))]
-    (let [update-invoke (fn [val]
-                          (when (and (list? val)
-                                     (= (first val) :invoke))
-                            (swap! emulator update-in
-                                   [:invoke] conj
-                                   (-&gt;&gt; val second second))))]
-      (doseq [^Stmt stmt basic-block]
-        (.. stmt
-            (apply (proxy [StmtSwitch] []
-                     (caseAssignStmt [stmt]
-                       (let [var (.. stmt getLeftOp)
-                             val (-&gt;&gt; (.. stmt getRightOp)
-                                      value-switch)]
-                         (update-invoke val)
-                         (swap! emulator assoc-in
-                                [:state var]
-                                val)))
-                     (caseBreakpointStmt [stmt])
-                     (caseEnterMonitorStmt [stmt])
-                     (caseExitMonitorStmt [stmt])
-                     (caseGotoStmt [stmt])
-                     (caseIdentityStmt [stmt]
-                       (try
-                         (let [var (.. stmt getLeftOp)
-                               val (-&gt;&gt; (.. stmt getRightOp)
-                                        value-switch)]
-                           (update-invoke val)
-                           (swap! emulator assoc-in
-                                  [:state var]
-                                  val))
-                         (catch Exception e
-                           (print-stack-trace-if-verbose e verbose 2))))
-                     (caseIfStmt [stmt])
-                     (caseInvokeStmt [stmt]
-                       (try
-                         (let [invoke-expr (.. stmt getInvokeExpr)
-                               val (-&gt;&gt; invoke-expr value-switch)]
-                           (update-invoke val)
-                           ;; static-invoke does not have base, so might throw Exception
-                           (let [base (.. invoke-expr getBase)]                           
-                             (swap! emulator assoc-in
-                                    [:state base]
-                                    val)))
-                         (catch Exception e
-                           (print-stack-trace-if-verbose e verbose 2))))
-                     (caseLookupSwitchStmt [stmt])
-                     (caseNopStmt [stmt])
-                     (caseRetStmt [stmt])
-                     (caseReturnStmt [stmt])
-                     (caseReturnVoidStmt [stmt])
-                     (caseTableSwitchStmt [stmt])
-                     (caseThrowStmt [stmt])
-                     (defaultCase [stmt]))))))
-    (let [ret (atom {:emulator @emulator
-                     :visited-stmts basic-block
-                     :next-start-stmts #{}})
-          ;; the first stmt of residue, if existed, is a brancher      
+                (mapcat (fn [{:keys [simulator start-stmt]}]
+                          (let [{:keys [simulator next-start-stmts]}
+                                (simulate-basic-block {:simulator simulator
+                                                       :stmt-info stmt-info
+                                                       :start-stmt start-stmt
+                                                       :method method
+                                                       :interesting-method?
+                                                       interesting-method?}
+                                                      options)]
+                            (swap! bb-budget dec)
+                            (swap! all-returns into
+                                   (-&gt; simulator
+                                       simulator-get-returns))
+                            (swap! all-explicit-invokes into
+                                   (-&gt; simulator
+                                       simulator-get-explicit-invokes))
+                            (swap! all-implicit-invokes into
+                                   (-&gt; simulator
+                                       simulator-get-implicit-invokes))
+                            (swap! all-component-invokes into
+                                   (-&gt; simulator
+                                       simulator-get-component-invokes))
+                            ;; add the following to worklist
+                            (when (and @bb-budget
+                                       (&gt; @bb-budget 0))
+                              (for [start-stmt (set next-start-stmts)]
+                                ;; control flow sensitive!
+                                {:simulator (-&gt; simulator
+                                                simulator-clear-returns
+                                                simulator-clear-explicit-invokes
+                                                simulator-clear-implicit-invokes
+                                                simulator-clear-component-invokes)
+                                 :start-stmt start-stmt})))))))))
+      {:returns @all-returns
+       :explicit-invokes @all-explicit-invokes
+       :implicit-invokes @all-implicit-invokes
+       :component-invokes @all-component-invokes})))</pre></td></tr><tr><td class="docs"><p>simulate a basic block</p>
+</td><td class="codes"><pre class="brush: clojure">(defn- simulate-basic-block
+  [{:keys [simulator stmt-info start-stmt method interesting-method?]
+    :as simulation-params}
+   {:keys [soot-method-simulation-depth-budget
+           verbose]
+    :as options}]
+  (let [simulator (atom simulator)
+        ;; split at first branch or return
+        [basic-block residue]
+        (split-with #(let [^Stmt stmt %]
+                       (and (.. stmt fallsThrough)
+                            (not (.. stmt branches))))
+                    (subvec (:stmts stmt-info)
+                            (get (:stmt-2-index stmt-info)
+                                 start-stmt)))]
+    ;; simulate statements in the basic block
+    (doseq [^Stmt stmt basic-block]
+      (.. stmt
+          (apply (proxy [StmtSwitch] []
+                   (caseAssignStmt [stmt]
+                     (let [target (.. stmt getLeftOp)
+                           value (-&gt; (.. stmt getRightOp)
+                                     (simulator-evaluate
+                                      {:simulator simulator
+                                       :interesting-method?
+                                       interesting-method?}
+                                      options))]
+                       (simulator-assign target value simulator)))
+                   (caseBreakpointStmt [stmt])
+                   (caseEnterMonitorStmt [stmt])
+                   (caseExitMonitorStmt [stmt])
+                   (caseGotoStmt [stmt])
+                   (caseIdentityStmt [stmt]
+                     (try
+                       (let [target (.. stmt getLeftOp)
+                             value(-&gt; (.. stmt getRightOp)
+                                      (simulator-evaluate
+                                       {:simulator simulator
+                                        :interesting-method?
+                                        interesting-method?}
+                                       options))]
+                         (simulator-assign target value simulator))
+                       (catch Exception e
+                         (print-stack-trace-if-verbose e verbose 4))))
+                   (caseIfStmt [stmt])
+                   (caseInvokeStmt [stmt]
+                     (try
+                       (-&gt; (.. stmt getInvokeExpr)
+                           (simulator-evaluate {:simulator simulator
+                                                :interesting-method?
+                                                interesting-method?}
+                                               options))
+                       (catch Exception e
+                         (print-stack-trace-if-verbose e verbose 4))))
+                   (caseLookupSwitchStmt [stmt])
+                   (caseNopStmt [stmt])
+                   (caseRetStmt [stmt])
+                   (caseReturnStmt [stmt])
+                   (caseReturnVoidStmt [stmt])
+                   (caseTableSwitchStmt [stmt])
+                   (caseThrowStmt [stmt])
+                   (defaultCase [stmt]))))
+      (when (and verbose (&gt; verbose 4))
+        (println &quot;------&quot;)
+        (println stmt)
+        (pprint (:locals @simulator))))
+    (let [return (atom {:simulator nil ; to be filled at the end
+                        :next-start-stmts #{}})
+          ;; the first stmt of residue, if existed, is a brancher
           stmt (first residue)]
-      ;; find next-start-stmts
       (when stmt
-        (swap! ret update-in [:visited-stmts]
-               conj stmt)
         (.. stmt
             (apply (proxy [StmtSwitch] []
                      (caseAssignStmt [stmt])
@@ -4122,44 +4319,821 @@ net.brehaut.ClojureTools = (function (SH) {
                      (caseEnterMonitorStmt [stmt])
                      (caseExitMonitorStmt [stmt])
                      (caseGotoStmt [^soot.jimple.internal.JGotoStmt stmt]
-                       (swap! ret update-in [:next-start-stmts]
+                       (swap! return update-in [:next-start-stmts]
                               conj (.. stmt getTarget)))                     
                      (caseIdentityStmt [stmt])
                      (caseIfStmt [^soot.jimple.internal.JIfStmt stmt]
                        (let [condition (.. stmt getCondition)
-                             val (-&gt;&gt; condition value-switch)                             
+                             value (-&gt; condition
+                                       (simulator-evaluate {:simulator simulator
+                                                            :interesting-method?
+                                                            interesting-method?}
+                                                           options))                             
                              target-stmt (.. stmt getTarget)
                              next-stmt (second residue)]
-                         (if-not (coll? val)
-                           (if val
-                             ;; if val is true, take target-stmt
+                         (if-not (extends? Sexp (class value))
+                           (if value
+                             ;; if value is true, take target-stmt
                              (when target-stmt
-                               (swap! ret update-in [:next-start-stmts]
+                               (swap! return update-in [:next-start-stmts]
                                       conj target-stmt))
-                             ;; if val is false, take next-stmt
+                             ;; if value is false, take next-stmt
                              (when next-stmt
-                               (swap! ret update-in [:next-start-stmts]
+                               (swap! return update-in [:next-start-stmts]
                                       conj next-stmt)))
                            ;; otherwise, take both stmts
                            (doseq [stmt [next-stmt target-stmt]
                                    :when stmt]
-                             (swap! ret update-in [:next-start-stmts]
+                             (swap! return update-in [:next-start-stmts]
                                     conj stmt)))))                     
                      (caseInvokeStmt [stmt])
                      (caseLookupSwitchStmt [stmt])
                      (caseNopStmt [stmt])
                      (caseRetStmt [stmt])
-                     (caseReturnStmt [stmt])
-                     (caseReturnVoidStmt [stmt])
+                     (caseReturnStmt [stmt]
+                       (doto simulator
+                         (swap! simulator-add-returns
+                                [(-&gt; (.. stmt getOp)
+                                     (simulator-evaluate {:simulator simulator
+                                                          :interesting-method?
+                                                          interesting-method?}
+                                                         options))])))
+                     (caseReturnVoidStmt [stmt]
+                       ;; nothing to do)
                      (caseTableSwitchStmt [stmt])
                      (caseThrowStmt [stmt])
                      (defaultCase [stmt])))))
-      @ret)))</pre></td></tr><tr><td class="docs"><p>create a fresh emulator</p>
-</td><td class="codes"><pre class="brush: clojure">(defn create-emulator
-  []
-  {:state {}
-   :invoke #{}})</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.dex.soot.helper" name="tbnl-apk.apk.dex.soot.helper"><h1 class="project-name">tbnl-apk.apk.dex.soot.helper</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.apk.dex.soot.helper
+      (swap! return assoc-in [:simulator]
+             @simulator)
+      @return)))</pre></td></tr><tr><td class="docs"><p>frame simulator manipulators</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord ^:private Simulator
+  [;; for a method frame
+   this params locals returns
+   ;; during simulation
+   explicit-invokes implicit-invokes component-invokes])</pre></td></tr><tr><td class="docs"><p>initialized in initialize-classes to avoid unintentional retation</p>
+</td><td class="codes"><pre class="brush: clojure">(def ^:private simulator-global-state
+  (atom nil))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- create-simulator
+  [this params]
+  (map-&gt;Simulator {:this this
+                   :params (vec params)
+                   :locals {}
+                   :returns #{}
+                   :explicit-invokes #{}
+                   :implicit-invokes #{}
+                   :component-invokes #{}}))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-new-instance
+  [&amp; [class]]
+  (let [instance (gensym (str &quot;instance&quot;
+                              (when-let [class-name (get-soot-class-name class)]
+                                (str &quot;-&quot; class-name))))]
+    (make-instance-sexp class instance)))</pre></td></tr><tr><td class="docs"><p>evaluate expr in simulator (simulator should be an Clojure atom to allow updates)</p>
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-evaluate
+  [expr
+   {:keys [simulator interesting-method?]
+    :as simulation-params}
+   {:keys [soot-method-simulation-depth-budget
+           soot-result-include-invoke-arguments
+           soot-no-implicit-cf
+           soot-dump-all-invokes
+           verbose]
+    :as options}]
+  (let [result (atom nil)
+        ;; binary operation
+        binary-operator-expr
+        (fn [expr operator]
+          (let [op1 (-&gt; (.. expr getOp1) (simulator-resolve-value @simulator))
+                op2 (-&gt; (.. expr getOp2) (simulator-resolve-value @simulator))
+                default-return (make-binary-operator-sexp operator [op1 op2])]
+            (try
+              (operator op1 op2)
+              (catch Exception e
+                (print-stack-trace-if-verbose e verbose 4)
+                default-return))))
+        ;; unary operation
+        unary-operator-expr
+        (fn [expr operator]
+          (let [op (-&gt; (.. expr getOp) (simulator-resolve-value @simulator))
+                default-return (make-unary-operator-sexp operator [op])]
+            (try
+              (operator op)
+              (catch Exception e
+                (print-stack-trace-if-verbose e verbose 4)
+                default-return)))) 
+        ;; invoke operation
+        invoke-expr
+        (fn [invoke-type ^SootMethodRef method base args]
+          (let [base-value (simulator-resolve-value base @simulator)
+                args (-&gt;&gt; args
+                          (map #(simulator-resolve-value % @simulator))
+                          vec) 
+                default-return (make-invoke-sexp invoke-type
+                                                 method
+                                                 base-value
+                                                 args)
+                method-class (-&gt; method get-soot-class)
+                class-name (-&gt; method get-soot-class-name)
+                method-name (-&gt; method get-soot-name)]
+            (try
+              ;; only add interesting methods
+              (when (or soot-dump-all-invokes
+                        (interesting-method? method))
+                (doto simulator
+                  (swap! simulator-add-explicit-invokes
+                         (if soot-result-include-invoke-arguments
+                           [{:method method
+                             :args args}]
+                           [method]))))
+              (let [invoke-method (fn [method this params &amp; [implicit?]]
+                                    (when (or soot-dump-all-invokes
+                                              (interesting-method? method))
+                                      (doto simulator
+                                        (swap! (if implicit?
+                                                 simulator-add-implicit-invokes
+                                                 simulator-add-explicit-invokes)
+                                               (if soot-result-include-invoke-arguments
+                                                 [{:method method
+                                                   :args args}]
+                                                 [method]))))
+                                    (let [{:keys [returns
+                                                  explicit-invokes
+                                                  implicit-invokes
+                                                  component-invokes]}
+                                          (simulate-method {:method method
+                                                            :this this
+                                                            :params params
+                                                            :interesting-method?
+                                                            interesting-method?}
+                                                           (update-in options
+                                                                      [:soot-method-simulation-depth-budget]
+                                                                      dec))]
+                                      (do
+                                        (doto simulator
+                                          ;; implicit is contagious
+                                          (swap! (if implicit?
+                                                   simulator-add-implicit-invokes
+                                                   simulator-add-explicit-invokes)
+                                                 explicit-invokes)
+                                          (swap! simulator-add-implicit-invokes
+                                                 implicit-invokes)
+                                          (swap! simulator-add-component-invokes
+                                                 component-invokes))
+                                        ;; if the result is unique, extract it
+                                        (if (== 1 (count returns))
+                                          (first returns)
+                                          returns))))]
+                (cond
+                  ;; safe invokes
+                  (let [t (get safe-invokes class-name)]
+                    (or (= t :all)
+                        (contains? t method-name)))
+                  (try
+                    (cond
+                      ;; special invokes: &lt;init&gt;
+                      (= invoke-type :special-invoke)
+                      (simulator-assign base
+                                        (eval `(new ~(symbol class-name)
+                                                    ~@args))
+                                        simulator)
+                      ;; interface and virtual invokes
+                      (and base
+                           (not (extends? Sexp (class base-value))))
+                      (binding [*object-embedding-hack* (atom base-value)]
+                        (eval `(. @*object-embedding-hack*
+                                  (~(symbol method-name) ~@args)))
+                        simulator)
+                      ;; static invokes
+                      (nil? base)
+                      (eval `(. ~(symbol class-name)
+                                (~(symbol method-name) ~@args))))
+                    (catch Exception e
+                      (invoke-method method base-value args)))
+                  ;; implicit cf: task
+                  (and (not soot-no-implicit-cf)
+                       (implicit-cf-task? method))
+                  (try
+                    (let [root-class-name (-&gt;&gt; method
+                                               get-implicit-cf-root-class-names
+                                               first)
+                          x [root-class-name method-name]]
+                      (cond
+                        (#{[&quot;java.lang.Thread&quot; &quot;start&quot;]
+                           [&quot;java.lang.Runnable&quot; &quot;run&quot;]}
+                         x)
+                        (when-let [implicit-target (.. method-class
+                                                       (getMethodByNameUnsafe &quot;run&quot;))]
+                          (invoke-method implicit-target base-value [] true))
+                        (#{[&quot;java.util.concurrent.Callable&quot; &quot;call&quot;]}
+                         x)
+                        (when-let [implicit-target (.. method-class
+                                                       (getMethodByNameUnsafe &quot;call&quot;))]
+                          (invoke-method implicit-target base-value [] true))
+                        (#{[&quot;java.util.concurrent.Executor&quot; &quot;execute&quot;]
+                           [&quot;java.util.concurrent.ExecutorService&quot; &quot;execute&quot;]}
+                         x)
+                        (let [target-obj (first args)]
+                          (when-let [implicit-target
+                                     (.. (-&gt; target-obj get-soot-class)
+                                         (getMethodByNameUnsafe &quot;run&quot;))]
+                            (invoke-method implicit-target target-obj [] true)))
+                        (#{[&quot;java.util.concurrent.ExecutorService&quot; &quot;submit&quot;]}
+                         x)
+                        (let [target-obj (first args)]
+                          (when-let [implicit-target
+                                     (.. (-&gt; target-obj get-soot-class)
+                                         (getMethodByNameUnsafe &quot;run&quot;))]
+                            (invoke-method implicit-target target-obj [] true))
+                          (when-let [implicit-target
+                                     (.. (-&gt; target-obj get-soot-class)
+                                         (getMethodByNameUnsafe &quot;call&quot;))]
+                            (invoke-method implicit-target target-obj [] true)))
+                        (#{[&quot;android.os.Handler&quot; &quot;post&quot;]
+                           [&quot;android.os.Handler&quot; &quot;postAtFrontOfQueue&quot;]
+                           [&quot;android.os.Handler&quot; &quot;postAtTime&quot;]
+                           [&quot;android.os.Handler&quot; &quot;postDelayed&quot;]}
+                         x)
+                        (let [target-obj (first args)]
+                          (when-let [implicit-target
+                                     (.. (-&gt; target-obj get-soot-class)
+                                         (getMethodByNameUnsafe &quot;run&quot;))]
+                            (invoke-method implicit-target target-obj [] true)))
+                        (#{[&quot;java.lang.Class&quot; &quot;forName&quot;]}
+                         x)
+                        (let [target-obj (first args)]
+                          (try
+                            (-&gt; target-obj get-soot-class)
+                            (catch Exception e
+                              (make-class-sexp target-obj))))
+                        (#{[&quot;java.lang.Class&quot; &quot;getMethod&quot;]}
+                         x)
+                        (let [target-obj (first args)]
+                          (try
+                            (.. (-&gt; base-value get-soot-class)
+                                (getMethodByNameUnsafe (str target-obj)))
+                            (catch Exception e
+                              (make-method-sexp base-value target-obj))))
+                        (#{[&quot;java.lang.reflect.Method&quot; &quot;invoke&quot;]}
+                         x)
+                        (try
+                          (when (and verbose (&gt; verbose 3))
+                            (println &quot;java.lang.reflect.Method.invoke:&quot; base-value args))
+                          (if (.. base-value isStatic)
+                            (invoke-method base-value nil args true)
+                            (invoke-method base-value (first args) (vec (rest args)) true))
+                          (catch Exception e
+                            (make-invoke-sexp :reflect base-value (first args) (vec (rest args)))))
+                        (#{[&quot;java.lang.Class&quot; &quot;getField&quot;]}
+                         x)
+                        (let [target-obj (first args)]
+                          (try
+                            (.. (-&gt; base-value get-soot-class)
+                                (getFieldByNameUnsafe (str target-obj)))
+                            (catch Exception e
+                              (make-field-sexp base-value target-obj))))
+                        (and (= &quot;java.lang.reflect.Field&quot; root-class-name)
+                             (#{&quot;get&quot; &quot;getBoolean&quot; &quot;getByte&quot; &quot;getChar&quot;
+                                &quot;getDouble&quot; &quot;getFloat&quot; &quot;getInt&quot; &quot;getLong&quot; &quot;getShort&quot;}
+                              method-name))
+                        (try
+                          (let [field (simulator-get-local @simulator base)
+                                value (simulator-get-field (simulator-get-this @simulator)
+                                                           field)]
+                            (when (and verbose (&gt; verbose 3))
+                              (println (format &quot;java.lang.reflect.Field.%1$s: %2$s=%3$s&quot;
+                                               method-name field value)))
+                            value)
+                          (catch Exception e
+                            (print-stack-trace e)
+                            (make-field-sexp (simulator-get-this @simulator) base-value)))
+                        (and (= &quot;java.lang.reflect.Field&quot; root-class-name)
+                             (#{&quot;equals&quot;}) method-name)
+                        (try
+                          (let [field (simulator-get-local @simulator base)
+                                value (simulator-get-field (simulator-get-this @simulator)
+                                                           field)]
+                            (= value (first args)))
+                          (catch Exception e
+                            (print-stack-trace e)
+                            (make-field-sexp (simulator-get-this @simulator)
+                                             base-value)))
+                        (and (= &quot;java.lang.reflect.Field&quot; root-class-name)
+                             (#{&quot;set&quot; &quot;setBoolean&quot; &quot;setByte&quot; &quot;setChar&quot;
+                                &quot;setDouble&quot; &quot;setFloat&quot; &quot;setInt&quot; &quot;setLong&quot; &quot;setShort&quot;}
+                              method-name))
+                        (try
+                          (let [field (simulator-get-local @simulator base)
+                                value (first args)]
+                            (simulator-set-field (simulator-get-this @simulator)
+                                                 field value)                            
+                            (when (and verbose (&gt; verbose 3))
+                              (println (format &quot;java.lang.reflect.Field.%1$s: %2$s=%3$s&quot;
+                                               method-name
+                                               field
+                                               value)))
+                            value)
+                          (catch Exception e
+                            (print-stack-trace e)
+                            (make-field-sexp (simulator-get-this @simulator) base-value)))
+                        :default (invoke-method method base-value args true)))
+                    (catch Exception e
+                       (invoke-method method base-value args true)))
+                  ;; implicit cf: component
+                  (and (not soot-no-implicit-cf)
+                       (implicit-cf-component? method))
+                  (try
+                    (let [root-class-name (-&gt;&gt; method
+                                               get-implicit-cf-root-class-names
+                                               first)
+                          x [root-class-name method-name]]
+                      (cond
+;;                   (#{[&quot;android.content.Context&quot; &quot;startActivity&quot;]
+;;                      [&quot;android.content.Context&quot; &quot;startActivities&quot;]}
+;;                    x)
+;;                   (update-result :category :component
+;;                                  :type &quot;android.app.Activity&quot;
+;;                                  :instance (with-out-str (pr (first args))))
+;;                   (#{[&quot;android.content.Context&quot; &quot;startService&quot;]
+;;                      [&quot;android.content.Context&quot; &quot;stopService&quot;]
+;;                      [&quot;android.content.Context&quot; &quot;bindService&quot;]
+;;                      [&quot;android.content.Context&quot; &quot;unbindService&quot;]}
+;;                    x)
+;;                   (update-result :category :component
+;;                                  :type &quot;android.app.Service&quot;
+;;                                  :instance (with-out-str (pr (first args))))
+;;                   (#{[&quot;android.content.Context&quot; &quot;sendBroadcast&quot;]
+;;                      [&quot;android.content.Context&quot; &quot;sendBrocastAsUser&quot;]
+;;                      [&quot;android.content.Context&quot; &quot;sendOrderedBroadcast&quot;]
+;;                      [&quot;android.content.Context&quot; &quot;sendOrderedBroadcastAsUser&quot;]
+;;                      [&quot;android.content.Context&quot; &quot;sendStickyBroadcast&quot;]
+;;                      [&quot;android.content.Context&quot; &quot;sendStickyBroadcastAsUser&quot;]}
+;;                    x)
+;;                   (update-result :category :component
+;;                                  :type &quot;android.content.BroadcastReceiver&quot;
+;;                                  :instance (with-out-str (pr (first args))))
+;;                   (#{[&quot;android.content.Context&quot; &quot;registerComponentCallbacks&quot;]}
+;;                    x)
+;;                   (update-result :category :component
+;;                                  :type &quot;android.content.ComponentCallbacks&quot;
+;;                                  :instance (with-out-str (pr (first args))))
+;;                   (#{[&quot;android.content.Context&quot; &quot;registerReceiver&quot;]}
+;;                    x)
+;;                   (update-result :category :component
+;;                                  :type &quot;android.content.BroadcastReceiver&quot;
+;;                                  :instance (with-out-str (pr args))))))))
+                        :default (invoke-method method base-value args true)))
+                    (catch Exception e
+                      (invoke-method method base-value args true)))
+                  :default
+                  (invoke-method method base-value args)))
+              (catch Exception e
+                (print-stack-trace-if-verbose e verbose 4)
+                default-return))))]
+    (try
+      (.. expr
+          (apply
+           (proxy [JimpleValueSwitch] []
+             ;; case local
+             (caseLocal [local]
+               (reset! result
+                       (simulator-resolve-value local @simulator)))
+             ;; ConstantSwitch
+             (caseClassConstant [const]
+               (reset! result
+                       (simulator-resolve-value const @simulator)))
+             (caseDoubleConstant [const]
+               (reset! result
+                       (simulator-resolve-value const @simulator)))
+             (caseFloatConstant [const]
+               (reset! result
+                       (simulator-resolve-value const @simulator)))
+             (caseIntConstant [const]
+               (reset! result
+                       (simulator-resolve-value const @simulator)))
+             (caseLongConstant [const]
+               (reset! result
+                       (simulator-resolve-value const @simulator)))
+             (caseMethodHandle [const]
+               (reset! result
+                       (simulator-resolve-value const @simulator)))
+             (caseNullConstant [const]
+               (reset! result
+                       (simulator-resolve-value const @simulator)))
+             (caseStringConstant [const]
+               (reset! result
+                       (simulator-resolve-value const @simulator)))
+             ;; ExprSwitch
+             (caseAddExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr +)))
+             (caseAndExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr bit-and)))
+             (caseCastExpr [expr]
+               ;; no effect on result)
+             (caseCmpExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr compare)))
+             (caseCmpgExpr [expr]
+               ;; JVM-specific artifacts; N/A on Dalvik
+               (reset! result
+                       (binary-operator-expr expr compare)))
+             (caseCmplExpr [expr]
+               ;; JVM-specific artifacts; N/A on Dalvik
+               (reset! result
+                       (binary-operator-expr expr compare)))
+             (caseDivExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr /)))
+             (caseDynamicInvokeExpr [expr]
+               ;; JVM8 specific; N/A on Dalvik
+               (reset! result
+                       (invoke-expr :dynamic-invoke
+                                    (.. expr getBootstrapMethodRef)
+                                    nil
+                                    (.. expr getBootstrapArgs))))
+             (caseEqExpr [expr]
+               (reset! result
+                       ;; only non-sexp can be meaningfully compared
+                       (binary-operator-expr
+                        expr
+                        (fn [op1 op2]
+                          (if (and (not (extends? Sexp (class op1)))
+                                   (not (extends? Sexp (class op2))))
+                            (== op1 op2)
+                            (make-binary-operator-sexp == [op1 op2]))))))
+             (caseGeExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr &gt;=)))
+             (caseGtExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr &gt;)))
+             (caseInstanceOfExpr [expr]
+               (reset! result
+                       (let [check-type (-&gt; (.. expr getCheckType) (simulator-resolve-value @simulator))
+                             op (-&gt; (.. expr getOp) (simulator-resolve-value @simulator))
+                             default-return (make-instance-of-sexp check-type op)]
+                         (try
+                           (let [check-type-class (-&gt; check-type get-soot-class)
+                                 check-type-name (-&gt; check-type get-soot-class-name)]
+                             (cond
+                               (instance? tbnl_apk.apk.dex.soot.sexp.InvokeSexp op)
+                               (let [method (:method op)
+                                     return-type (cond
+                                                   (instance? soot.SootMethodRef method)
+                                                   (.. method returnType)
+                                                   (instance? soot.SootMethod method)
+                                                   (.. method getReturnType))
+                                     type-class (-&gt; return-type get-soot-class)]
+                                 (if (transitive-ancestor? check-type-class
+                                                           type-class)
+                                   ;; only positive answer is certain
+                                   1
+                                   default-return))
+                               :default default-return))
+                           (catch Exception e
+                             (print-stack-trace-if-verbose e verbose 4)
+                             default-return)))))
+             (caseInterfaceInvokeExpr [expr]
+               (reset! result
+                       (invoke-expr :interface-invoke
+                                    (.. expr getMethodRef)
+                                    (.. expr getBase)
+                                    (.. expr getArgs))))
+             (caseLeExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr &lt;=)))
+             (caseLengthExpr [expr]
+               (reset! result
+                       (unary-operator-expr expr count)))
+             (caseLtExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr &lt;)))
+             (caseMulExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr *)))
+             (caseNeExpr [expr]
+               (reset! result
+                       ;; only non-sexp can be meaningfully compared                       
+                       (binary-operator-expr
+                        expr
+                        (fn [op1 op2]
+                          (if (and (not (extends? Sexp (class op1)))
+                                   (not (extends? Sexp (class op2))))
+                            (not= op1 op2)
+                            (make-binary-operator-sexp not= [op1 op2]))))))
+             (caseNegExpr [expr]
+               (reset! result
+                       (unary-operator-expr expr -)))
+             (caseNewArrayExpr [expr]
+               (reset! result
+                       (let [base-type (-&gt; (.. expr getBaseType)
+                                           (simulator-resolve-value @simulator))
+                             size (-&gt; (.. expr getSize)
+                                      (simulator-resolve-value @simulator))
+                             default-return (make-new-array-sexp base-type size)]
+                         (try
+                           (-&gt;&gt; (repeat size nil)
+                                vec)
+                           (catch Exception e
+                             (print-stack-trace-if-verbose e verbose 4)
+                             default-return)))))
+             (caseNewExpr [expr]
+               ;; will be evaluated in caseSpecialInvokeExpr where the arguments are ready)
+             (caseNewMultiArrayExpr [expr]
+               (reset! result
+                       (let [base-type (-&gt; (.. expr getBaseType)
+                                           (simulator-resolve-value @simulator))
+                             sizes (-&gt;&gt; (.. expr getSize)
+                                        (map #(simulator-resolve-value % @simulator))
+                                        vec)
+                             default-return (make-new-multi-array-sexp base-type sizes)]
+                         (try
+                           (-&gt;&gt; (repeat (reduce * sizes) nil)
+                                vec)
+                           (catch Exception e
+                             (print-stack-trace-if-verbose e verbose 4)
+                             default-return)))))
+             (caseOrExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr bit-or)))
+             (caseRemExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr rem)))
+             (caseShlExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr not=)))
+             (caseShrExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr bit-shift-right)))
+             (caseSpecialInvokeExpr [expr]
+               (reset! result
+                       (invoke-expr :special-invoke
+                                    (.. expr getMethodRef)
+                                    (.. expr getBase)
+                                    (.. expr getArgs))))
+             (caseStaticInvokeExpr [expr]
+               (reset! result
+                       (invoke-expr :static-invoke
+                                    (.. expr getMethodRef)
+                                    nil
+                                    (.. expr getArgs))))
+             (caseSubExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr -)))
+             (caseUshrExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr unsigned-bit-shift-right)))
+             (caseVirtualInvokeExpr [expr]
+               (reset! result
+                       (invoke-expr :virtual-invoke
+                                    (.. expr getMethodRef)
+                                    (.. expr getBase)
+                                    (.. expr getArgs))))
+             (caseXorExpr [expr]
+               (reset! result
+                       (binary-operator-expr expr bit-xor)))
+             ;; RefSwitch
+             (caseArrayRef [ref]
+               (reset! result
+                       (let [base (-&gt; (.. ref getBase) (simulator-resolve-value @simulator))
+                             index (-&gt; (.. ref getIndex) (simulator-resolve-value @simulator))
+                             default-return (make-array-ref-sexp base index)]
+                         (try
+                           (get base index)
+                           (catch Exception e
+                             (print-stack-trace-if-verbose e verbose 4)
+                             default-return)))))
+             (caseCaughtExceptionRef [ref]
+               ;; irrelevant)
+             (caseInstanceFieldRef [ref]
+               (reset! result
+                       (simulator-resolve-value ref @simulator)))
+             (caseParameterRef [ref]
+               (reset! result
+                       (simulator-get-param @simulator (.. ref getIndex))))
+             (caseStaticFieldRef [ref]
+               (reset! result
+                       (simulator-resolve-value ref @simulator)))
+             (caseThisRef [ref]
+               (reset! result
+                       (simulator-get-this @simulator)))  
+             ;; default case
+             (defaultCase [expr]))))
+      (catch Exception e
+        (print-stack-trace-if-verbose e verbose)))
+    @result))</pre></td></tr><tr><td class="docs"><p>:nil signify N/A</p>
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-get-field
+  [instance field]
+  (let [class-name (-&gt; field get-soot-class-name)
+        field-name (-&gt; field get-soot-name)
+        field-id [class-name field-name]]
+    (if (.. field isStatic)
+      (get-in @simulator-global-state [:fields :static field-id] :nil)
+      (get-in @simulator-global-state [:fields :instance instance field-id] :nil))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-set-field
+  [instance field value]
+  (let [class-name (-&gt; field get-soot-class-name)
+        field-name (-&gt; field get-soot-name)
+        field-id [class-name field-name]]
+    (if (.. field isStatic)
+      (swap! simulator-global-state assoc-in [:fields :static field-id] value)
+      (swap! simulator-global-state assoc-in [:fields :instance instance field-id] value))))</pre></td></tr><tr><td class="docs"><p>:nil signify N/A</p>
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-get-this
+  [simulator]
+  (get-in simulator [:this] :nil))</pre></td></tr><tr><td class="docs"><p>:nil signify N/A</p>
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-get-param
+  [simulator param]
+  (get-in simulator [:params param] :nil))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-set-local
+  [simulator local val]
+  (assoc-in simulator [:locals local]
+            val))</pre></td></tr><tr><td class="docs"><p>:nil signify N/A</p>
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-get-local
+  [simulator local]
+  (get-in simulator [:locals local] :nil))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-add-returns
+  [simulator invokes]
+  (update-in simulator [:returns] into
+             invokes))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-get-returns
+  [simulator]
+  (get-in simulator [:returns]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-clear-returns
+  [simulator]
+  (assoc-in simulator [:returns] #{}))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-add-explicit-invokes
+  [simulator invokes]
+  (update-in simulator [:explicit-invokes] into
+             invokes))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-get-explicit-invokes
+  [simulator]
+  (get-in simulator [:explicit-invokes]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-clear-explicit-invokes
+  [simulator]
+  (assoc-in simulator [:explicit-invokes] #{}))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-add-implicit-invokes
+  [simulator invokes]
+  (update-in simulator [:implicit-invokes] into
+             invokes))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-get-implicit-invokes
+  [simulator]
+  (get-in simulator [:implicit-invokes]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-clear-implicit-invokes
+  [simulator]
+  (assoc-in simulator [:implicit-invokes] #{}))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-add-component-invokes
+  [simulator invokes]
+  (update-in simulator [:component-invokes] into
+             invokes))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-get-component-invokes
+  [simulator]
+  (get-in simulator [:component-invokes]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- simulator-clear-component-invokes
+  [simulator]
+  (assoc-in simulator [:component-invokes] #{}))</pre></td></tr><tr><td class="docs"><p>implicit control flow helpers</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>filter methods that contain implicit control flow invokes</p>
+</td><td class="codes"><pre class="brush: clojure">(defn filter-implicit-cf-invoke-methods
+  [methods]
+  (-&gt;&gt; methods
+       (filter
+        (fn [^SootMethod method]
+          (-&gt;&gt; [method]
+               mapcat-invoke-methodrefs
+               (filter implicit-cf?)
+               not-empty)))))</pre></td></tr><tr><td class="docs"><p>test whether class possibly contains implicit cf</p>
+</td><td class="codes"><pre class="brush: clojure">(defn implicit-cf-class?
+  [class]
+  (-&gt;&gt; class get-transitive-implicit-cf-super-class-and-interface not-empty))</pre></td></tr><tr><td class="docs"><p>test whether methodref is possibly an implicit cf</p>
+</td><td class="codes"><pre class="brush: clojure">(def implicit-cf?
+  get-implicit-cf-root-class-names)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn implicit-cf-task?
+  [method]
+  (set/intersection (-&gt;&gt; method get-implicit-cf-root-class-names)
+                    (set (-&gt;&gt; implicit-cf-marker-task keys))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn implicit-cf-component?
+  [method]
+  (set/intersection (-&gt;&gt; method get-implicit-cf-root-class-names)
+                    (set (-&gt;&gt; implicit-cf-marker-component keys))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn get-transitive-implicit-cf-super-class-and-interface
+  [class]
+  (set/intersection (set (keys implicit-cf-marker))
+                    (-&gt;&gt; class
+                         get-transitive-super-class-and-interface
+                         (map get-soot-class-name)
+                         set)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn get-implicit-cf-root-class-names
+  [method]
+  (let [class (-&gt;&gt; method get-soot-class)
+        name (-&gt;&gt; method get-soot-name)]
+    (-&gt;&gt; (get-transitive-implicit-cf-super-class-and-interface class)
+         (filter #(let [t (get implicit-cf-marker %)]
+                    (or (= t :all)
+                        (contains? t name))))
+         not-empty)))</pre></td></tr><tr><td class="docs"><p>domain knowledge</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def ^:private implicit-cf-marker-task
+  {&quot;java.lang.Thread&quot; #{&quot;start&quot;}
+   &quot;java.lang.Runnable&quot; #{&quot;run&quot;}
+   &quot;java.util.concurrent.Callable&quot; #{&quot;call&quot;}
+   &quot;java.util.concurrent.Executor&quot; #{&quot;execute&quot;}
+   &quot;java.util.concurrent.ExecutorService&quot; #{&quot;submit&quot;
+                                            &quot;execute&quot;}
+   &quot;java.lang.Class&quot; #{&quot;forName&quot;
+                       &quot;getMethod&quot;
+                       &quot;getField&quot;}
+   &quot;java.lang.reflect.Method&quot; #{&quot;invoke&quot;}
+   &quot;java.lang.reflect.Field&quot; :all
+   &quot;android.os.Handler&quot; #{&quot;post&quot; &quot;postAtFrontOfQueue&quot;
+                          &quot;postAtTime&quot; &quot;postDelayed&quot;}})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def ^:private implicit-cf-marker-component
+  {&quot;android.content.Context&quot; #{&quot;startActivity&quot; &quot;startActivities&quot;
+                               &quot;startService&quot; &quot;stopService&quot;
+                               &quot;bindService&quot; &quot;unbindService&quot;
+                               &quot;sendBroadcast&quot; &quot;sendBrocastAsUser&quot;
+                               &quot;sendOrderedBroadcast&quot; &quot;sendOrderedBroadcastAsUser&quot;
+                               &quot;sendStickyBroadcast&quot; &quot;sendStickyBroadcastAsUser&quot;
+                               &quot;registerComponentCallbacks&quot;
+                               &quot;registerReceiver&quot;}})</pre></td></tr><tr><td class="docs"><p>these methods mark implicit control flows</p>
+</td><td class="codes"><pre class="brush: clojure">(def ^:private implicit-cf-marker
+  (merge implicit-cf-marker-task
+         implicit-cf-marker-component))</pre></td></tr><tr><td class="docs"><p>safe classes are the ones that can be simulated in Clojure</p>
+</td><td class="codes"><pre class="brush: clojure">(def ^:private safe-invokes
+  {;;; java.lang
+   ;; interface
+   &quot;java.lang.Iterable&quot; :all
+   ;; classes
+   &quot;java.lang.String&quot; :all
+   &quot;java.lang.StringBuilder&quot; :all
+   &quot;java.lang.StringBuffer&quot; :all
+   &quot;java.lang.Math&quot; :all
+   &quot;java.lang.StrictMath&quot; :all
+   &quot;java.lang.Integer&quot; :all
+   &quot;java.lang.Long&quot; :all
+   &quot;java.lang.Double&quot; :all
+   &quot;java.lang.Float&quot; :all
+   &quot;java.lang.Byte&quot; :all
+   &quot;java.lang.Character&quot; :all
+   &quot;java.lang.Short&quot; :all
+   &quot;java.lang.Boolean&quot; :all
+   &quot;java.lang.Void&quot; :all
+   &quot;java.lang.System&quot; #{&quot;nanoTime&quot;
+                        &quot;currentTimeMillis&quot;}
+   ;;; java.util
+   ;; interface
+   &quot;java.util.Collection&quot; :all
+   &quot;java.util.Comparator&quot; :all
+   &quot;java.util.Deque&quot; :all
+   &quot;java.util.Enumeration&quot; :all
+   &quot;java.util.Formattable&quot; :all
+   &quot;java.util.Iterator&quot; :all
+   &quot;java.util.List&quot; :all
+   &quot;java.util.ListIterator&quot; :all
+   &quot;java.util.Map&quot; :all
+   &quot;java.util.Map$Entry&quot; :all
+   &quot;java.util.NavigableMap&quot; :all
+   &quot;java.util.NavigableSet&quot; :all
+   &quot;java.util.Queue&quot; :all
+   &quot;java.util.RandomAccess&quot; :all
+   &quot;java.util.Set&quot; :all
+   &quot;java.util.SortedMap&quot; :all
+   &quot;java.util.SortedSet&quot; :all
+   ;; classes
+   &quot;java.util.ArrayList&quot; :all
+   &quot;java.util.ArrayDeque&quot; :all
+   &quot;java.util.Arrays&quot; :all
+   &quot;java.util.BitSet&quot; :all
+   &quot;java.util.Calendar&quot; :all
+   &quot;java.util.Collections&quot; :all
+   &quot;java.util.Currency&quot; :all
+   &quot;java.util.Date&quot; :all
+   &quot;java.util.Dictionary&quot; :all
+   &quot;java.util.EnumMap&quot; :all
+   &quot;java.util.EnumSet&quot; :all
+   &quot;java.util.Formatter&quot; :all
+   &quot;java.util.GregorianCalendar&quot; :all
+   &quot;java.util.HashMap&quot; :all
+   &quot;java.util.HashSet&quot; :all
+   &quot;java.util.Hashtable&quot; :all
+   &quot;java.util.IdentityHashMap&quot; :all
+   &quot;java.util.LinkedHashMap&quot; :all
+   &quot;java.util.LinkedHashSet&quot; :all
+   &quot;java.util.LinkedList&quot; :all
+   &quot;java.util.Locale&quot; :all
+   &quot;java.util.Locale$Builder&quot; :all
+   &quot;java.util.Objects&quot; :all
+   &quot;java.util.PriorityQueue&quot; :all
+   &quot;java.util.Properties&quot; :all
+   &quot;java.util.Random&quot; :all
+   &quot;java.util.SimpleTimeZone&quot; :all
+   &quot;java.util.Stack&quot; :all
+   &quot;java.util.StringTokenizer&quot; :all
+   &quot;java.util.TreeMap&quot; :all
+   &quot;java.util.TreeSet&quot; :all
+   &quot;java.util.UUID&quot; :all
+   &quot;java.util.Vector&quot; :all
+   &quot;java.util.WeakHashMap&quot; :all})</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.dex.soot.util" name="tbnl-apk.apk.dex.soot.util"><h1 class="project-name">tbnl-apk.apk.dex.soot.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.apk.dex.soot.util
   ;; internal libs
   (:require [tbnl-apk.util
              :refer [print-stack-trace-if-verbose]])
@@ -4172,40 +5146,40 @@ net.brehaut.ClojureTools = (function (SH) {
             [clojure.pprint :refer [pprint print-table]]
             [clojure.stacktrace :refer [print-stack-trace]])
   ;; import
-  (:import (soot G
-                 G$GlobalObjectGetter
-                 PhaseOptions
-                 PackManager
-                 Scene
-                 Pack
-                 Unit
-                 SootField
-                 SootClass
-                 SootMethod
-                 SootMethodRef
-                 Local
-                 RefLikeType
-                 ArrayType
-                 RefType)
-           (soot.options Options)
-           (soot.jimple Stmt
-                        StmtSwitch)
-           (soot.jimple.toolkits.callgraph CallGraph
-                                           Edge)))</pre></td></tr><tr><td class="docs"><p>declaration</p>
+  (:import
+   (soot G
+         G$GlobalObjectGetter
+         PhaseOptions
+         PackManager
+         Scene
+         Pack
+         Unit
+         SootField
+         SootClass
+         SootMethod
+         SootMethodRef
+         Local
+         RefLikeType
+         ArrayType
+         RefType)
+   (soot.options Options)
+   (soot.jimple Stmt
+                StmtSwitch)
+   (soot.jimple.toolkits.callgraph CallGraph
+                                   Edge)))</pre></td></tr><tr><td class="docs"><p>declaration</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(declare perform-worklist
-
-         with-soot new-g-objgetter
-         
-         get-application-classes get-application-methods get-method-body map-class-bodies run-body-packs
-         
-         mapcat-invoke-methodrefs resolve-methodrefs mapcat-invoke-methods
-         
-         get-cg mapcat-edgeout-methods
-         
-         get-transitive-super-class-and-interface transitive-ancestor?
-
-         filter-interesting-methodrefs)</pre></td></tr><tr><td class="docs"><p>implementation</p>
+</td><td class="codes"><pre class="brush: clojure">(declare shallow-pass deep-pass)
+(declare process-worklist)
+(declare get-application-classes get-application-methods)
+(declare get-method-body map-class-bodies run-body-packs)
+(declare mapcat-invoke-methodrefs resolve-methodrefs mapcat-invoke-methods)
+(declare get-transitive-super-class-and-interface transitive-ancestor?)
+(declare filter-interesting-methods)
+(declare get-cg mapcat-edgeout-methods)
+(declare android-api?)
+(declare with-soot new-g-objgetter)
+(declare mute unmute with-silence)</pre></td></tr><tr><td class="docs"><p>implementation</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>common code patterns</p>
 </td><td class="codes"></td></tr><tr><td class="docs"><p>process worklist until it is empty</p>
 
 <p>process takes a worklist as input, and outputs the new worklist</p>
@@ -4213,7 +5187,177 @@ net.brehaut.ClojureTools = (function (SH) {
   [initial-worklist process]
   (loop [worklist initial-worklist]
     (when-not (empty? worklist)
-      (recur (process worklist)))))</pre></td></tr><tr><td class="docs"><p>Soot mutex: Soot is unfortunately Singleton</p>
+      (recur (process worklist)))))</pre></td></tr><tr><td class="docs"><p>SootQuery</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defprotocol SootQuery
+  (get-soot-class [this])
+  (get-soot-class-name [this])
+  (get-soot-name [this]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.SootClass
+  SootQuery
+  (get-soot-class [this]
+    this)
+  (get-soot-class-name [this]
+    (.. this getName))
+  (get-soot-name [this]
+    (.. this getName)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.SootMethod
+  SootQuery
+  (get-soot-class [this]
+    (.. this getDeclaringClass))
+  (get-soot-class-name [this]
+    (.. this getDeclaringClass getName))
+  (get-soot-name [this]
+    (.. this getName)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.SootMethodRef
+  SootQuery
+  (get-soot-class [this]
+    (.. this declaringClass))
+  (get-soot-class-name [this]
+    (.. this declaringClass getName))
+  (get-soot-name [this]
+    (.. this name)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.SootField
+  SootQuery
+  (get-soot-class [this]
+    (.. this getDeclaringClass))
+  (get-soot-class-name [this]
+    (.. this getDeclaringClass getName))
+  (get-soot-name [this]
+    (.. this getName)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.SootFieldRef
+  SootQuery
+  (get-soot-class [this]
+    (.. this declaringClass))
+  (get-soot-class-name [this]
+    (.. this declaringClass getName))
+  (get-soot-name [this]
+    (.. this name)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type String
+  SootQuery
+  (get-soot-class [this]
+    (.. (Scene/v) (getSootClass this)))
+  (get-soot-class-name [this]
+    this)
+  (get-soot-name [this]
+    this))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.RefType
+  SootQuery
+  (get-soot-class [this]
+    (.. this getSootClass))
+  (get-soot-class-name [this]
+    (.. this getClassName))
+  (get-soot-name [this]
+    (.. this getClassName)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type soot.ArrayType
+  SootQuery
+  (get-soot-class [this]
+    (get-soot-class (.. this getArrayElementType)))
+  (get-soot-class-name [this]
+    (get-soot-class-name (.. this getArrayElementType)))
+  (get-soot-name [this]
+    (get-soot-name (.. this getArrayElementType))))</pre></td></tr><tr><td class="docs"><p>Soot Class helpers</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>get application classes in scene</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-application-classes
+  [scene]
+  (-&gt;&gt; (.. scene getApplicationClasses snapshotIterator)
+       iterator-seq
+       set))</pre></td></tr><tr><td class="docs"><p>get application methods in scene</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-application-methods
+  [scene]
+  (-&gt;&gt; scene
+       get-application-classes
+       (remove #(.. ^SootClass % isPhantom))
+       (mapcat #(.. ^SootClass % getMethods))
+       set))</pre></td></tr><tr><td class="docs"><p>Soot Body helpers</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>get method body</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-method-body
+  [^SootMethod method]
+  (if (.. method hasActiveBody)
+    (.. method getActiveBody)
+    (when (and (not (.. method isPhantom))
+               ;; method must have backing source
+               (.. method getSource))
+      (.. method retrieveActiveBody))))</pre></td></tr><tr><td class="docs"><p>map classes to their method bodies</p>
+</td><td class="codes"><pre class="brush: clojure">(defn map-class-bodies
+  [classes]
+  (-&gt;&gt; classes
+       (remove #(.. ^SootClass % isPhantom))
+       (mapcat #(-&gt;&gt; (.. ^SootClass % getMethods)
+                     seq
+                     (map get-method-body)
+                     (filter identity)))))</pre></td></tr><tr><td class="docs"><p>run body packs over application classes</p>
+</td><td class="codes"><pre class="brush: clojure">(defn run-body-packs
+  [&amp; {:keys [scene pack-manager body-packs verbose]}]
+  (doto scene
+    (.loadNecessaryClasses))
+  ;; force application class bodies to be mapped at least once 
+  (let [bodies (-&gt;&gt; scene get-application-classes map-class-bodies)
+        packs (-&gt;&gt; body-packs (map #(.. ^PackManager pack-manager (getPack ^String %))))]
+    (doseq [^Pack pack packs]
+      (when pack
+        (doseq [^SootBody body bodies]
+          (try
+            (.. pack (apply body))
+            ;; catch Exception to prevent it destroys outer threads
+            (catch Exception e
+              (print-stack-trace-if-verbose e verbose))))))))</pre></td></tr><tr><td class="docs"><p>invoker-invokee relationship helpers</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>phantom SootClass has SootMethodRef but not SootMethod</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>mapcat methods to their invoked methodrefs</p>
+</td><td class="codes"><pre class="brush: clojure">(defn mapcat-invoke-methodrefs
+  [methods]
+  (-&gt;&gt; methods
+       (remove #(.. ^SootMethod % isPhantom))
+       ;; try retrieveActiveBody
+       (filter #(try
+                  (.. ^SootMethod % retrieveActiveBody)
+                  true
+                  (catch Exception e
+                    false)))
+       (mapcat #(iterator-seq (.. ^SootMethod % retrieveActiveBody getUnits snapshotIterator)))
+       (filter #(.. ^Stmt % containsInvokeExpr))
+       (map #(.. ^Stmt % getInvokeExpr getMethodRef))))</pre></td></tr><tr><td class="docs"><p>mapcat methods to their invoked methods</p>
+</td><td class="codes"><pre class="brush: clojure">(defn mapcat-invoke-methods
+  [methods]
+  (-&gt;&gt; methods
+       mapcat-invoke-methodrefs
+       ;; deduplication early
+       set
+       resolve-methodrefs
+       set))</pre></td></tr><tr><td class="docs"><p>resolve methodrefs</p>
+</td><td class="codes"><pre class="brush: clojure">(defn resolve-methodrefs
+  [methodrefs]
+  (-&gt;&gt; methodrefs
+       (remove #(.. ^SootMethodRef % declaringClass isPhantom))
+       (filter #(try
+                  (.. ^SootMethodRef % resolve)
+                  true
+                  (catch Exception e
+                    false)))
+       (map #(.. ^SootMethodRef % resolve))))</pre></td></tr><tr><td class="docs"><p>interesting method helpers</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>filter interesting methodrefs</p>
+</td><td class="codes"><pre class="brush: clojure">(defn filter-interesting-methods
+  [interesting-method? methods]
+  (-&gt;&gt; methods
+       (filter interesting-method?)))</pre></td></tr><tr><td class="docs"><p>Soot callgraph helpers</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>get Call Graph from scene</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-cg
+  [scene]
+  (when (.. scene hasCallGraph)
+    (.. scene getCallGraph)))</pre></td></tr><tr><td class="docs"><p>mapcat methods to their edgeout methods on cg </p>
+</td><td class="codes"><pre class="brush: clojure">(defn mapcat-edgeout-methods
+  [methods cg]
+  (when cg
+    (-&gt;&gt; methods
+         (mapcat #(iterator-seq (.. ^CallGraph cg (edgesOutOf %))))
+         (map #(.. ^Edge % getTgt))
+         set)))</pre></td></tr><tr><td class="docs"><p>helpers</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>test see if obj is Android API</p>
+</td><td class="codes"><pre class="brush: clojure">(defn android-api?
+  [obj]
+  (re-find #&quot;^(android\.|com\.android\.|dalvik\.)&quot;
+           (-&gt; obj get-soot-class-name)))</pre></td></tr><tr><td class="docs"><p>Soot body wrapper</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>Soot mutex: Soot is unfortunately Singleton</p>
 </td><td class="codes"><pre class="brush: clojure">(def soot-mutex
   (Object.))</pre></td></tr><tr><td class="docs"><p>System's exsiting security manager</p>
 </td><td class="codes"><pre class="brush: clojure">(def system-security-manager
@@ -4227,14 +5371,30 @@ net.brehaut.ClojureTools = (function (SH) {
          (throw (SecurityException. &quot;no exit for Soot&quot;))))
       ([^java.security.Permission perm ^Object context]
        (when (.startsWith (.getName perm) &quot;exitVM&quot;)
-         (throw (SecurityException. &quot;no exit for Soot&quot;)))))))</pre></td></tr><tr><td class="docs"><p>wrap body with major Soot refs <em>at the call time</em>: g, scene, pack-manager, options, phase-options; g can be (optionally) provided with g-objgetter (nil to ask fetch the G <em>at the call time</em>); (G/reset) at the end if "reset?" is true</p>
+         (throw (SecurityException. &quot;no exit for Soot&quot;)))))))</pre></td></tr><tr><td class="docs"><p>get transitive super class and interfaces known to Soot</p>
+
+<p>this memoized function is initilized in with-soot</p>
+</td><td class="codes"><pre class="brush: clojure">(def get-transitive-super-class-and-interface
+  nil)</pre></td></tr><tr><td class="docs"><p>name-or-class-a is a transitive ancestor (super class/interface) of class-b</p>
+
+<p>this memoized function is initilized in with-soot</p>
+</td><td class="codes"><pre class="brush: clojure">(def transitive-ancestor?
+  nil)</pre></td></tr><tr><td class="docs"><p>create a new Soot context (G$GlobalObjectGetter)</p>
+</td><td class="codes"><pre class="brush: clojure">(defn new-g-objgetter
+  []
+  (let [g (new G)]
+    (reify G$GlobalObjectGetter
+      (getG [this] g)
+      (reset [this]))))</pre></td></tr><tr><td class="docs"><p>wrap body with major Soot refs <em>at the call time</em>: g, scene, pack-manager, options, phase-options; g can be (optionally) provided with g-objgetter (nil to ask fetch the G <em>at the call time</em>); (G/reset) at the end if "reset?" is true</p>
 </td><td class="codes"><pre class="brush: clojure">(defmacro with-soot
   [g-objgetter reset? &amp; body]
   `(locking soot-mutex
      (let [get-transitive-super-class-and-interface#
            (memoize
             (fn [class-or-interface#]
-              (let [known# (atom #{})]
+              ;; preserve order
+              (let [known# (atom [])
+                    class-or-interface# (get-soot-class class-or-interface#)]
                 (loop [worklist# #{class-or-interface#}
                        visited# #{}]
                   (when-not (empty? worklist#)
@@ -4244,8 +5404,7 @@ net.brehaut.ClojureTools = (function (SH) {
                         (swap! known# conj item#)
                         ;; interfaces
                         (swap! new-worklist# into (-&gt;&gt; (.. item# getInterfaces snapshotIterator)
-                                                       iterator-seq
-                                                       doall))
+                                                       iterator-seq))
                         ;; superclass?
                         (when (.. item# hasSuperclass)
                           (swap! new-worklist# conj (.. item# getSuperclass))))
@@ -4293,507 +5452,10 @@ net.brehaut.ClojureTools = (function (SH) {
            (~'_soot-clean_)
            (throw e#))
          (finally
-           (System/setSecurityManager system-security-manager))))))</pre></td></tr><tr><td class="docs"><p>create a new Soot context (G$GlobalObjectGetter)</p>
-</td><td class="codes"><pre class="brush: clojure">(defn new-g-objgetter
-  []
-  (let [g (new G)]
-    (reify G$GlobalObjectGetter
-      (getG [this] g)
-      (reset [this]))))</pre></td></tr><tr><td class="docs"><p>get application classes in scene</p>
-</td><td class="codes"><pre class="brush: clojure">(defn get-application-classes
-  [scene]
-  (-&gt;&gt; (.. scene getApplicationClasses snapshotIterator)
-       iterator-seq
-       set
-       doall))</pre></td></tr><tr><td class="docs"><p>get application methods in scene</p>
-</td><td class="codes"><pre class="brush: clojure">(defn get-application-methods
-  [scene]
-  (-&gt;&gt; scene
-       get-application-classes
-       (remove #(.. ^SootClass % isPhantom))
-       (mapcat #(.. ^SootClass % getMethods))
-       set))</pre></td></tr><tr><td class="docs"><p>get method body</p>
-</td><td class="codes"><pre class="brush: clojure">(defn get-method-body
-  [^SootMethod method]
-  (if (.. method hasActiveBody)
-    (.. method getActiveBody)
-    (when (and (not (.. method isPhantom))
-               ;; method must have backing source
-               (.. method getSource))
-      (.. method retrieveActiveBody))))</pre></td></tr><tr><td class="docs"><p>map classes to their method bodies</p>
-</td><td class="codes"><pre class="brush: clojure">(defn map-class-bodies
-  [classes]
-  (-&gt;&gt; classes
-       (remove #(.. ^SootClass % isPhantom))
-       (mapcat #(-&gt;&gt; (.. ^SootClass % getMethods)
-                     seq
-                     (map get-method-body)
-                     (filter identity)))))</pre></td></tr><tr><td class="docs"><p>run body packs over application classes</p>
-</td><td class="codes"><pre class="brush: clojure">(defn run-body-packs
-  [&amp; {:keys [scene pack-manager body-packs verbose]}]
-  (doto scene
-    (.loadNecessaryClasses))
-  ;; force application class bodies to be mapped at least once 
-  (let [bodies (-&gt;&gt; scene get-application-classes map-class-bodies)
-        packs (-&gt;&gt; body-packs (map #(.. ^PackManager pack-manager (getPack ^String %))))]
-    (doseq [^Pack pack packs]
-      (when pack
-        (doseq [^SootBody body bodies]
-          (try
-            (.. pack (apply body))
-            ;; catch Exception to prevent it destroys outer threads
-            (catch Exception e
-              (print-stack-trace-if-verbose e verbose))))))))</pre></td></tr><tr><td class="docs"><p>mapcat methods to methodrefs invoked by them</p>
-
-<p>phantom SootClass do not have SootMethod, but we can have SootMethodRef</p>
-</td><td class="codes"><pre class="brush: clojure">(defn mapcat-invoke-methodrefs
-  [methods]
-  (-&gt;&gt; methods
-       (remove #(.. ^SootMethod % isPhantom))
-       ;; try retrieveActiveBody
-       (filter #(try
-                  (.. ^SootMethod % retrieveActiveBody)
-                  true
-                  (catch Exception e
-                    false)))
-       (mapcat #(iterator-seq (.. ^SootMethod % retrieveActiveBody getUnits snapshotIterator)))
-       (filter #(.. ^Stmt % containsInvokeExpr))
-       (map #(.. ^Stmt % getInvokeExpr getMethodRef))
-       doall))</pre></td></tr><tr><td class="docs"><p>resolve methodrefs</p>
-</td><td class="codes"><pre class="brush: clojure">(defn resolve-methodrefs
-  [methodrefs]
-  (-&gt;&gt; methodrefs
-       (remove #(.. ^SootMethodRef % declaringClass isPhantom))
-       (filter #(try
-                  (.. ^SootMethodRef % resolve)
-                  true
-                  (catch Exception e
-                    false)))
-       (map #(.. ^SootMethodRef % resolve))))</pre></td></tr><tr><td class="docs"><p>mapcat methods to methods (not methodrefs) invoked by them: for recursive expanding</p>
-</td><td class="codes"><pre class="brush: clojure">(defn mapcat-invoke-methods
-  [methods]
-  (-&gt;&gt; methods
-       mapcat-invoke-methodrefs
-       set                              ; deduplication early
-       resolve-methodrefs
-       set))</pre></td></tr><tr><td class="docs"><p>get Call Graph from scene</p>
-</td><td class="codes"><pre class="brush: clojure">(defn get-cg
-  [scene]
-  (when (.. scene hasCallGraph)
-    (.. scene getCallGraph)))</pre></td></tr><tr><td class="docs"><p>mapcat methods to their edgeout methods on cg </p>
-</td><td class="codes"><pre class="brush: clojure">(defn mapcat-edgeout-methods
-  [methods cg]
-  (when cg
-    (-&gt;&gt; methods
-         (mapcat #(iterator-seq (.. ^CallGraph cg (edgesOutOf %))))
-         (map #(.. ^Edge % getTgt))
-         set)))</pre></td></tr><tr><td class="docs"><p>get transitive super class and interfaces known to Soot</p>
-</td><td class="codes"><pre class="brush: clojure">(def get-transitive-super-class-and-interface
-  nil)</pre></td></tr><tr><td class="docs"><p>name-or-class-a is a transitive ancestor (super class/interface) of class-b</p>
-</td><td class="codes"><pre class="brush: clojure">(def transitive-ancestor?
-  nil)</pre></td></tr><tr><td class="docs"><p>filter interesting methodrefs</p>
-</td><td class="codes"><pre class="brush: clojure">(defn filter-interesting-methodrefs
-  [interesting-methodref? methodrefs]
-  (-&gt;&gt; methodrefs
-       (filter interesting-methodref?)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.dex.soot.parse" name="tbnl-apk.apk.dex.soot.parse"><h1 class="project-name">tbnl-apk.apk.dex.soot.parse</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.apk.dex.soot.parse
-  ;; internal libs
-  (:require [tbnl-apk.util
-             :refer [print-stack-trace-if-verbose]])  
-  (:require [tbnl-apk.apk.dex.soot.util
-             :refer [with-silence mute unmute]])
-  (:require [tbnl-apk.apk.dex.soot.helper
-             :as helper
-             :refer :all])
-  (:require [tbnl-apk.apk.dex.soot.emulator
-             :as emulator
-             :refer :all])  
-  (:require [tbnl-apk.apk.parse
-             :as apk-parse])
-  ;; common libs
-  (:require [clojure.string :as str]
-            [clojure.set :as set]
-            [clojure.walk :as walk]
-            [clojure.zip :as zip]
-            [clojure.java.io :as io]
-            [clojure.pprint :refer [pprint print-table]]
-            [clojure.stacktrace :refer [print-stack-trace]])  
-  ;; special lib
-  (:require [me.raynes.fs :as fs])  
-  ;; imports
-  (:import (soot Unit
-                 SootField
-                 SootClass
-                 SootMethod
-                 SootMethodRef)
-           (soot.jimple Stmt)
-           (soot.options Options)))</pre></td></tr><tr><td class="docs"><p>declaration</p>
-</td><td class="codes"></td></tr><tr><td class="docs"><p>func</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(declare parse-apk
-         get-app-comp-interesting-invokes)</pre></td></tr><tr><td class="docs"><p>implementation</p>
-</td><td class="codes"></td></tr><tr><td class="docs"><p>parse apk with soot</p>
-</td><td class="codes"><pre class="brush: clojure">(defn parse-apk
-  [apk-name options]
-  (merge (apk-parse/parse-apk apk-name)
-         {:dex (get-app-comp-interesting-invokes apk-name options)}))</pre></td></tr><tr><td class="docs"><p>get App components and their (transitive) interesting invokes</p>
-</td><td class="codes"><pre class="brush: clojure">(defn get-app-comp-interesting-invokes
-  [apk-name
-   {:keys [soot-android-jar-path
-           verbose
-           soot-no-implicit-cf ; do NOT resolve non-invoke inter-procedural control flow, e.g., Java reflection, Android API
-           interesting-class-name-patterns
-           implicit-cf]
-    :as options
-    :or {interesting-class-name-patterns [#&quot;^android\.&quot;
-                                          #&quot;^com\.android\.&quot;
-                                          #&quot;^dalvik\.&quot;
-                                          #&quot;^java\.lang\.System&quot;
-                                          #&quot;^java\.lang\.Class&quot;
-                                          #&quot;^java\.lang\.ClassLoader&quot;
-                                          #&quot;^java\.lang\.reflect&quot;
-                                          #&quot;^java\.security&quot;]
-         implicit-cf {&quot;java.lang.Thread&quot; #{&quot;start&quot;}
-                      &quot;java.lang.Runnable&quot; #{&quot;run&quot;}
-                      &quot;java.util.concurrent.Callable&quot; #{&quot;call&quot;}
-                      &quot;java.util.concurrent.Executor&quot; #{&quot;execute&quot;}
-                      &quot;java.util.concurrent.ExecutorService&quot; #{&quot;invokeAny&quot;
-                                                               &quot;invokeAll&quot;
-                                                               &quot;submit&quot;}
-                      &quot;java.lang.reflect.Method&quot; #{&quot;invoke&quot;}
-                      &quot;android.os.Handler&quot; #{&quot;post&quot; &quot;postAtFrontOfQueue&quot;
-                                             &quot;postAtTime&quot; &quot;postDelayed&quot;}
-                      &quot;android.content.Context&quot; #{&quot;startActivity&quot; &quot;startActivities&quot;
-                                                  &quot;startService&quot; &quot;stopService&quot;
-                                                  &quot;bindService&quot; &quot;unbindService&quot;
-                                                  &quot;sendBroadcast&quot; &quot;sendBrocastAsUser&quot;
-                                                  &quot;sendOrderedBroadcast&quot; &quot;sendOrderedBroadcastAsUser&quot;
-                                                  &quot;sendStickyBroadcast&quot; &quot;sendStickyBroadcastAsUser&quot;
-                                                  &quot;registerComponentCallbacks&quot;
-                                                  &quot;registerReceiver&quot;}}}}]
-  (when (and apk-name (fs/readable? apk-name))
-    (let [apk-path (.getPath (io/file apk-name))
-          get-android-jar-path #(let [res-name &quot;EMPTY&quot;
-                                      ;; hack to get &quot;tbnl-apk.jar&quot; dir
-                                      [_ path] (re-find (re-pattern (str &quot;^file:(.*)/[^/]+!/&quot;
-                                                                         res-name &quot;$&quot;))
-                                                        (.getPath (io/resource res-name)))]
-                                  (str/join (System/getProperty &quot;file.separator&quot;)
-                                            [path &quot;android.jar&quot;]))
-          android-jar-path (if soot-android-jar-path
-                             soot-android-jar-path
-                             (get-android-jar-path))
-          android-api? (fn [name] (some #(re-find % name)
-                                        [#&quot;^android\.&quot;
-                                         #&quot;^com\.android\.&quot;
-                                         #&quot;^dalvik\.&quot;]))
-          result (atom {})
-          ;; the current thread's Soot context
-          g-objgetter (new-g-objgetter)]
-      ;; unfortunately, Singleton is so deeply embedded in Soot's implementation, we have to work in critical Section altogether
-      (with-soot
-        ;; use the current thread's Soot context
-        g-objgetter
-        ;; reset at the end to release the Soot Objects built up during the analysis
-        true
-        ;; the real work begins from here
-        (when (or (not verbose)
-                  (&lt;= verbose 1))
-          (mute))
-        (try
-          (doto soot-options
-            (.set_src_prec (Options/src_prec_apk))
-            (.set_process_dir [apk-path])
-            (.set_force_android_jar android-jar-path)
-            (.set_allow_phantom_refs true)
-            (.set_no_bodies_for_excluded true)
-            (.set_ignore_resolution_errors true)
-            (.set_whole_program true)
-            (.set_output_format (Options/output_format_none)))
-          (doto soot-phase-options)
-          ;; do it manually --- barebone
-          (run-body-packs :scene soot-scene
-                                 :pack-manager soot-pack-manager
-                                 :body-packs [&quot;jb&quot;]
-                                 :verbose verbose)
-          (when (and verbose (&gt; verbose 3))
-            (println &quot;body pack finished&quot;))
-          ;; start working on the bodies
-          (let [step1 (fn []
-                        (let [application-classes (get-application-classes soot-scene)
-                              android-api-descendants (-&gt;&gt; application-classes
-                                                           (filter (fn [class]
-                                                                     (-&gt;&gt; (get-transitive-super-class-and-interface class)
-                                                                          (filter #(-&gt;&gt; (.getName %)
-                                                                                        android-api?))
-                                                                          not-empty))))
-                              android-api-descendant-callbacks  (-&gt;&gt; android-api-descendants
-                                                                     (remove #(.. ^SootClass % isPhantom))
-                                                                     (mapcat #(-&gt;&gt; (.. ^SootClass % getMethods)
-                                                                                   (filter (fn [method]
-                                                                                             (and (.hasActiveBody method)
-                                                                                                  (re-find #&quot;^on[A-Z]&quot;
-                                                                                                           (.getName method)))))))
-                                                                     set)]
-                          ;; descendant relations
-                          (doseq [descendant android-api-descendants]
-                            (when (and verbose (&gt; verbose 3))
-                              (println &quot;descendant&quot; descendant))
-                            (swap! result assoc-in [(.. descendant getPackageName) (.. descendant getName)]
-                                   {:android-api-ancestors (-&gt;&gt; (for [super (get-transitive-super-class-and-interface descendant)
-                                                                      :when (-&gt;&gt; (.getName super) android-api?)]
-                                                                  {:class (.. super getName)
-                                                                   :package (.. super getPackageName)})
-                                                                set)}))
-                          ;; cg will only see parts reachable from these entry points
-                          (.. soot-scene
-                              (setEntryPoints (seq android-api-descendant-callbacks)))
-                          ;; return the result
-                          {:android-api-descendants android-api-descendants
-                           :android-api-descendant-callbacks android-api-descendant-callbacks}))
-                step1-result (step1)
-                ;; step 2
-                step2 (fn [{:keys [android-api-descendants android-api-descendant-callbacks] :as prev-step-result}]
-                        (let [cg (get-cg soot-scene)
-                              application-classes (get-application-classes soot-scene)
-                              application-methods (get-application-methods soot-scene)
-                              interesting-methodref? (memoize
-                                                      (fn [^SootMethodRef methodref]
-                                                        (let [method-name (.. methodref name)
-                                                              class (.. methodref declaringClass)
-                                                              class-name (.. class getName)]
-                                                          (and true
-                                                               ;; only non-application class behaviors are interesting
-                                                               (or (.. class isPhantom)
-                                                                   (.. methodref resolve isPhantom)
-                                                                   (not (contains? application-classes
-                                                                                   class)))
-                                                               ;; interesting class name patterns
-                                                               (some #(re-find % class-name)
-                                                                     interesting-class-name-patterns)
-                                                               ;; &lt;init&gt; is not interesting
-                                                               (not (re-find #&quot;&lt;[^&gt;]+&gt;&quot; method-name))))))]
-                          (doseq [callback android-api-descendant-callbacks]
-                            (let [callback-class (.. callback getDeclaringClass)]
-                              (when (and verbose (&gt; verbose 3))
-                                (println &quot;callback&quot; callback))
-                              (let [interesting-methodrefs (atom #{})
-                                    implicit-cf-invoke-methods (atom #{})]
-                                (let [visited (atom #{})]
-                                  (process-worklist
-                                   ;; the initial worklist
-                                   #{callback}
-                                   ;; the process
-                                   (fn [worklist]
-                                     (let [t1  (set/union worklist
-                                                          (mapcat-invoke-methods worklist)
-                                                          (mapcat-edgeout-methods worklist cg))
-                                           t2 (set/difference t1
-                                                              @visited)
-                                           all (set/intersection t2 application-methods)]
-                                       (swap! interesting-methodrefs into
-                                              (-&gt;&gt; all
-                                                   mapcat-invoke-methodrefs
-                                                   (filter-interesting-methodrefs interesting-methodref?)))
-                                       (when-not soot-no-implicit-cf
-                                         (swap! implicit-cf-invoke-methods into
-                                                (-&gt;&gt; all
-                                                     (filter-implicit-cf-invoke-methods implicit-cf))))
-                                       (swap! visited set/union worklist)
-                                       ;; the new worklist
-                                       (set/difference all
-                                                       worklist)))))
-                                ;; explicit cf
-                                (swap! result assoc-in
-                                       [(.. callback-class getPackageName)
-                                        (.. callback-class getName)
-                                        :callbacks
-                                        (.getName callback)
-                                        :explicit]
-                                       (-&gt;&gt; @interesting-methodrefs
-                                            (map #(let [methodref ^SootMethodRef %
-                                                        class (.. methodref declaringClass)]
-                                                    {:method (.. methodref name)
-                                                     :class (.. class getName)
-                                                     :package (.. class getPackageName)}))
-                                            set))
-                                ;; implicit cf
-                                (try
-                                  (doseq [^SootMethod method @implicit-cf-invoke-methods]
-                                    (let [invokes (get-method-implicit-cf implicit-cf
-                                                                          method
-                                                                          options)
-                                          path [(.. callback-class getPackageName)
-                                                (.. callback-class getName)
-                                                :callbacks
-                                                (.getName callback)
-                                                :implicit]]
-                                      (when (and verbose
-                                                 (&gt; verbose 2))
-                                        (pprint {:method method
-                                                 :implicit-cf-invokes invokes}))
-                                      (doseq [invoke invokes]
-                                        ;; make invoke briefer
-                                        (let [methodref (first invoke)
-                                              method-name (.. methodref name)
-                                              method-class-name (.. methodref declaringClass getName)
-                                              root-class-name (first (get-implicit-cf-root-class-names implicit-cf
-                                                                                                       methodref))
-                                              x [root-class-name method-name]]
-                                          (let [invoke (walk/prewalk
-                                                        (fn [form]
-                                                          (cond
-                                                            (instance? soot.SootMethodRef form)
-                                                            (list
-                                                             :method
-                                                             [(.. form declaringClass getName)
-                                                              (.. form name)])
-                                                            (instance? soot.SootFieldRef form)
-                                                            (list
-                                                             :field
-                                                             [(.. form declaringClass getName)
-                                                              (.. form name)])
-                                                            (instance? soot.SootClass form)
-                                                            (list
-                                                             :type
-                                                             (.. form getName))
-                                                            (instance? soot.RefType form)
-                                                            (list
-                                                             :type
-                                                             (.. form getClassName))
-                                                            (instance? soot.ArrayType form)
-                                                            (list
-                                                             :array
-                                                             [(.. form baseType)
-                                                              (.. form numDimensions)])
-                                                            (instance? soot.NullType form)
-                                                            nil
-                                                            (and (list? form)
-                                                                 (= (first form) :invoke))
-                                                            (-&gt;&gt; form second second)
-                                                            :default form))
-                                                        invoke)
-                                                base (second invoke)
-                                                args (nth invoke 2)]
-                                            (let [update-result
-                                                  (fn [&amp; {:keys [category type method instance]}]
-                                                    (swap! result update-in (conj path category)
-                                                           conj
-                                                           {:type type
-                                                            :method method
-                                                            :instance instance}))]
-                                              (cond
-                                                (#{[&quot;java.lang.Thread&quot; &quot;start&quot;]
-                                                   [&quot;java.lang.Runnable&quot; &quot;run&quot;]}
-                                                 x)
-                                                (update-result :category :task
-                                                               :type (first x)
-                                                               :method &quot;run&quot;
-                                                               :instance (with-out-str (pr base)))
-                                                (#{[&quot;java.util.concurrent.Callable&quot; &quot;call&quot;]}
-                                                 x)
-                                                (update-result :category :task
-                                                               :type (first x)
-                                                               :method &quot;call&quot;
-                                                               :instance (with-out-str (pr base)))
-                                                (#{[&quot;java.util.concurrent.ExecutorService&quot; &quot;invokeAny&quot;]
-                                                   [&quot;java.util.concurrent.ExecutorService&quot; &quot;invokeAll&quot;]
-                                                   [&quot;java.util.concurrent.ExecutorService&quot; &quot;submit&quot;]}
-                                                 x)
-                                                (update-result :category :task
-                                                               :type (first x)
-                                                               :method &quot;call&quot;
-                                                               :instance (with-out-str (pr (first args))))
-                                                (#{[&quot;java.util.concurrent.Executor&quot; &quot;execute&quot;]
-                                                   [&quot;android.os.Handler&quot; &quot;post&quot;]
-                                                   [&quot;android.os.Handler&quot; &quot;postAtFrontOfQueue&quot;]
-                                                   [&quot;android.os.Handler&quot; &quot;postAtTime&quot;]
-                                                   [&quot;android.os.Handler&quot; &quot;postDelayed&quot;]}
-                                                 x)
-                                                (update-result :category :task
-                                                               :type (first x)
-                                                               :class method-class-name
-                                                               :method &quot;run&quot;
-                                                               :instance (with-out-str (pr (first args)))) 
-                                                (#{[&quot;java.lang.reflect.Method&quot; &quot;invoke&quot;]}
-                                                 x)
-                                                (update-result :category :task
-                                                               :type (first x)
-                                                               :method (with-out-str (prn base))
-                                                               :instance (with-out-str (pr (list base
-                                                                                                 (first args)
-                                                                                                 (rest args)))))
-                                                (#{[&quot;android.content.Context&quot; &quot;startActivity&quot;]
-                                                   [&quot;android.content.Context&quot; &quot;startActivities&quot;]}
-                                                 x)
-                                                (update-result :category :component
-                                                               :type &quot;android.app.Activity&quot;
-                                                               :instance (with-out-str (pr (first args))))
-                                                (#{[&quot;android.content.Context&quot; &quot;startService&quot;]
-                                                   [&quot;android.content.Context&quot; &quot;stopService&quot;]
-                                                   [&quot;android.content.Context&quot; &quot;bindService&quot;]
-                                                   [&quot;android.content.Context&quot; &quot;unbindService&quot;]}
-                                                 x)
-                                                (update-result :category :component
-                                                               :type &quot;android.app.Service&quot;
-                                                               :instance (with-out-str (pr (first args))))
-                                                (#{[&quot;android.content.Context&quot; &quot;sendBroadcast&quot;]
-                                                   [&quot;android.content.Context&quot; &quot;sendBrocastAsUser&quot;]
-                                                   [&quot;android.content.Context&quot; &quot;sendOrderedBroadcast&quot;]
-                                                   [&quot;android.content.Context&quot; &quot;sendOrderedBroadcastAsUser&quot;]
-                                                   [&quot;android.content.Context&quot; &quot;sendStickyBroadcast&quot;]
-                                                   [&quot;android.content.Context&quot; &quot;sendStickyBroadcastAsUser&quot;]}
-                                                 x)
-                                                (update-result :category :component
-                                                               :type &quot;android.content.BroadcastReceiver&quot;
-                                                               :instance (with-out-str (pr (first args))))
-                                                (#{[&quot;android.content.Context&quot; &quot;registerComponentCallbacks&quot;]}
-                                                 x)
-                                                (update-result :category :component
-                                                               :type &quot;android.content.ComponentCallbacks&quot;
-                                                               :instance (with-out-str (pr (first args))))
-                                                (#{[&quot;android.content.Context&quot; &quot;registerReceiver&quot;]}
-                                                 x)
-                                                (update-result :category :component
-                                                               :type &quot;android.content.BroadcastReceiver&quot;
-                                                               :instance (with-out-str (pr args))))))))
-                                      ;; make :implicit part from a seq to a set
-                                      (doseq [category (get-in result path)]
-                                        (swap! result update-in (conj path category)
-                                               set))))
-                                  (catch Exception e
-                                    (print-stack-trace-if-verbose e verbose)))
-                                ;; step 2 result
-                                {:interesting-methodrefs @interesting-methodrefs
-                                 :implicit-cf-invoke-methods @implicit-cf-invoke-methods})))))
-                step2-result (step2 step1-result)])
-          ;; catch Exception to prevent disrupting outer threads
-          (catch Exception e
-            (print-stack-trace-if-verbose e verbose))
-          (finally
-            (unmute))))
-      ;; for debug
-      (when (and verbose (&gt; verbose 2))
-        (pprint @result))
-      @result)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#tbnl-apk.apk.dex.soot.util" name="tbnl-apk.apk.dex.soot.util"><h1 class="project-name">tbnl-apk.apk.dex.soot.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns tbnl-apk.apk.dex.soot.util
-  ;; common libs
-  (:require [clojure.string :as str]
-            [clojure.set :as set]
-            [clojure.walk :as walk]
-            [clojure.zip :as zip]
-            [clojure.java.io :as io]
-            [clojure.pprint :refer [pprint print-table]]
-            [clojure.stacktrace :refer [print-stack-trace]])  
-  ;; imports
-  (:import (java.io PrintStream
-                    OutputStream))
-  (:import (soot G)))</pre></td></tr><tr><td class="docs"><p>declaration</p>
-</td><td class="codes"><pre class="brush: clojure">(declare mute unmute
-         with-silence)</pre></td></tr><tr><td class="docs"><p>implementation</p>
-</td><td class="codes"><pre class="brush: clojure">(def mutter (PrintStream. (proxy [OutputStream] []
-                            (write [_ _1 _2]))))
-(def original-system-out System/out)</pre></td></tr><tr><td class="docs"><p>execute the body in silence</p>
+           (System/setSecurityManager system-security-manager))))))</pre></td></tr><tr><td class="docs"><p>mutter</p>
+</td><td class="codes"><pre class="brush: clojure">(def ^:private mutter (java.io.PrintStream. (proxy [java.io.OutputStream] []
+                                    (write [_ _1 _2]))))
+(def ^:private original-system-out System/out)</pre></td></tr><tr><td class="docs"><p>execute the body in silence</p>
 </td><td class="codes"><pre class="brush: clojure">(defmacro with-silence
   [&amp; body]
   `(try
@@ -4955,10 +5617,16 @@ net.brehaut.ClojureTools = (function (SH) {
    ;; Soot config
    [&quot;-s&quot; &quot;--soot-task-build-model&quot; &quot;build APK model with Soot&quot;]
    [nil &quot;--soot-android-jar-path&quot; &quot;path of android.jar for Soot's Dexpler&quot;]
-   [nil &quot;--soot-no-implicit-cf&quot; &quot;do not detect implicit control flows&quot;]
-   [nil &quot;--soot-method-emulation-guard NUM&quot; &quot;basic block emulation will run at most NUM times&quot;
+   [nil &quot;--soot-basic-block-simulation-budget BUDGET&quot; &quot;basic block simulation budget&quot;
     :parse-fn #(Long/parseLong %)
-    :default 50]
+    :default 100]
+   [nil &quot;--soot-method-simulation-depth-budget BUDGET&quot; &quot;method invocation simulation budget&quot;
+    :parse-fn #(Long/parseLong %)
+    :default 10]
+   [nil &quot;--soot-result-include-invoke-arguments&quot; &quot;include invoke arguments (for comparison)&quot;]
+   [nil &quot;--soot-no-implicit-cf&quot; &quot;do not detect implicit control flows (for comparison)&quot;]
+   [nil &quot;--soot-dump-all-invokes&quot; &quot;dump all invokes&quot;]
+   [nil &quot;--soot-result-exclude-app-methods&quot; &quot;exclude app internal methods from the result&quot;]
    ;; Neo4j config
    [nil &quot;--neo4j-port PORT&quot; &quot;Neo4j server port&quot;
     :parse-fn #(Integer/parseInt %)
@@ -5670,7 +6338,7 @@ net.brehaut.ClojureTools = (function (SH) {
                    (str/replace &quot;_&quot; &quot;-&quot;)
                    keyword)
                v]))
-       (into {})))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.emulator">tbnl-apk.apk.dex.soot.emulator</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.helper">tbnl-apk.apk.dex.soot.helper</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.parse">tbnl-apk.apk.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.util">tbnl-apk.apk.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.core">tbnl-apk.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.neo4j.recipe">tbnl-apk.neo4j.recipe</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.util">tbnl-apk.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.virustotal.core">tbnl-apk.virustotal.core</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+       (into {})))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.aapt.parse">tbnl-apk.apk.aapt.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.opcodes">tbnl-apk.apk.dex.asmdex.opcodes</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.parse">tbnl-apk.apk.dex.asmdex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.asmdex.util">tbnl-apk.apk.dex.asmdex.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.parse">tbnl-apk.apk.dex.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.parse">tbnl-apk.apk.dex.soot.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.sexp">tbnl-apk.apk.dex.soot.sexp</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.simulator">tbnl-apk.apk.dex.soot.simulator</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.dex.soot.util">tbnl-apk.apk.dex.soot.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.parse">tbnl-apk.apk.parse</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.apk.util">tbnl-apk.apk.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.core">tbnl-apk.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.neo4j.core">tbnl-apk.neo4j.core</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.neo4j.recipe">tbnl-apk.neo4j.recipe</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.util">tbnl-apk.util</li><li class="floating-toc-li" id="floating-toc_tbnl-apk.virustotal.core">tbnl-apk.virustotal.core</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
 SyntaxHighlighter.all();
 
 // hackity hack
