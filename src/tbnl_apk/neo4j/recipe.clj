@@ -34,11 +34,11 @@
                                                                   v)))))))
                        ""))
              "OPTIONAL MATCH (signingKey:SigningKey)"
-             "-[:Sign]-> (apk)"
-             "-[:Contain]-> (dex:Dex)"
-             "-[:Contain]-> (class:Class)"
-             "-[:Contain]-> (callback:Callback)"
-             "OPTIONAL MATCH (explicitInvoke) <-[:ExplicitInvoke]- (callback) -[:ImplicitInvoke]-> (implicitInvoke)"
+             "-[:SIGN]-> (apk)"
+             "-[:CONTAIN]-> (dex:Dex)"
+             "-[:CONTAIN]-> (class:Class)"
+             "-[:CONTAIN]-> (callback:Callback)"
+             "OPTIONAL MATCH (explicitInvoke) <-[:EXPLICIT_INVOKE]- (callback) -[:IMPLICIT_INVOKE]-> (implicitInvoke)"
              (if return?
                "RETURN signingKey, apk, dex, class, callback, explicitInvoke, implicitInvoke"
                "")]))
@@ -51,8 +51,8 @@
     :or {limit 5}}]
   (str/join " "
             ["MATCH (apk:Apk)"
-             "-[:Contain]-> (:Dex)"
-             "-[:Contain]-> (class:Class)"
+             "-[:CONTAIN]-> (:Dex)"
+             "-[:CONTAIN]-> (class:Class)"
              "WITH apk, count(class) as cc"
              (if where (format "WHERE %1$s" where) "")
              (if return? "RETURN apk, cc" "")

@@ -91,3 +91,24 @@ node.Malware {
   color: #FF0000;
   caption: '{id}';
 }
+
+relationship.IMPLICIT_INVOKE {
+  color: #F25A29;
+  shaft-width: 2px;
+  font-size: 8px;
+  padding: 3px;
+  text-color-external: #000000;
+  text-color-internal: #FFFFFF;
+  border-color: #DC4717;
+}
+
+relationship.EXPLICIT_INVOKE {
+  color: #30B6AF;
+  shaft-width: 1px;
+  font-size: 8px;
+  padding: 3px;
+  text-color-external: #000000;
+  text-color-internal: #FFFFFF;
+  border-color: #46A39E;
+}
+

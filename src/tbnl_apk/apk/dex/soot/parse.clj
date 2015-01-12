@@ -235,7 +235,7 @@
                                                         {:method (-> method get-soot-name)
                                                          :class (-> method get-soot-class-name)
                                                          :package (.. class getPackageName)
-                                                         :args args})
+                                                         :args (str args)})
                                                       (let [method %
                                                             class (-> method get-soot-class)]
                                                         {:method (-> method get-soot-name)
@@ -250,7 +250,7 @@
                                             :descend]]
                                   (doseq [invoke (set/union explicit-invokes implicit-invokes)]
                                     (let [method (if soot-result-include-invoke-arguments
-                                                   (first invoke)
+                                                   (:method invoke)
                                                    invoke)]
                                       (when-not (android-api? method)
                                         (let [method-name (-> method get-soot-name)
