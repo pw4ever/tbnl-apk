@@ -44,13 +44,7 @@
    ["-i" "--interactive" "do not exit (i.e., shutdown-agents) at the end"]
 
    ;; does not work with Soot
-   #_["-j" "--jobs JOBS"
-    "number of parallel jobs (default: #core+2; NB Soot processing is serialized due to its Singleton design)"
-    :parse-fn #(Integer/parseInt %)
-    :default  (+ (.. Runtime getRuntime availableProcessors)
-                 2)
-    :validate [#(> % 0)
-               (format "You need at least 1 job to proceed")]]
+   
 
    ;; nREPL config
    [nil "--nrepl-port PORT" "REPL port"
@@ -80,6 +74,12 @@
    [nil "--soot-method-simulation-depth-budget BUDGET" "method invocation simulation budget"
     :parse-fn #(Long/parseLong %)
     :default 10]
+   ["-j" "--soot-parallel-jobs JOBS"
+    "analysis task parallilism"
+    :parse-fn #(Integer/parseInt %)
+    :default 1
+    :validate [#(> % 0)
+               (format "You need at least 1 job to proceed")]]   
    [nil "--soot-result-include-invoke-arguments" "include invoke arguments (for comparison)"]
    [nil "--soot-no-implicit-cf" "do not detect implicit control flows (for comparison)"]
    [nil "--soot-dump-all-invokes" "dump all invokes"]

@@ -22,6 +22,8 @@
   ;; special lib
   (:require [me.raynes.fs :as fs])  
   ;; imports
+  (:import (java.util.concurrent Executors
+                                 TimeUnit))
   (:import (soot Unit
                  SootField
                  SootClass
@@ -69,6 +71,7 @@
    {:keys [soot-android-jar-path
            soot-result-include-invoke-arguments
            soot-result-exclude-app-methods
+           soot-parallel-jobs
            verbose]
     :as options}]
   (when (and apk-name (fs/readable? apk-name))
@@ -205,79 +208,94 @@
                                                :circumscription application-methods}
                                               options)
 
-                          ;; may be parallelized later
-                          (doseq [callback android-api-descendant-callbacks]
-                            (let [callback-class (.. callback getDeclaringClass)]
-                              
-                              (when (and verbose (> verbose 3))
-                                (println "callback" callback))
+                          (let [pool (Executors/newFixedThreadPool soot-parallel-jobs)]
+                            (doseq [callback android-api-descendant-callbacks]
+                              (.. pool
+                                  (execute
+                                   (fn []
+                                     (try
+                                       (let [callback-class (.. callback getDeclaringClass)]
+                                         
+                                         (when (and verbose (> verbose 3))
+                                           (println "callback" callback))
 
-                              (let [{:keys [explicit-invokes
-                                            implicit-invokes
-                                            component-invokes]}
-                                    (get-all-interesting-invokes callback
-                                                                 interesting-method?
-                                                                 application-methods
-                                                                 options)]
-                                (doseq [[type invokes] [[:explicit explicit-invokes]
-                                                        [:implicit implicit-invokes]
-                                                        [:component component-invokes]]]
-                                  (swap! result assoc-in
-                                         [(.. callback-class getPackageName)
-                                          (.. callback-class getName)
-                                          :callbacks
-                                          (.. callback getName)
-                                          type]
-                                         (->> invokes
-                                              (map #(if soot-result-include-invoke-arguments
-                                                      (let [{:keys [method args]} %
-                                                            class (-> method get-soot-class)]
-                                                        {:method (-> method get-soot-name)
-                                                         :class (-> method get-soot-class-name)
-                                                         :package (.. class getPackageName)
-                                                         :args (str args)})
-                                                      (let [method %
-                                                            class (-> method get-soot-class)]
-                                                        {:method (-> method get-soot-name)
-                                                         :class (-> method get-soot-class-name)
-                                                         :package (.. class getPackageName)})))
-                                              set)))
-                                ;; add explicit link between invokes and their Android API ancestor
-                                (let [path [(.. callback-class getPackageName)
-                                            (.. callback-class getName)
-                                            :callbacks
-                                            (.. callback getName)
-                                            :descend]]
-                                  (doseq [invoke (set/union explicit-invokes implicit-invokes)]
-                                    (let [method (if soot-result-include-invoke-arguments
-                                                   (:method invoke)
-                                                   invoke)]
-                                      (when-not (android-api? method)
-                                        (let [method-name (-> method get-soot-name)
-                                              method-class (-> method get-soot-class)
-                                              v {:method method-name
-                                                 :class (-> method get-soot-class-name)
-                                                 :package (.. method-class getPackageName)}
-                                              ;; Android API supers
-                                              supers (->> method-class
-                                                          get-transitive-super-class-and-interface
-                                                          (filter android-api?))]
-                                          (when-let [super (some #(try
-                                                                    (if (.. ^soot.SootClass %
-                                                                            (getMethodByNameUnsafe
-                                                                             method-name))
-                                                                      %
-                                                                      false)
-                                                                    ;; Soot implementation: Ambiguious 
-                                                                    (catch RuntimeException e
-                                                                      %))
-                                                                 supers)]
-                                            (let [k {:method method-name
-                                                     :class (-> super get-soot-class-name)
-                                                     :package (.. super getPackageName)}]
-                                              (swap! result update-in (conj path k)
-                                                     #(conj (set %1) %2) v))))))))
-                                )))
+                                         (let [{:keys [explicit-invokes
+                                                       implicit-invokes
+                                                       component-invokes]}
+                                               (get-all-interesting-invokes callback
+                                                                            interesting-method?
+                                                                            application-methods
+                                                                            options)]
+                                           (doseq [[type invokes] [[:explicit explicit-invokes]
+                                                                   [:implicit implicit-invokes]
+                                                                   [:component component-invokes]]]
+                                             (swap! result assoc-in
+                                                    [(.. callback-class getPackageName)
+                                                     (.. callback-class getName)
+                                                     :callbacks
+                                                     (.. callback getName)
+                                                     type]
+                                                    (->> invokes
+                                                         (map #(if soot-result-include-invoke-arguments
+                                                                 (let [{:keys [method args]} %
+                                                                       class (-> method get-soot-class)]
+                                                                   {:method (-> method get-soot-name)
+                                                                    :class (-> method get-soot-class-name)
+                                                                    :package (.. class getPackageName)
+                                                                    :args (str args)})
+                                                                 (let [method %
+                                                                       class (-> method get-soot-class)]
+                                                                   {:method (-> method get-soot-name)
+                                                                    :class (-> method get-soot-class-name)
+                                                                    :package (.. class getPackageName)})))
+                                                         set)))
+                                           ;; add explicit link between invokes and their Android API ancestor
+                                           (let [path [(.. callback-class getPackageName)
+                                                       (.. callback-class getName)
+                                                       :callbacks
+                                                       (.. callback getName)
+                                                       :descend]]
+                                             (doseq [invoke (set/union explicit-invokes implicit-invokes)]
+                                               (let [method (if soot-result-include-invoke-arguments
+                                                              (:method invoke)
+                                                              invoke)]
+                                                 (when-not (android-api? method)
+                                                   (let [method-name (-> method get-soot-name)
+                                                         method-class (-> method get-soot-class)
+                                                         v {:method method-name
+                                                            :class (-> method get-soot-class-name)
+                                                            :package (.. method-class getPackageName)}
+                                                         ;; Android API supers
+                                                         supers (->> method-class
+                                                                     get-transitive-super-class-and-interface
+                                                                     (filter android-api?))]
+                                                     (when-let [super (some #(try
+                                                                               (if (.. ^soot.SootClass %
+                                                                                       (getMethodByNameUnsafe
+                                                                                        method-name))
+                                                                                 %
+                                                                                 false)
+                                                                               ;; Soot implementation: Ambiguious 
+                                                                               (catch RuntimeException e
+                                                                                 %))
+                                                                            supers)]
+                                                       (let [k {:method method-name
+                                                                :class (-> super get-soot-class-name)
+                                                                :package (.. super getPackageName)}]
+                                                         (swap! result update-in (conj path k)
+                                                                #(conj (set %1) %2) v))))))))
+                                           ))
+                                       (catch Exception e
+                                         (print-stack-trace-if-verbose e verbose)))))))
+                            (.. pool shutdown)
+                            (try
+                              (when-not (.. pool (awaitTermination Integer/MAX_VALUE
+                                                                   TimeUnit/SECONDS))
+                                (.. pool shutdownNow))
+                              (catch InterruptedException e
+                                (.. pool shutdownNow)
+                                (.. Thread currentThread interrupt))))
+                          
                           ;; must be in Soot body to ensure content/arguments can be printed
                           (when (and verbose (> verbose 2))
                             (pprint @result))))

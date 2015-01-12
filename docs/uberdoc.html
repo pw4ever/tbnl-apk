@@ -3595,6 +3595,8 @@ net.brehaut.ClojureTools = (function (SH) {
   ;; special lib
   (:require [me.raynes.fs :as fs])  
   ;; imports
+  (:import (java.util.concurrent Executors
+                                 TimeUnit))
   (:import (soot Unit
                  SootField
                  SootClass
@@ -3634,6 +3636,7 @@ net.brehaut.ClojureTools = (function (SH) {
    {:keys [soot-android-jar-path
            soot-result-include-invoke-arguments
            soot-result-exclude-app-methods
+           soot-parallel-jobs
            verbose]
     :as options}]
   (when (and apk-name (fs/readable? apk-name))
@@ -3755,76 +3758,90 @@ net.brehaut.ClojureTools = (function (SH) {
                           (initialize-classes {:classes application-classes
                                                :circumscription application-methods}
                                               options)
-                          ;; may be parallelized later
-                          (doseq [callback android-api-descendant-callbacks]
-                            (let [callback-class (.. callback getDeclaringClass)]
-                              (when (and verbose (&gt; verbose 3))
-                                (println &quot;callback&quot; callback))
-                              (let [{:keys [explicit-invokes
-                                            implicit-invokes
-                                            component-invokes]}
-                                    (get-all-interesting-invokes callback
-                                                                 interesting-method?
-                                                                 application-methods
-                                                                 options)]
-                                (doseq [[type invokes] [[:explicit explicit-invokes]
-                                                        [:implicit implicit-invokes]
-                                                        [:component component-invokes]]]
-                                  (swap! result assoc-in
-                                         [(.. callback-class getPackageName)
-                                          (.. callback-class getName)
-                                          :callbacks
-                                          (.. callback getName)
-                                          type]
-                                         (-&gt;&gt; invokes
-                                              (map #(if soot-result-include-invoke-arguments
-                                                      (let [{:keys [method args]} %
-                                                            class (-&gt; method get-soot-class)]
-                                                        {:method (-&gt; method get-soot-name)
-                                                         :class (-&gt; method get-soot-class-name)
-                                                         :package (.. class getPackageName)
-                                                         :args (str args)})
-                                                      (let [method %
-                                                            class (-&gt; method get-soot-class)]
-                                                        {:method (-&gt; method get-soot-name)
-                                                         :class (-&gt; method get-soot-class-name)
-                                                         :package (.. class getPackageName)})))
-                                              set)))
-                                ;; add explicit link between invokes and their Android API ancestor
-                                (let [path [(.. callback-class getPackageName)
-                                            (.. callback-class getName)
-                                            :callbacks
-                                            (.. callback getName)
-                                            :descend]]
-                                  (doseq [invoke (set/union explicit-invokes implicit-invokes)]
-                                    (let [method (if soot-result-include-invoke-arguments
-                                                   (:method invoke)
-                                                   invoke)]
-                                      (when-not (android-api? method)
-                                        (let [method-name (-&gt; method get-soot-name)
-                                              method-class (-&gt; method get-soot-class)
-                                              v {:method method-name
-                                                 :class (-&gt; method get-soot-class-name)
-                                                 :package (.. method-class getPackageName)}
-                                              ;; Android API supers
-                                              supers (-&gt;&gt; method-class
-                                                          get-transitive-super-class-and-interface
-                                                          (filter android-api?))]
-                                          (when-let [super (some #(try
-                                                                    (if (.. ^soot.SootClass %
-                                                                            (getMethodByNameUnsafe
-                                                                             method-name))
-                                                                      %
-                                                                      false)
-                                                                    ;; Soot implementation: Ambiguious 
-                                                                    (catch RuntimeException e
-                                                                      %))
-                                                                 supers)]
-                                            (let [k {:method method-name
-                                                     :class (-&gt; super get-soot-class-name)
-                                                     :package (.. super getPackageName)}]
-                                              (swap! result update-in (conj path k)
-                                                     #(conj (set %1) %2) v)))))))))))
+                          (let [pool (Executors/newFixedThreadPool soot-parallel-jobs)]
+                            (doseq [callback android-api-descendant-callbacks]
+                              (.. pool
+                                  (execute
+                                   (fn []
+                                     (try
+                                       (let [callback-class (.. callback getDeclaringClass)]
+                                         (when (and verbose (&gt; verbose 3))
+                                           (println &quot;callback&quot; callback))
+                                         (let [{:keys [explicit-invokes
+                                                       implicit-invokes
+                                                       component-invokes]}
+                                               (get-all-interesting-invokes callback
+                                                                            interesting-method?
+                                                                            application-methods
+                                                                            options)]
+                                           (doseq [[type invokes] [[:explicit explicit-invokes]
+                                                                   [:implicit implicit-invokes]
+                                                                   [:component component-invokes]]]
+                                             (swap! result assoc-in
+                                                    [(.. callback-class getPackageName)
+                                                     (.. callback-class getName)
+                                                     :callbacks
+                                                     (.. callback getName)
+                                                     type]
+                                                    (-&gt;&gt; invokes
+                                                         (map #(if soot-result-include-invoke-arguments
+                                                                 (let [{:keys [method args]} %
+                                                                       class (-&gt; method get-soot-class)]
+                                                                   {:method (-&gt; method get-soot-name)
+                                                                    :class (-&gt; method get-soot-class-name)
+                                                                    :package (.. class getPackageName)
+                                                                    :args (str args)})
+                                                                 (let [method %
+                                                                       class (-&gt; method get-soot-class)]
+                                                                   {:method (-&gt; method get-soot-name)
+                                                                    :class (-&gt; method get-soot-class-name)
+                                                                    :package (.. class getPackageName)})))
+                                                         set)))
+                                           ;; add explicit link between invokes and their Android API ancestor
+                                           (let [path [(.. callback-class getPackageName)
+                                                       (.. callback-class getName)
+                                                       :callbacks
+                                                       (.. callback getName)
+                                                       :descend]]
+                                             (doseq [invoke (set/union explicit-invokes implicit-invokes)]
+                                               (let [method (if soot-result-include-invoke-arguments
+                                                              (:method invoke)
+                                                              invoke)]
+                                                 (when-not (android-api? method)
+                                                   (let [method-name (-&gt; method get-soot-name)
+                                                         method-class (-&gt; method get-soot-class)
+                                                         v {:method method-name
+                                                            :class (-&gt; method get-soot-class-name)
+                                                            :package (.. method-class getPackageName)}
+                                                         ;; Android API supers
+                                                         supers (-&gt;&gt; method-class
+                                                                     get-transitive-super-class-and-interface
+                                                                     (filter android-api?))]
+                                                     (when-let [super (some #(try
+                                                                               (if (.. ^soot.SootClass %
+                                                                                       (getMethodByNameUnsafe
+                                                                                        method-name))
+                                                                                 %
+                                                                                 false)
+                                                                               ;; Soot implementation: Ambiguious 
+                                                                               (catch RuntimeException e
+                                                                                 %))
+                                                                            supers)]
+                                                       (let [k {:method method-name
+                                                                :class (-&gt; super get-soot-class-name)
+                                                                :package (.. super getPackageName)}]
+                                                         (swap! result update-in (conj path k)
+                                                                #(conj (set %1) %2) v))))))))))
+                                       (catch Exception e
+                                         (print-stack-trace-if-verbose e verbose)))))))
+                            (.. pool shutdown)
+                            (try
+                              (when-not (.. pool (awaitTermination Integer/MAX_VALUE
+                                                                   TimeUnit/SECONDS))
+                                (.. pool shutdownNow))
+                              (catch InterruptedException e
+                                (.. pool shutdownNow)
+                                (.. Thread currentThread interrupt))))
                           ;; must be in Soot body to ensure content/arguments can be printed
                           (when (and verbose (&gt; verbose 2))
                             (pprint @result))))
@@ -4045,6 +4062,10 @@ net.brehaut.ClojureTools = (function (SH) {
 </td><td class="codes"></td></tr><tr><td class="docs"><p>simulator should be an atom to have persistent effect</p>
 </td><td class="codes"><pre class="brush: clojure">(defprotocol SimulatorAssignment
   (simulator-assign [target value simulator]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type nil
+  SimulatorAssignment
+  (simulator-assign [local value simulator]
+    nil))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(extend-type soot.Local
   SimulatorAssignment
   (simulator-assign [local value simulator]
@@ -4097,7 +4118,7 @@ net.brehaut.ClojureTools = (function (SH) {
                          (assoc-in options [:circumscription]
                                    circumscription))
         (catch Exception e
-          (print-stack-trace-if-verbose e verbose))))))</pre></td></tr><tr><td class="docs"><p>get both explicit and implicit interesting invokes</p>
+          (print-stack-trace-if-verbose e verbose 3))))))</pre></td></tr><tr><td class="docs"><p>get both explicit and implicit interesting invokes</p>
 </td><td class="codes"><pre class="brush: clojure">(defn get-all-interesting-invokes
   [^SootMethod root-method
    interesting-method?
@@ -4138,7 +4159,7 @@ net.brehaut.ClojureTools = (function (SH) {
         (swap! all-component-invokes into
                component-invokes))
       (catch Exception e
-        (print-stack-trace-if-verbose e verbose)))
+        (print-stack-trace-if-verbose e verbose 3)))
     ;; return result
     {:explicit-invokes @all-explicit-invokes
      :implicit-invokes @all-implicit-invokes
@@ -4604,7 +4625,6 @@ net.brehaut.ClojureTools = (function (SH) {
                                                method-name field value)))
                             value)
                           (catch Exception e
-                            (print-stack-trace e)
                             (make-field-sexp (simulator-get-this @simulator) base-value)))
                         (and (= &quot;java.lang.reflect.Field&quot; root-class-name)
                              (#{&quot;equals&quot;}) method-name)
@@ -4614,7 +4634,6 @@ net.brehaut.ClojureTools = (function (SH) {
                                                            field)]
                             (= value (first args)))
                           (catch Exception e
-                            (print-stack-trace e)
                             (make-field-sexp (simulator-get-this @simulator)
                                              base-value)))
                         (and (= &quot;java.lang.reflect.Field&quot; root-class-name)
@@ -4633,7 +4652,6 @@ net.brehaut.ClojureTools = (function (SH) {
                                                value)))
                             value)
                           (catch Exception e
-                            (print-stack-trace e)
                             (make-field-sexp (simulator-get-this @simulator) base-value)))
                         :default (invoke-method method base-value args true)))
                     (catch Exception e
@@ -4921,7 +4939,7 @@ net.brehaut.ClojureTools = (function (SH) {
              ;; default case
              (defaultCase [expr]))))
       (catch Exception e
-        (print-stack-trace-if-verbose e verbose)))
+        (print-stack-trace-if-verbose e verbose 3)))
     @result))</pre></td></tr><tr><td class="docs"><p>:nil signify N/A</p>
 </td><td class="codes"><pre class="brush: clojure">(defn- simulator-get-field
   [instance field]
@@ -5193,6 +5211,14 @@ net.brehaut.ClojureTools = (function (SH) {
   (get-soot-class [this])
   (get-soot-class-name [this])
   (get-soot-name [this]))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend-type nil
+  SootQuery
+  (get-soot-class [this]
+    nil)
+  (get-soot-class-name [this]
+    nil)
+  (get-soot-name [this]
+    nil))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(extend-type soot.SootClass
   SootQuery
   (get-soot-class [this]
@@ -5590,13 +5616,6 @@ net.brehaut.ClojureTools = (function (SH) {
     :assoc-fn (fn [m k _] (update-in m [k] inc))]
    [&quot;-i&quot; &quot;--interactive&quot; &quot;do not exit (i.e., shutdown-agents) at the end&quot;]
    ;; does not work with Soot
-   #_[&quot;-j&quot; &quot;--jobs JOBS&quot;
-    &quot;number of parallel jobs (default: #core+2; NB Soot processing is serialized due to its Singleton design)&quot;
-    :parse-fn #(Integer/parseInt %)
-    :default  (+ (.. Runtime getRuntime availableProcessors)
-                 2)
-    :validate [#(&gt; % 0)
-               (format &quot;You need at least 1 job to proceed&quot;)]]
    ;; nREPL config
    [nil &quot;--nrepl-port PORT&quot; &quot;REPL port&quot;
     :parse-fn #(Integer/parseInt %)
@@ -5623,6 +5642,12 @@ net.brehaut.ClojureTools = (function (SH) {
    [nil &quot;--soot-method-simulation-depth-budget BUDGET&quot; &quot;method invocation simulation budget&quot;
     :parse-fn #(Long/parseLong %)
     :default 10]
+   [&quot;-j&quot; &quot;--soot-parallel-jobs JOBS&quot;
+    &quot;analysis task parallilism&quot;
+    :parse-fn #(Integer/parseInt %)
+    :default 1
+    :validate [#(&gt; % 0)
+               (format &quot;You need at least 1 job to proceed&quot;)]]   
    [nil &quot;--soot-result-include-invoke-arguments&quot; &quot;include invoke arguments (for comparison)&quot;]
    [nil &quot;--soot-no-implicit-cf&quot; &quot;do not detect implicit control flows (for comparison)&quot;]
    [nil &quot;--soot-dump-all-invokes&quot; &quot;dump all invokes&quot;]

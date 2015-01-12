@@ -150,6 +150,11 @@
   "simulator should be an atom to have persistent effect"
   (simulator-assign [target value simulator]))
 
+(extend-type nil
+  SimulatorAssignment
+  (simulator-assign [local value simulator]
+    nil))
+
 (extend-type soot.Local
   SimulatorAssignment
   (simulator-assign [local value simulator]
@@ -214,7 +219,7 @@
                          (assoc-in options [:circumscription]
                                    circumscription))
         (catch Exception e
-          (print-stack-trace-if-verbose e verbose))))))
+          (print-stack-trace-if-verbose e verbose 3))))))
 
 (defn get-all-interesting-invokes
   "get both explicit and implicit interesting invokes"
@@ -258,7 +263,7 @@
         (swap! all-component-invokes into
                component-invokes))
       (catch Exception e
-        (print-stack-trace-if-verbose e verbose)))
+        (print-stack-trace-if-verbose e verbose 3)))
     ;; return result
     {:explicit-invokes @all-explicit-invokes
      :implicit-invokes @all-implicit-invokes
@@ -770,7 +775,6 @@
                                                method-name field value)))
                             value)
                           (catch Exception e
-                            (print-stack-trace e)
                             (make-field-sexp (simulator-get-this @simulator) base-value)))
 
                         (and (= "java.lang.reflect.Field" root-class-name)
@@ -781,7 +785,6 @@
                                                            field)]
                             (= value (first args)))
                           (catch Exception e
-                            (print-stack-trace e)
                             (make-field-sexp (simulator-get-this @simulator)
                                              base-value)))
 
@@ -801,7 +804,6 @@
                                                value)))
                             value)
                           (catch Exception e
-                            (print-stack-trace e)
                             (make-field-sexp (simulator-get-this @simulator) base-value)))
 
                         :default (invoke-method method base-value args true)))
@@ -1105,7 +1107,7 @@
              ;; default case
              (defaultCase [expr]))))
       (catch Exception e
-        (print-stack-trace-if-verbose e verbose)))
+        (print-stack-trace-if-verbose e verbose 3)))
     @result))
 
 ;; :nil signify N/A

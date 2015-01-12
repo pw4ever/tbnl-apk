@@ -74,6 +74,15 @@ process takes a worklist as input, and outputs the new worklist"
   (get-soot-class-name [this])
   (get-soot-name [this]))
 
+(extend-type nil
+  SootQuery
+  (get-soot-class [this]
+    nil)
+  (get-soot-class-name [this]
+    nil)
+  (get-soot-name [this]
+    nil))
+
 (extend-type soot.SootClass
   SootQuery
   (get-soot-class [this]
