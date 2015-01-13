@@ -3755,9 +3755,6 @@ net.brehaut.ClojureTools = (function (SH) {
                                                  not-empty))
                                         ;; not &lt;init&gt; or &lt;clinit&gt;
                                         (not (re-find #&quot;&lt;[^&gt;]+&gt;&quot; method-name))))))]
-                          (initialize-classes {:classes application-classes
-                                               :circumscription application-methods}
-                                              options)
                           (let [pool (Executors/newFixedThreadPool soot-parallel-jobs)]
                             (doseq [callback android-api-descendant-callbacks]
                               (.. pool
@@ -3770,10 +3767,14 @@ net.brehaut.ClojureTools = (function (SH) {
                                          (let [{:keys [explicit-invokes
                                                        implicit-invokes
                                                        component-invokes]}
-                                               (get-all-interesting-invokes callback
-                                                                            interesting-method?
-                                                                            application-methods
-                                                                            options)]
+                                               (with-simulator
+                                                 (initialize-classes {:classes application-classes
+                                                                      :circumscription application-methods}
+                                                                     options)                                                 
+                                                 (get-all-interesting-invokes callback
+                                                                              interesting-method?
+                                                                              application-methods
+                                                                              options))]
                                            (doseq [[type invokes] [[:explicit explicit-invokes]
                                                                    [:implicit implicit-invokes]
                                                                    [:component component-invokes]]]
@@ -3964,12 +3965,12 @@ net.brehaut.ClojureTools = (function (SH) {
                         StmtSwitch
                         JimpleValueSwitch)))</pre></td></tr><tr><td class="docs"><p>declaration</p>
 </td><td class="codes"></td></tr><tr><td class="docs"><p>public</p>
-</td><td class="codes"><pre class="brush: clojure">(declare get-all-interesting-invokes)</pre></td></tr><tr><td class="docs"><p>private</p>
-
-<p>workaround: Cannot Embed Object in Code exception in eval</p>
-</td><td class="codes"><pre class="brush: clojure">(declare init-instances initialize-classes)
-(declare simulate-method simulate-basic-block)
-(declare simulator-global-state create-simulator 
+</td><td class="codes"><pre class="brush: clojure">(declare with-simulator)
+(declare initialize-classes get-all-interesting-invokes)
+(declare ^:dynamic *init-instances* ^:dynamic *simulator-global-state*)</pre></td></tr><tr><td class="docs"><p>private</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(declare simulate-method simulate-basic-block)
+(declare create-simulator 
          simulator-evaluate simulator-new-instance
          simulator-get-field simulator-set-field
          simulator-get-this simulator-get-param
@@ -3982,9 +3983,7 @@ net.brehaut.ClojureTools = (function (SH) {
          implicit-cf-class? implicit-cf? implicit-cf-task? implicit-cf-component? 
          get-transitive-implicit-cf-super-class-and-interface get-implicit-cf-root-class-names)
 (declare implicit-cf-marker implicit-cf-marker-task implicit-cf-marker-component)
-(declare safe-invokes)
-(def ^:dynamic *object-embedding-hack*
-  nil)</pre></td></tr><tr><td class="docs"><p>implementation</p>
+(declare safe-invokes)</pre></td></tr><tr><td class="docs"><p>implementation</p>
 </td><td class="codes"></td></tr><tr><td class="docs"><p>value resolver protocol</p>
 </td><td class="codes"><pre class="brush: clojure">(defprotocol SimulatorValueResolver
   (simulator-resolve-value [obj simulator]))</pre></td></tr><tr><td class="docs"><p>the default case</p>
@@ -4096,19 +4095,26 @@ net.brehaut.ClojureTools = (function (SH) {
                         (assoc base-value index-value value)
                         simulator))))</pre></td></tr><tr><td class="docs"><p>get method interesting invokes and helpers</p>
 </td><td class="codes"></td></tr><tr><td class="docs"><p>initial instance of classes with circumscription</p>
-</td><td class="codes"><pre class="brush: clojure">(def ^:private init-instances
-  (atom {}))</pre></td></tr><tr><td class="docs"><p>initialize class by invoking <clinit></p>
+</td><td class="codes"><pre class="brush: clojure">(def ^:dynamic *init-instances*
+  nil)</pre></td></tr><tr><td class="docs"><p>initialized in initialize-classes to avoid unintentional retation</p>
+</td><td class="codes"><pre class="brush: clojure">(def ^:dynamic *simulator-global-state*
+  nil)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmacro with-simulator
+  [&amp; body]
+  `(binding [*init-instances* (atom nil)
+             *simulator-global-state* (atom nil)]
+     ~@body))</pre></td></tr><tr><td class="docs"><p>initialize class by invoking <clinit></p>
 </td><td class="codes"><pre class="brush: clojure">(defn initialize-classes
   [{:keys [classes circumscription]
     :or {circumscription :all}
     :as initialize-params}
    {:keys [verbose]
     :as options}]
-  (reset! simulator-global-state
+  (reset! *simulator-global-state*
           {:fields {:static {}
                     :instance {}}})
   (doseq [^SootClass class classes]
-    (swap! init-instances assoc-in [class]
+    (swap! *init-instances* assoc-in [class]
            (simulator-new-instance class))
     (doseq [^SootMethod clinit (.. (soot.EntryPoints/v) (clinitsOf class))]
       (try
@@ -4138,7 +4144,7 @@ net.brehaut.ClojureTools = (function (SH) {
                               :this
                               ;; use initial instance if available
                               (let [root-method-class (-&gt; root-method get-soot-class)
-                                    instance (get-in @init-instances
+                                    instance (get-in @*init-instances*
                                                      [root-method-class])]
                                 (if instance
                                   instance
@@ -4392,9 +4398,7 @@ net.brehaut.ClojureTools = (function (SH) {
   [;; for a method frame
    this params locals returns
    ;; during simulation
-   explicit-invokes implicit-invokes component-invokes])</pre></td></tr><tr><td class="docs"><p>initialized in initialize-classes to avoid unintentional retation</p>
-</td><td class="codes"><pre class="brush: clojure">(def ^:private simulator-global-state
-  (atom nil))</pre></td></tr><tr><td class="docs">
+   explicit-invokes implicit-invokes component-invokes])</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn- create-simulator
   [this params]
   (map-&gt;Simulator {:this this
@@ -4513,21 +4517,18 @@ net.brehaut.ClojureTools = (function (SH) {
                     (cond
                       ;; special invokes: &lt;init&gt;
                       (= invoke-type :special-invoke)
-                      (simulator-assign base
-                                        (eval `(new ~(symbol class-name)
-                                                    ~@args))
-                                        simulator)
-                      ;; interface and virtual invokes
-                      (and base
-                           (not (extends? Sexp (class base-value))))
-                      (binding [*object-embedding-hack* (atom base-value)]
-                        (eval `(. @*object-embedding-hack*
-                                  (~(symbol method-name) ~@args)))
-                        simulator)
-                      ;; static invokes
-                      (nil? base)
-                      (eval `(. ~(symbol class-name)
-                                (~(symbol method-name) ~@args))))
+                      (let [args (into-array args)]
+                        (simulator-assign base
+                                          (.. (Class/forName class-name)
+                                              (getConstructor args)
+                                              (newInstance args))
+                                          simulator))
+                      ;; other invokes
+                      (not (extends? Sexp (class base-value)))
+                      (let [args (into-array args)]
+                        (.. (Class/forName class-name)
+                            (getMethod method-name args)
+                            (invoke base-value args))))
                     (catch Exception e
                       (invoke-method method base-value args)))
                   ;; implicit cf: task
@@ -4947,16 +4948,16 @@ net.brehaut.ClojureTools = (function (SH) {
         field-name (-&gt; field get-soot-name)
         field-id [class-name field-name]]
     (if (.. field isStatic)
-      (get-in @simulator-global-state [:fields :static field-id] :nil)
-      (get-in @simulator-global-state [:fields :instance instance field-id] :nil))))</pre></td></tr><tr><td class="docs">
+      (get-in @*simulator-global-state* [:fields :static field-id] :nil)
+      (get-in @*simulator-global-state* [:fields :instance instance field-id] :nil))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn- simulator-set-field
   [instance field value]
   (let [class-name (-&gt; field get-soot-class-name)
         field-name (-&gt; field get-soot-name)
         field-id [class-name field-name]]
     (if (.. field isStatic)
-      (swap! simulator-global-state assoc-in [:fields :static field-id] value)
-      (swap! simulator-global-state assoc-in [:fields :instance instance field-id] value))))</pre></td></tr><tr><td class="docs"><p>:nil signify N/A</p>
+      (swap! *simulator-global-state* assoc-in [:fields :static field-id] value)
+      (swap! *simulator-global-state* assoc-in [:fields :instance instance field-id] value))))</pre></td></tr><tr><td class="docs"><p>:nil signify N/A</p>
 </td><td class="codes"><pre class="brush: clojure">(defn- simulator-get-this
   [simulator]
   (get-in simulator [:this] :nil))</pre></td></tr><tr><td class="docs"><p>:nil signify N/A</p>
@@ -5643,7 +5644,7 @@ net.brehaut.ClojureTools = (function (SH) {
     :parse-fn #(Long/parseLong %)
     :default 10]
    [&quot;-j&quot; &quot;--soot-parallel-jobs JOBS&quot;
-    &quot;analysis task parallilism&quot;
+    &quot;number of concurrent threads for analyzing methods&quot;
     :parse-fn #(Integer/parseInt %)
     :default 1
     :validate [#(&gt; % 0)
@@ -5835,12 +5836,7 @@ net.brehaut.ClojureTools = (function (SH) {
               (let [{:keys [file-path tags] :as task} (read-string line)]
                 (try
                   (when (and file-path (fs/readable? file-path))
-                    ;; do the real work using a fresh Thread
-                    (let [t (Thread. #(work task options))]
-                      (doto t
-                        (.start)
-                        ;; wait till the thread dies
-                        (.join))))
+                    (work task options))
                   (catch Exception e
                     (print-stack-trace-if-verbose e verbose)))
                 (recur (read-line)))))

@@ -97,5 +97,5 @@ clean:
 	rm -rf target *.touch
 
 # defmacro dependencies
-src/tbnl_apk/apk/dex/soot/parse.clj: src/tbnl_apk/apk/dex/soot/util.clj
+src/tbnl_apk/apk/dex/soot/parse.clj: src/tbnl_apk/apk/dex/soot/util.clj src/tbnl_apk/apk/dex/soot/simulator.clj
 	touch $@

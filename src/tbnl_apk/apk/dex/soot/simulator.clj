@@ -32,12 +32,14 @@
 ;;; declaration
 
 ;; public
-(declare get-all-interesting-invokes)
+(declare with-simulator)
+(declare initialize-classes get-all-interesting-invokes)
+(declare ^:dynamic *init-instances* ^:dynamic *simulator-global-state*)
 
 ;; private
-(declare init-instances initialize-classes)
+
 (declare simulate-method simulate-basic-block)
-(declare simulator-global-state create-simulator 
+(declare create-simulator 
          simulator-evaluate simulator-new-instance
          simulator-get-field simulator-set-field
          simulator-get-this simulator-get-param
@@ -51,9 +53,7 @@
          get-transitive-implicit-cf-super-class-and-interface get-implicit-cf-root-class-names)
 (declare implicit-cf-marker implicit-cf-marker-task implicit-cf-marker-component)
 (declare safe-invokes)
-(def ^:dynamic *object-embedding-hack*
-  "workaround: Cannot Embed Object in Code exception in eval"
-  nil)
+
 ;;; implementation
 
 ;; value resolver protocol
@@ -193,9 +193,19 @@
 ;; get method interesting invokes and helpers
 ;; 
 
-(def ^:private init-instances
+(def ^:dynamic *init-instances*
   "initial instance of classes with circumscription"
-  (atom {}))
+  nil)
+
+(def ^:dynamic *simulator-global-state*
+  "initialized in initialize-classes to avoid unintentional retation"
+  nil)
+
+(defmacro with-simulator
+  [& body]
+  `(binding [*init-instances* (atom nil)
+             *simulator-global-state* (atom nil)]
+     ~@body))
 
 (defn initialize-classes
   "initialize class by invoking <clinit>"
@@ -204,12 +214,12 @@
     :as initialize-params}
    {:keys [verbose]
     :as options}]
-  (reset! simulator-global-state
+  (reset! *simulator-global-state*
           {:fields {:static {}
                     :instance {}}})
   
   (doseq [^SootClass class classes]
-    (swap! init-instances assoc-in [class]
+    (swap! *init-instances* assoc-in [class]
            (simulator-new-instance class))
     (doseq [^SootMethod clinit (.. (soot.EntryPoints/v) (clinitsOf class))]
       (try
@@ -241,7 +251,7 @@
                               :this
                               ;; use initial instance if available
                               (let [root-method-class (-> root-method get-soot-class)
-                                    instance (get-in @init-instances
+                                    instance (get-in @*init-instances*
                                                      [root-method-class])]
                                 (if instance
                                   instance
@@ -515,10 +525,6 @@
    ;; during simulation
    explicit-invokes implicit-invokes component-invokes])
 
-(def ^:private simulator-global-state
-  "initialized in initialize-classes to avoid unintentional retation"
-  (atom nil))
-
 (defn- create-simulator
   [this params]
   (map->Simulator {:this this
@@ -651,23 +657,19 @@
                       
                       ;; special invokes: <init>
                       (= invoke-type :special-invoke)
-                      (simulator-assign base
-                                        (eval `(new ~(symbol class-name)
-                                                    ~@args))
-                                        simulator)
+                      (let [args (into-array args)]
+                        (simulator-assign base
+                                          (.. (Class/forName class-name)
+                                              (getConstructor args)
+                                              (newInstance args))
+                                          simulator))
 
-                      ;; interface and virtual invokes
-                      (and base
-                           (not (extends? Sexp (class base-value))))
-                      (binding [*object-embedding-hack* (atom base-value)]
-                        (eval `(. @*object-embedding-hack*
-                                  (~(symbol method-name) ~@args)))
-                        simulator)
-                      
-                      ;; static invokes
-                      (nil? base)
-                      (eval `(. ~(symbol class-name)
-                                (~(symbol method-name) ~@args))))
+                      ;; other invokes
+                      (not (extends? Sexp (class base-value)))
+                      (let [args (into-array args)]
+                        (.. (Class/forName class-name)
+                            (getMethod method-name args)
+                            (invoke base-value args))))
                     (catch Exception e
                       (invoke-method method base-value args)))
 
@@ -1117,8 +1119,8 @@
         field-name (-> field get-soot-name)
         field-id [class-name field-name]]
     (if (.. field isStatic)
-      (get-in @simulator-global-state [:fields :static field-id] :nil)
-      (get-in @simulator-global-state [:fields :instance instance field-id] :nil))))
+      (get-in @*simulator-global-state* [:fields :static field-id] :nil)
+      (get-in @*simulator-global-state* [:fields :instance instance field-id] :nil))))
 
 (defn- simulator-set-field
   [instance field value]
@@ -1126,8 +1128,8 @@
         field-name (-> field get-soot-name)
         field-id [class-name field-name]]
     (if (.. field isStatic)
-      (swap! simulator-global-state assoc-in [:fields :static field-id] value)
-      (swap! simulator-global-state assoc-in [:fields :instance instance field-id] value))))
+      (swap! *simulator-global-state* assoc-in [:fields :static field-id] value)
+      (swap! *simulator-global-state* assoc-in [:fields :instance instance field-id] value))))
 
 ;; :nil signify N/A
 (defn- simulator-get-this

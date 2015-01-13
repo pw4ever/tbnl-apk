@@ -204,10 +204,6 @@
                                         ;; not <init> or <clinit>
                                         (not (re-find #"<[^>]+>" method-name))))))]
 
-                          (initialize-classes {:classes application-classes
-                                               :circumscription application-methods}
-                                              options)
-
                           (let [pool (Executors/newFixedThreadPool soot-parallel-jobs)]
                             (doseq [callback android-api-descendant-callbacks]
                               (.. pool
@@ -222,10 +218,14 @@
                                          (let [{:keys [explicit-invokes
                                                        implicit-invokes
                                                        component-invokes]}
-                                               (get-all-interesting-invokes callback
-                                                                            interesting-method?
-                                                                            application-methods
-                                                                            options)]
+                                               (with-simulator
+                                                 (initialize-classes {:classes application-classes
+                                                                      :circumscription application-methods}
+                                                                     options)                                                 
+                                                 (get-all-interesting-invokes callback
+                                                                              interesting-method?
+                                                                              application-methods
+                                                                              options))]
                                            (doseq [[type invokes] [[:explicit explicit-invokes]
                                                                    [:implicit implicit-invokes]
                                                                    [:component component-invokes]]]

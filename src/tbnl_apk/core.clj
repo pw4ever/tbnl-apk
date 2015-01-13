@@ -75,7 +75,7 @@
     :parse-fn #(Long/parseLong %)
     :default 10]
    ["-j" "--soot-parallel-jobs JOBS"
-    "analysis task parallilism"
+    "number of concurrent threads for analyzing methods"
     :parse-fn #(Integer/parseInt %)
     :default 1
     :validate [#(> % 0)
@@ -304,12 +304,7 @@
               (let [{:keys [file-path tags] :as task} (read-string line)]
                 (try
                   (when (and file-path (fs/readable? file-path))
-                    ;; do the real work using a fresh Thread
-                    (let [t (Thread. #(work task options))]
-                      (doto t
-                        (.start)
-                        ;; wait till the thread dies
-                        (.join))))
+                    (work task options))
                   (catch Exception e
                     (print-stack-trace-if-verbose e verbose)))
                 (recur (read-line)))))
